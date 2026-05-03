@@ -2237,22 +2237,11 @@
         <div><div class="label">Total do pedido</div><div style="font-size:12px;color:var(--muted);margin-top:3px;" id="order-desc">5 fotos · Aniversário</div></div>
         <div class="value" id="order-price">R$ 89,90</div>
       </div>
-      <div class="pay-options">
-        <div class="pay-opt" onclick="processarPagamento()">
-          <div class="pay-icon">📱</div>
-          <div class="pay-name">PIX</div>
-          <div class="pay-desc">Aprovação imediata</div>
-        </div>
-        <div class="pay-opt" onclick="processarPagamento()">
-          <div class="pay-icon">💳</div>
-          <div class="pay-name">Cartão de Crédito</div>
-          <div class="pay-desc">Até 6x sem juros</div>
-        </div>
+      <div style="text-align:center;margin-bottom:24px;">
+        <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.20.41/_jsfall/mercado-pago_isologo--blue.png" alt="MercadoPago" style="height:60px;margin-bottom:16px;">
+        <p style="font-size:14px;color:var(--charcoal);margin-bottom:16px;">Clique para pagar com segurança</p>
+        <button class="btn-primary" style="width:100%;justify-content:center;padding:14px;" onclick="processarPagamento()">Pagar com Mercado Pago</button>
       </div>
-
-      <div style="display:flex;gap:12px;">
-        <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(2)">← Voltar</button>
-        <button class="btn-primary" style="flex:2;justify-content:center" onclick="processarPagamento()">Pagar agora ✓</button>
       </div>
     </div>
 
@@ -3044,14 +3033,10 @@
         <div><div class="label">Total do pedido</div><div style="font-size:12px;color:var(--muted);margin-top:3px;" id="order-desc">5 fotos</div></div>
         <div class="value" id="order-price">R$ 89,90</div>
       </div>
-      <div class="pay-options">
-        <div class="pay-opt" onclick="processarPagamento()"><div class="pay-icon">📱</div><div class="pay-name">PIX</div><div class="pay-desc">Aprovacao imediata</div></div>
-        <div class="pay-opt" onclick="processarPagamento()"><div class="pay-icon">💳</div><div class="pay-name">Cartao</div><div class="pay-desc">Ate 6x sem juros</div></div>
-      </div>
-
-      <div style="display:flex;gap:12px;">
-        <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(2)">Voltar</button>
-        <button class="btn-primary" style="flex:2;justify-content:center" onclick="processarPagamento()">Pagar agora</button>
+      <div style="text-align:center;margin-bottom:24px;">
+        <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.20.41/_jsfall/mercado-pago_isologo--blue.png" alt="MercadoPago" style="height:60px;margin-bottom:16px;">
+        <p style="font-size:14px;color:var(--charcoal);margin-bottom:16px;">Clique para pagar com segurança</p>
+        <button class="btn-primary" style="width:100%;justify-content:center;padding:14px;" onclick="processarPagamento()">Pagar com Mercado Pago</button>
       </div>
     </div>
     <div class="modal-step" id="step4">
@@ -3220,7 +3205,7 @@ window.addEventListener('scroll', function(){
   }
 
   function processarPagamento() {
-    const BACKEND_URL = 'http://localhost:3001';
+    const BACKEND_URL = 'https://ai-studio-backend-five.vercel.app';
     
     const nome = document.getElementById('input-nome').value;
     const email = document.getElementById('input-email').value;
