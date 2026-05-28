@@ -1665,6 +1665,38 @@
 
 <!-- ===== SITE ===== -->
 <div id="app-site" class="app-section active">
+  <div id="screen-home" class="screen active">
+
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo" onclick="appNav('site')">
+    <span class="ai">AI</span>
+    <div class="dot"></div>
+    <span class="studio">Studio</span>
+  </div>
+  <div class="nav-links">
+    <a href="#" onclick="appNav('site')">Início</a>
+    <a href="#" onclick="goEnsaios()">Ensaios</a>
+    <a href="#" onclick="goDepoimentos()">Depoimentos</a>
+    <a href="#" onclick="appNav('cliente')">Meu Ensaio</a>
+    <a href="#" onclick="appNav('admin')">Admin</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-wpp" href="https://wa.me/5521999999999" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+    <button class="btn-nav" onclick="openModal()">Criar Ensaio</button>
+  </div>
+</nav>
+
+<!-- WHATSAPP FLUTUANTE -->
+<a class="wpp-float" href="https://wa.me/5521999999999" target="_blank" title="Fale no WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- ===== HOME ===== -->
 <div id="screen-home" class="screen active">
 
   <!-- HERO -->
@@ -3033,3 +3065,422 @@
         <div><div class="label">Total do pedido</div><div style="font-size:12px;color:var(--muted);margin-top:3px;" id="order-desc">5 fotos</div></div>
         <div class="value" id="order-price">R$ 89,90</div>
       </div>
+      <div class="pay-options">
+        <div class="pay-opt" onclick="selectPay(this,'pix')"><div class="pay-icon">📱</div><div class="pay-name">PIX</div><div class="pay-desc">Aprovacao imediata</div></div>
+        <div class="pay-opt" onclick="selectPay(this,'cartao')"><div class="pay-icon">💳</div><div class="pay-name">Cartao</div><div class="pay-desc">Ate 6x sem juros</div></div>
+      </div>
+      <div id="pix-info" style="display:none;background:#F0F9F4;border:1px solid #A0D0B0;border-radius:10px;padding:18px;margin-bottom:16px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:8px;">📲</div>
+        <p style="font-size:13px;font-weight:600;">Chave PIX: <span style="color:var(--success);">aistudio@pix.com.br</span></p>
+      </div>
+      <div id="cartao-info" style="display:none;margin-bottom:16px;">
+        <label class="field-label">Numero do cartao</label>
+        <input type="text" placeholder="0000 0000 0000 0000">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label class="field-label">Validade</label><input type="text" placeholder="MM/AA"></div>
+          <div><label class="field-label">CVV</label><input type="text" placeholder="000"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(2)">Voltar</button>
+        <button class="btn-primary" style="flex:2;justify-content:center" onclick="processarPagamento()">Pagar agora</button>
+      </div>
+    </div>
+    <div class="modal-step" id="step4">
+      <div class="progress-bar">
+        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Ensaio</div></div>
+        <div class="prog-line done"></div>
+        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Fotos</div></div>
+        <div class="prog-line done"></div>
+        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Pagamento</div></div>
+        <div class="prog-line done"></div>
+        <div class="prog-step"><div class="prog-circle active">4</div><div class="prog-label">Upload</div></div>
+      </div>
+      <div class="eyebrow">Passo 4 de 4</div>
+      <h2>Envie suas fotos</h2>
+      <p class="subtitle">Envie ate 5 fotos. Prefira rostos nítidos e boa iluminacao!</p>
+      <div class="upload-area" onclick="simularUpload()">
+        <div class="upload-icon">📸</div>
+        <p><strong>Clique para selecionar</strong> ou arraste aqui</p>
+        <p style="margin-top:6px;font-size:12px;">JPG, PNG ate 10MB</p>
+        <div class="upload-count" id="upload-count">0 / 5 fotos selecionadas</div>
+      </div>
+      <div class="preview-grid" id="preview-grid"></div>
+      <button class="btn-primary" style="width:100%;justify-content:center;opacity:0.5" onclick="enviarFotos()" id="btn-enviar" disabled>Enviar e finalizar</button>
+    </div>
+    <div class="modal-step" id="step5">
+      <div class="success-screen">
+        <div class="success-icon">✨</div>
+        <h2>Tudo <em style="color:var(--deep-rose);font-style:italic;font-family:'Playfair Display',serif;">certo!</em></h2>
+        <p>Suas fotos foram enviadas com sucesso, e serao analisadas para a confeccao do seu ensaio.</p>
+        <p>Voce recebera um e-mail quando estiver pronto! 💌</p>
+        <button class="btn-primary" style="margin-bottom:12px;width:100%;justify-content:center" onclick="appNav('cliente');closeModal()">Acompanhar meu pedido</button>
+        <button class="btn-outline" style="width:100%;justify-content:center" onclick="closeModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  AI STUDIO — UNIFIED APP NAVIGATION
+// ============================================================
+
+var currentSection = 'site';
+
+function appNav(section) {
+  // Hide all sections
+  document.querySelectorAll('.app-section').forEach(function(s){ s.classList.remove('active'); });
+
+  // Show target
+  var el = document.getElementById('app-' + section);
+  if (el) el.classList.add('active');
+  currentSection = section;
+
+  // Nav visibility
+  var nav = document.getElementById('global-nav');
+  if (section === 'admin') {
+    nav.classList.add('hidden');
+  } else {
+    nav.classList.remove('hidden');
+  }
+
+  // Reset scroll
+  window.scrollTo(0, 0);
+
+  // Admin: init
+  if (section === 'admin') {
+    if (typeof renderPedidos === 'function') renderPedidos('todos');
+    if (typeof adminShowPage === 'function') adminShowPage('dashboard');
+  }
+
+  // Upload: reset to page 1
+  if (section === 'upload') {
+    if (typeof showUploadPage === 'function') showUploadPage(1);
+  }
+
+  // Site: reset screens
+  if (section === 'site' || section === 'cliente') {
+    document.querySelectorAll('#app-site .screen').forEach(function(s){ s.classList.remove('active'); });
+    var screenId = section === 'cliente' ? 'screen-cliente' : 'screen-home';
+    var target = document.getElementById(screenId);
+    if (target) target.classList.add('active');
+  }
+}
+
+function goEnsaios() {
+  appNav('site');
+  setTimeout(function(){
+    var el = document.querySelector('.ensaios-grid');
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  }, 120);
+}
+
+function goDepoimentos() {
+  appNav('site');
+  setTimeout(function(){
+    var el = document.querySelector('.depoimentos-section');
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  }, 120);
+}
+
+function downloadFotos() {
+  showToast('Download iniciado! Suas fotos serao salvas no dispositivo.');
+}
+
+// Nav scroll effect
+window.addEventListener('scroll', function(){
+  var nav = document.getElementById('global-nav');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ============================================================
+//  SITE JS
+// ============================================================
+
+  let state = { tipo:'', tipoId:'', qty:0, price:0, payMethod:'', uploadCount:0 };
+  const slides = { aniv:0, bebe:0, pet:0, grav:0 };
+  const slidesTotal = { aniv:4, bebe:4, pet:4, grav:4 };
+
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  
+
+  function changeSlide(id, dir) {
+    slides[id] = (slides[id] + dir + slidesTotal[id]) % slidesTotal[id];
+    document.getElementById('car-' + id).querySelector('.carousel-slides').style.transform = `translateX(-${slides[id]*100}%)`;
+    document.querySelectorAll(`#dots-${id} .dot`).forEach((d,i) => d.classList.toggle('active', i===slides[id]));
+  }
+
+  // Auto-advance carousels
+  setInterval(function(){ if(currentSection==='site'){ ['aniv','bebe','pet','grav'].forEach(function(id){ changeSlide(id,1); }); } }, 4000);
+
+  function openModal(id) {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    goStep(1);
+    if (id) { selectTipo(id); }
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) closeModal(); });
+
+  function goStep(n) {
+    document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step'+n).classList.add('active');
+  }
+
+  var tipoNames = {aniv:'Aniversario', bebe:'Bebe com a Mamae', pet:'Com Pet', grav:'Gravida'};
+
+  function selectTipo(id) {
+    state.tipo = tipoNames[id]; state.tipoId = id;
+    document.querySelectorAll('[id^="tipo-"]').forEach(el => el.classList.remove('selected'));
+    document.getElementById('tipo-'+id).classList.add('selected');
+  }
+
+  function selectQty(el, qty, price) {
+    state.qty=qty; state.price=price;
+    document.querySelectorAll('.qty-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('order-desc').textContent = qty+' foto'+(qty>1?'s':'')+' · '+(state.tipo||'Ensaio');
+    document.getElementById('order-price').textContent = 'R$ '+price.toFixed(2).replace('.',',');
+  }
+
+  function selectPay(el, method) {
+    state.payMethod=method;
+    document.querySelectorAll('.pay-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('pix-info').style.display = method==='pix' ? 'block' : 'none';
+    document.getElementById('cartao-info').style.display = method==='cartao' ? 'block' : 'none';
+  }
+
+  function processarPagamento() {
+    if (!state.payMethod) { showToast('Selecione uma forma de pagamento'); return; }
+    showToast('⏳ Processando pagamento...');
+    setTimeout(() => { showToast('✅ Pagamento aprovado!'); setTimeout(() => goStep(4), 700); }, 1600);
+  }
+
+  const emojis = ['😊','🙂','😄','🥰','😌'];
+  const mockColors = ['aniv-1','aniv-2','bebe-1','bebe-2','grav-1'];
+
+  function simularUpload() {
+    if (state.uploadCount >= 5) return;
+    state.uploadCount++;
+    const grid = document.getElementById('preview-grid');
+    const div = document.createElement('div');
+    div.className = 'preview-thumb';
+    div.innerHTML = `<div class="mock-prev ${mockColors[state.uploadCount-1]}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;">${emojis[state.uploadCount-1]}</div>
+      <button class="remove-btn" onclick="removerFoto(this.parentElement)">×</button>`;
+    grid.appendChild(div);
+    document.getElementById('upload-count').textContent = state.uploadCount + ' / 5 fotos selecionadas';
+    const btn = document.getElementById('btn-enviar');
+    btn.disabled=false; btn.style.opacity='1';
+  }
+
+  function removerFoto(el) {
+    el.remove(); state.uploadCount--;
+    document.getElementById('upload-count').textContent = state.uploadCount + ' / 5 fotos selecionadas';
+    if (state.uploadCount===0) { document.getElementById('btn-enviar').disabled=true; document.getElementById('btn-enviar').style.opacity='0.5'; }
+  }
+
+  function enviarFotos() {
+    if (state.uploadCount===0) { showToast('Envie pelo menos 1 foto'); return; }
+    showToast('📤 Enviando suas fotos...');
+    setTimeout(() => goStep(5), 1400);
+  }
+
+  function liberarFotos() {
+    showToast('Ensaio liberado! A cliente ja pode visualizar e baixar.');
+    document.getElementById('btn-download-area').style.display = 'block';
+    setTimeout(() => document.querySelectorAll('.foto-locked').forEach(el => el.remove()), 600);
+  }
+
+  function switchTab(btn) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // goEnsaios defined above),120); }
+  // goDepoimentos defined above),120); }
+  // downloadFotos defined above
+
+  // showToast defined below
+
+
+// ============================================================
+//  ADMIN JS
+// ============================================================
+
+  // ===== DATA =====
+  const pedidos = [
+    {id:1, nome:'Maria Silva',       email:'maria@email.com', tel:'(21) 99999-0001', tipo:'Aniversario', emoji:'🎂', qty:'5 fotos', valor:'R$ 89,90', pay:'PIX', data:'20/04/2026', status:'revisao'},
+    {id:2, nome:'Ana Beatriz Santos',email:'ana@email.com',   tel:'(21) 99999-0002', tipo:'Gravida',     emoji:'🤰', qty:'10 fotos',valor:'R$149,90', pay:'Cartao', data:'18/04/2026', status:'producao'},
+    {id:3, nome:'Juliana Mendes',    email:'ju@email.com',    tel:'(21) 99999-0003', tipo:'Com Pet',     emoji:'🐾', qty:'5 fotos', valor:'R$ 89,90', pay:'PIX', data:'17/04/2026', status:'pago'},
+    {id:4, nome:'Camila Rodrigues',  email:'cami@email.com',  tel:'(21) 99999-0004', tipo:'Bebe c/ Mamae',emoji:'👶',qty:'10 fotos',valor:'R$149,90', pay:'Cartao', data:'15/04/2026', status:'liberado'},
+    {id:5, nome:'Fernanda Lima',     email:'fe@email.com',    tel:'(21) 99999-0005', tipo:'Gravida',     emoji:'🤰', qty:'20 fotos',valor:'R$229,90', pay:'PIX', data:'10/04/2026', status:'liberado'},
+    {id:6, nome:'Patricia Souza',    email:'pat@email.com',   tel:'(21) 99999-0006', tipo:'Aniversario', emoji:'🎂', qty:'2 fotos', valor:'R$ 49,90', pay:'PIX', data:'08/04/2026', status:'liberado'},
+    {id:7, nome:'Renata Costa',      email:'re@email.com',    tel:'(21) 99999-0007', tipo:'Aniversario', emoji:'🎂', qty:'1 foto',  valor:'R$ 29,90', pay:'PIX', data:'05/04/2026', status:'liberado'},
+  ];
+
+  const badgeMap = {
+    revisao:  {cls:'badge-revisao',  txt:'Em revisao'},
+    producao: {cls:'badge-producao', txt:'Em producao'},
+    pago:     {cls:'badge-pago',     txt:'Fotos recebidas'},
+    liberado: {cls:'badge-liberado', txt:'Liberado'},
+    pendente: {cls:'badge-pendente', txt:'Pendente'},
+  };
+
+  // ===== PAGES =====
+  const pageTitles = {
+    dashboard:  ['Dashboard', 'Visao geral do AI Studio'],
+    pedidos:    ['Pedidos', 'Todos os pedidos recebidos'],
+    clientes:   ['Clientes', 'Base de clientes cadastradas'],
+    producao:   ['Em Producao', 'Pedidos aguardando acao'],
+    liberados:  ['Liberados', 'Ensaios entregues as clientes'],
+  };
+
+  function adminShowPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector(`[onclick="adminShowPage('${id}')"]`).classList.add('active');
+    const t = pageTitles[id] || [id, ''];
+    document.getElementById('page-title').textContent = t[0];
+    document.getElementById('page-sub').textContent = t[1];
+    if (id === 'pedidos') renderPedidos('todos');
+  }
+
+  // ===== TABELA PEDIDOS =====
+  function renderPedidos(filtro) {
+    const tbody = document.getElementById('pedidos-tbody');
+    const lista = filtro === 'todos' ? pedidos : pedidos.filter(p => p.status === filtro);
+    tbody.innerHTML = lista.map(p => {
+      const b = badgeMap[p.status] || badgeMap.pendente;
+      return `<tr onclick="abrirPedido(${p.id})">
+        <td style="color:var(--muted);font-size:12px">#${String(p.id).padStart(3,'0')}</td>
+        <td><div class="client-cell">
+          <div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#C97B5E);font-size:13px;font-weight:700">${p.nome[0]}</div>
+          <div><div class="client-name">${p.nome}</div><div class="client-email">${p.email}</div></div>
+        </div></td>
+        <td><span class="ensaio-pill">${p.emoji} ${p.tipo}</span></td>
+        <td>${p.qty}</td>
+        <td><span class="receita-val">${p.valor}</span></td>
+        <td style="color:var(--muted);font-size:12px">${p.data}</td>
+        <td><span class="badge ${b.cls}">${b.txt}</span></td>
+        <td><div class="action-btns">
+          ${p.status==='revisao' ? `<button class="action-btn green" onclick="event.stopPropagation();liberarDiretoId(${p.id})" title="Liberar">✅</button>` : ''}
+          ${p.status==='producao'||p.status==='pago' ? `<button class="action-btn" onclick="event.stopPropagation();showToast('Gerando ensaio...')" title="Gerar">✨</button>` : ''}
+          ${p.status==='liberado' ? `<button class="action-btn" onclick="event.stopPropagation();showToast('E-mail reenviado!')" title="Reenviar">📧</button>` : ''}
+          <button class="action-btn" onclick="event.stopPropagation();abrirPedido(${p.id})" title="Ver detalhes">👁</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+    if (!lista.length) tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📭</div><p>Nenhum pedido nesta categoria</p></div></td></tr>';
+  }
+
+  function filterTab(btn, filtro) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderPedidos(filtro);
+  }
+
+  // ===== MODAL =====
+  function abrirPedido(id) {
+    const p = pedidos.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('modal-nome').textContent = p.nome;
+    document.getElementById('modal-ensaio').textContent = p.emoji + ' ' + p.tipo;
+    const b = badgeMap[p.status];
+    const badge = document.getElementById('modal-status-badge');
+    badge.className = 'badge ' + b.cls;
+    badge.textContent = b.txt;
+    document.getElementById('m-cliente').textContent = p.nome;
+    document.getElementById('m-email').textContent = p.email;
+    document.getElementById('m-tel').textContent = p.tel;
+    document.getElementById('m-tipo').textContent = p.tipo;
+    document.getElementById('m-qty').textContent = p.qty;
+    document.getElementById('m-valor').textContent = p.valor;
+    document.getElementById('m-pay').textContent = p.pay + ' ✓';
+    document.getElementById('m-data').textContent = p.data;
+    document.getElementById('m-status').textContent = b.txt;
+    document.getElementById('modal-pedido').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharModal() {
+    document.getElementById('modal-pedido').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modal-pedido').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-pedido')) fecharModal();
+  });
+
+  function liberarModal() {
+    showToast('Fotos liberadas! A cliente ja pode baixar.');
+    fecharModal();
+  }
+
+  function liberarDireto(nome) { showToast('Ensaio liberado com sucesso!'); }
+
+  function deletarFotoGerada(btn) {
+    const thumb = btn.closest('.foto-thumb');
+    thumb.style.opacity = '0';
+    thumb.style.transform = 'scale(0.8)';
+    thumb.style.transition = 'all 0.3s';
+    setTimeout(() => { thumb.remove(); showToast('Foto removida. Faca upload ou regere.'); }, 300);
+  }
+
+  // ===== BAR CHART =====
+  const meses = ['Nov','Dez','Jan','Fev','Mar','Abr'];
+  const receitas = [420, 680, 890, 1100, 1340, 847];
+  const pedidosMes = [5, 8, 10, 12, 15, 7];
+  const maxR = Math.max(...receitas);
+
+  const chart = document.getElementById('bar-chart');
+  meses.forEach((m, i) => {
+    const hR = Math.round((receitas[i]/maxR)*140);
+    const hP = Math.round((pedidosMes[i]/Math.max(...pedidosMes))*140);
+    chart.innerHTML += `
+      <div class="bar-group">
+        <div class="bar-wrap">
+          <div class="bar receita" style="height:${hR}px" data-val="R$${receitas[i]}"></div>
+          <div class="bar pedidos" style="height:${hP}px" data-val="${pedidosMes[i]} pedidos"></div>
+        </div>
+        <div class="bar-label">${m}</div>
+      </div>`;
+  });
+
+  // ===== TOAST =====
+  // showToast defined below
+
+  // Init
+  renderPedidos('todos');
+
+
+// ============================================================
+//  UPLOAD JS
+// ============================================================
+
+
+// ============================================================
+//  UNIFIED TOAST (override all)
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+
+// Init
+appNav('site');
+if (typeof renderPedidos === 'function') renderPedidos('todos');
+</script>
+</body>
+</html>
