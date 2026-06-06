@@ -3038,7 +3038,85 @@
 // ============================================================
 //  AI STUDIO — UNIFIED APP NAVIGATION
 
-  // LIGHTBOX
+  // ============================================================
+  //  SUPABASE - Carregar pedidos reais
+  // ============================================================
+  const SUPABASE_URL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  const BACKEND_URL_ADMIN = 'http://localhost:3001';
+
+  async function carregarPedidos() {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/pedidos?order=created_at.desc`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const pedidos = await response.json();
+      renderizarPedidos(pedidos);
+    } catch (error) {
+      console.error('Erro ao carregar pedidos:', error);
+    }
+  }
+
+  function renderizarPedidos(pedidos) {
+    const tbody = document.getElementById('pedidos-tbody');
+    if (!tbody) return;
+
+    if (!pedidos || pedidos.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">Nenhum pedido ainda</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = pedidos.map((p, i) => {
+      const data = new Date(p.created_at).toLocaleDateString('pt-BR');
+      const statusColor = {
+        'aprovado': '#2D6A4F', 'pendente': '#B7791F', 'recusado': '#9B2C2C'
+      }[p.status] || '#666';
+      const statusBg = {
+        'aprovado': '#D1FAE5', 'pendente': '#FEF3C7', 'recusado': '#FEE2E2'
+      }[p.status] || '#F3F4F6';
+      const statusLabel = {
+        'aprovado': '✅ Aprovado', 'pendente': '⏳ Pendente', 'recusado': '❌ Recusado'
+      }[p.status] || p.status;
+
+      return `<tr>
+        <td style="color:#999;font-size:12px">#${i+1}</td>
+        <td>
+          <div style="font-weight:600">${p.nome}</div>
+          <div style="font-size:12px;color:#999">${p.email}</div>
+        </td>
+        <td>${p.tema}</td>
+        <td>${p.quantidade} foto${p.quantidade > 1 ? 's' : ''}</td>
+        <td style="font-weight:600;color:#C97B5E">R$ ${Number(p.valor).toFixed(2).replace('.',',')}</td>
+        <td style="font-size:12px">${data}</td>
+        <td><span style="background:${statusBg};color:${statusColor};padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600">${statusLabel}</span></td>
+        <td>
+          <button class="action-btn" onclick="showToast('Email: ${p.email}')" title="Ver email">📧</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    // Atualizar contador
+    const countEl = document.querySelector('#page-pedidos .table-count');
+    if (countEl) countEl.textContent = `${pedidos.length} pedido${pedidos.length !== 1 ? 's' : ''} no total`;
+  }
+
+  // Carregar pedidos quando abrir o admin
+  const _origAdminShowPage = typeof adminShowPage === 'function' ? adminShowPage : null;
+  function adminShowPage(page) {
+    if (_origAdminShowPage) _origAdminShowPage(page);
+    if (page === 'pedidos') carregarPedidos();
+  }
+
+  // Carregar ao abrir o painel admin
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('app-admin')?.classList.contains('active')) {
+      carregarPedidos();
+    }
+  });
   function openLightbox(wrapper) {
     var img = wrapper.querySelector('img');
     var overlay = document.getElementById('lightbox-overlay');
@@ -3203,7 +3281,8 @@ window.addEventListener('scroll', function(){
     const orderData = {
       title: state.qty + ' foto' + (state.qty > 1 ? 's' : '') + ' - ' + state.tipo,
       quantity: 1, price: state.price, currency_id: 'BRL',
-      customer_email: email, customer_name: nome
+      customer_email: email, customer_name: nome,
+      tema: state.tipo
     };
     fetch(BACKEND_URL + '/create_preference', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
