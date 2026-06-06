@@ -1665,7 +1665,6 @@
 
 <!-- ===== SITE ===== -->
 <div id="app-site" class="app-section active">
-  <div id="screen-home" class="screen active">
 
 
 <!-- NAV -->
@@ -1796,76 +1795,97 @@
 
   <div class="ensaios-grid">
 
-    <!-- ANIVERSÁRIO -->
+    <!-- PROFISSIONAL -->
     <div class="ensaio-card">
-      <div class="carousel-wrapper" id="car-aniv">
-        <div class="carousel-slides">
-          <!-- Para usar fotos reais: <img src="aniv1.jpg" alt=""> no lugar do .slide-mock -->
-          <div class="carousel-slide aniv-1">
-            <div class="slide-mock"><div class="slide-emoji">✨</div>Pose Glamour</div>
-            <div class="slide-overlay"><span class="slide-label">Diva de Aniversário</span><span class="slide-num">1 / 4</span></div>
-          </div>
-          <div class="carousel-slide aniv-2">
-            <div class="slide-mock"><div class="slide-emoji">🎂</div>Pose Clássica</div>
-            <div class="slide-overlay"><span class="slide-label">Elegância &amp; Luz</span><span class="slide-num">2 / 4</span></div>
-          </div>
-          <div class="carousel-slide aniv-3">
-            <div class="slide-mock"><div class="slide-emoji">🌸</div>Pose Delicada</div>
-            <div class="slide-overlay"><span class="slide-label">Beleza Natural</span><span class="slide-num">3 / 4</span></div>
-          </div>
-          <div class="carousel-slide aniv-4">
-            <div class="slide-mock"><div class="slide-emoji">💫</div>Pose Dramática</div>
-            <div class="slide-overlay"><span class="slide-label">Sofisticação</span><span class="slide-num">4 / 4</span></div>
-          </div>
-        </div>
-        <button class="carousel-btn prev" onclick="changeSlide('aniv',-1)">‹</button>
-        <button class="carousel-btn next" onclick="changeSlide('aniv',1)">›</button>
-        <div class="carousel-dots" id="dots-aniv">
-          <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <img src="./tema-profissional.jpeg" alt="Profissional" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
+      <div class="ensaio-info">
+        <div class="ensaio-tag">💼 Profissional</div>
+        <h3>Ensaio Profissional</h3>
+        <p>Fotos corporativas de alta qualidade para LinkedIn, portfólio e materiais profissionais.</p>
+        <div class="ensaio-footer">
+          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <button class="btn-escolher" onclick="openModal('prof')">Quero este 💼</button>
         </div>
       </div>
+    </div>
+
+    <!-- GESTANTE -->
+    <div class="ensaio-card">
+      <img src="./tema-gestante.jpeg" alt="Gestante" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
+      <div class="ensaio-info">
+        <div class="ensaio-tag">🤰 Gestante</div>
+        <h3>Ensaio Gestante</h3>
+        <p>Celebre a maternidade com fotos elegantes que valorizam a barriguinha com iluminação calorosa.</p>
+        <div class="ensaio-footer">
+          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <button class="btn-escolher" onclick="openModal('gest')">Quero este 🤰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANIVERSÁRIO -->
+    <div class="ensaio-card">
+      <img src="./tema-aniversario.jpeg" alt="Aniversário" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
       <div class="ensaio-info">
         <div class="ensaio-tag">🎂 Aniversário</div>
         <h3>Ensaio de Aniversário</h3>
-        <p>Celebre sua data especial com fotos de estúdio deslumbrantes. Poses glamourosas, iluminação cinematográfica e um look que vai te deixar sem palavras.</p>
+        <p>Celebre sua data especial com fotos deslumbrantes, poses glamourosas e iluminação cinematográfica.</p>
         <div class="ensaio-footer">
           <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
-          <button class="btn-escolher" onclick="openModal('aniv')">Quero este ✨</button>
+          <button class="btn-escolher" onclick="openModal('aniv')">Quero este 🎂</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASAL -->
+    <div class="ensaio-card">
+      <img src="./tema-casal.jpeg" alt="Casal" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
+      <div class="ensaio-info">
+        <div class="ensaio-tag">💕 Casal</div>
+        <h3>Ensaio de Casal</h3>
+        <p>Capture momentos especiais com seu parceiro. Poses românticas com iluminação suave.</p>
+        <div class="ensaio-footer">
+          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <button class="btn-escolher" onclick="openModal('casal')">Quero este 💕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMATURA -->
+    <div class="ensaio-card">
+      <img src="./tema-formatura.jpeg" alt="Formatura" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
+      <div class="ensaio-info">
+        <div class="ensaio-tag">🎓 Formatura</div>
+        <h3>Ensaio de Formatura</h3>
+        <p>Eternize seu momento de sucesso acadêmico com fotos sofisticadas e elegantes.</p>
+        <div class="ensaio-footer">
+          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <button class="btn-escolher" onclick="openModal('form')">Quero este 🎓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTIMISTA -->
+    <div class="ensaio-card">
+      <img src="./tema-intimista.jpeg" alt="Intimista" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
+      <div class="ensaio-info">
+        <div class="ensaio-tag">✨ Intimista</div>
+        <h3>Ensaio Intimista</h3>
+        <p>Fotos sensíveis e pessoais que capturam a essência da sua personalidade.</p>
+        <div class="ensaio-footer">
+          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <button class="btn-escolher" onclick="openModal('intim')">Quero este ✨</button>
         </div>
       </div>
     </div>
 
     <!-- BEBÊ -->
     <div class="ensaio-card">
-      <div class="carousel-wrapper" id="car-bebe">
-        <div class="carousel-slides">
-          <div class="carousel-slide bebe-1">
-            <div class="slide-mock"><div class="slide-emoji">👶</div>Pose Ternura</div>
-            <div class="slide-overlay"><span class="slide-label">Mamãe Radiante</span><span class="slide-num">1 / 4</span></div>
-          </div>
-          <div class="carousel-slide bebe-2">
-            <div class="slide-mock"><div class="slide-emoji">🌸</div>Abraço Infinito</div>
-            <div class="slide-overlay"><span class="slide-label">Amor de Mãe</span><span class="slide-num">2 / 4</span></div>
-          </div>
-          <div class="carousel-slide bebe-3">
-            <div class="slide-mock"><div class="slide-emoji">💛</div>Pose Delicada</div>
-            <div class="slide-overlay"><span class="slide-label">Amor Dourado</span><span class="slide-num">3 / 4</span></div>
-          </div>
-          <div class="carousel-slide bebe-4">
-            <div class="slide-mock"><div class="slide-emoji">🌙</div>Pose Suave</div>
-            <div class="slide-overlay"><span class="slide-label">Nosso Universo</span><span class="slide-num">4 / 4</span></div>
-          </div>
-        </div>
-        <button class="carousel-btn prev" onclick="changeSlide('bebe',-1)">‹</button>
-        <button class="carousel-btn next" onclick="changeSlide('bebe',1)">›</button>
-        <div class="carousel-dots" id="dots-bebe">
-          <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-      </div>
+      <img src="./tema-bebe.jpeg" alt="Bebê" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
       <div class="ensaio-info">
-        <div class="ensaio-tag">👶 Bebê com a Mamãe</div>
-        <h3>Bebê com a Mamãe</h3>
-        <p>Momentos de pura ternura e amor eternizados para sempre. Poses suaves, tons quentes e a beleza única do vínculo entre mãe e filho.</p>
+        <div class="ensaio-tag">👶 Bebê</div>
+        <h3>Ensaio do Bebê</h3>
+        <p>Registre os momentos mais fofos do seu pequeno com poses seguras e iluminação suave.</p>
         <div class="ensaio-footer">
           <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
           <button class="btn-escolher" onclick="openModal('bebe')">Quero este 👶</button>
@@ -1873,81 +1893,34 @@
       </div>
     </div>
 
-    <!-- PET -->
+    <!-- ANIVERSÁRIO INFANTIL -->
     <div class="ensaio-card">
-      <div class="carousel-wrapper" id="car-pet">
-        <div class="carousel-slides">
-          <div class="carousel-slide pet-1">
-            <div class="slide-mock"><div class="slide-emoji">🐾</div>Best Friends</div>
-            <div class="slide-overlay"><span class="slide-label">Amor Incondicional</span><span class="slide-num">1 / 4</span></div>
-          </div>
-          <div class="carousel-slide pet-2">
-            <div class="slide-mock"><div class="slide-emoji">🌿</div>Nature Vibes</div>
-            <div class="slide-overlay"><span class="slide-label">Aventura Juntos</span><span class="slide-num">2 / 4</span></div>
-          </div>
-          <div class="carousel-slide pet-3">
-            <div class="slide-mock"><div class="slide-emoji">💚</div>Pose Espontânea</div>
-            <div class="slide-overlay"><span class="slide-label">Alma Gêmea</span><span class="slide-num">3 / 4</span></div>
-          </div>
-          <div class="carousel-slide pet-4">
-            <div class="slide-mock"><div class="slide-emoji">🌳</div>Pose Natural</div>
-            <div class="slide-overlay"><span class="slide-label">Família Completa</span><span class="slide-num">4 / 4</span></div>
-          </div>
-        </div>
-        <button class="carousel-btn prev" onclick="changeSlide('pet',-1)">‹</button>
-        <button class="carousel-btn next" onclick="changeSlide('pet',1)">›</button>
-        <div class="carousel-dots" id="dots-pet">
-          <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-      </div>
+      <img src="./tema-aniversario-infantil.jpeg" alt="Aniversário Infantil" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
       <div class="ensaio-info">
-        <div class="ensaio-tag">🐾 Com Pet</div>
-        <h3>Ensaio com Pet</h3>
-        <p>Seu melhor amigo também merece estar em fotos incríveis. Cenários naturais, poses espontâneas e muito amor em cada clique.</p>
+        <div class="ensaio-tag">🎉 Aniversário Infantil</div>
+        <h3>Aniversário Infantil</h3>
+        <p>Celebre o aniversário da criança com fotos alegres e divertidas cheias de magia.</p>
         <div class="ensaio-footer">
           <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
-          <button class="btn-escolher" onclick="openModal('pet')">Quero este 🐾</button>
+          <button class="btn-escolher" onclick="openModal('aninf')">Quero este 🎉</button>
         </div>
       </div>
     </div>
 
-    <!-- GRÁVIDA -->
+    <!-- FAMÍLIA -->
     <div class="ensaio-card">
-      <div class="carousel-wrapper" id="car-grav">
-        <div class="carousel-slides">
-          <div class="carousel-slide grav-1">
-            <div class="slide-mock"><div class="slide-emoji">🤰</div>Pose Sagrada</div>
-            <div class="slide-overlay"><span class="slide-label">Magia da Vida</span><span class="slide-num">1 / 4</span></div>
-          </div>
-          <div class="carousel-slide grav-2">
-            <div class="slide-mock"><div class="slide-emoji">💜</div>Deusa da Criação</div>
-            <div class="slide-overlay"><span class="slide-label">Poder Feminino</span><span class="slide-num">2 / 4</span></div>
-          </div>
-          <div class="carousel-slide grav-3">
-            <div class="slide-mock"><div class="slide-emoji">🌙</div>Espera Sagrada</div>
-            <div class="slide-overlay"><span class="slide-label">Luz e Vida</span><span class="slide-num">3 / 4</span></div>
-          </div>
-          <div class="carousel-slide grav-4">
-            <div class="slide-mock"><div class="slide-emoji">🌟</div>Beleza Sublime</div>
-            <div class="slide-overlay"><span class="slide-label">Amor Eterno</span><span class="slide-num">4 / 4</span></div>
-          </div>
-        </div>
-        <button class="carousel-btn prev" onclick="changeSlide('grav',-1)">‹</button>
-        <button class="carousel-btn next" onclick="changeSlide('grav',1)">›</button>
-        <div class="carousel-dots" id="dots-grav">
-          <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-      </div>
+      <img src="./tema-familia.jpeg" alt="Família" style="width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;">
       <div class="ensaio-info">
-        <div class="ensaio-tag">🤰 Grávida</div>
-        <h3>Ensaio de Grávida</h3>
-        <p>A gestação é um momento único e sagrado. Celebre com fotos deslumbrantes que capturam toda a beleza e magia dessa fase especial.</p>
+        <div class="ensaio-tag">👨‍👩‍👧‍👦 Família</div>
+        <h3>Ensaio Familiar</h3>
+        <p>Capture o amor e união da sua família com fotos descontraídas e cheias de carinho.</p>
         <div class="ensaio-footer">
           <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
-          <button class="btn-escolher" onclick="openModal('grav')">Quero este 🤰</button>
+          <button class="btn-escolher" onclick="openModal('fam')">Quero este 👨‍👩‍👧‍👦</button>
         </div>
       </div>
     </div>
+
 
   </div>
 
@@ -2196,25 +2169,50 @@
       <h2>Escolha o ensaio</h2>
       <p class="subtitle">Selecione o tema que combina com você.</p>
       <div class="tipo-grid">
+        <div class="tipo-opt" id="tipo-prof" onclick="selectTipo('prof')">
+          <div class="tipo-emoji">💼</div>
+          <div class="tipo-nome">Profissional</div>
+          <div class="tipo-desc">Corporativo & LinkedIn</div>
+        </div>
+        <div class="tipo-opt" id="tipo-gest" onclick="selectTipo('gest')">
+          <div class="tipo-emoji">🤰</div>
+          <div class="tipo-nome">Gestante</div>
+          <div class="tipo-desc">Beleza & maternidade</div>
+        </div>
         <div class="tipo-opt" id="tipo-aniv" onclick="selectTipo('aniv')">
           <div class="tipo-emoji">🎂</div>
           <div class="tipo-nome">Aniversário</div>
           <div class="tipo-desc">Glamour & elegância</div>
         </div>
+        <div class="tipo-opt" id="tipo-casal" onclick="selectTipo('casal')">
+          <div class="tipo-emoji">💕</div>
+          <div class="tipo-nome">Casal</div>
+          <div class="tipo-desc">Amor & conexão</div>
+        </div>
+        <div class="tipo-opt" id="tipo-form" onclick="selectTipo('form')">
+          <div class="tipo-emoji">🎓</div>
+          <div class="tipo-nome">Formatura</div>
+          <div class="tipo-desc">Conquista & orgulho</div>
+        </div>
+        <div class="tipo-opt" id="tipo-intim" onclick="selectTipo('intim')">
+          <div class="tipo-emoji">✨</div>
+          <div class="tipo-nome">Intimista</div>
+          <div class="tipo-desc">Sensibilidade & estilo</div>
+        </div>
         <div class="tipo-opt" id="tipo-bebe" onclick="selectTipo('bebe')">
           <div class="tipo-emoji">👶</div>
-          <div class="tipo-nome">Bebê c/ Mamãe</div>
-          <div class="tipo-desc">Ternura & amor</div>
+          <div class="tipo-nome">Bebê</div>
+          <div class="tipo-desc">Ternura & pureza</div>
         </div>
-        <div class="tipo-opt" id="tipo-pet" onclick="selectTipo('pet')">
-          <div class="tipo-emoji">🐾</div>
-          <div class="tipo-nome">Com Pet</div>
-          <div class="tipo-desc">Amor incondicional</div>
+        <div class="tipo-opt" id="tipo-aninf" onclick="selectTipo('aninf')">
+          <div class="tipo-emoji">🎉</div>
+          <div class="tipo-nome">Aniv. Infantil</div>
+          <div class="tipo-desc">Alegria & diversão</div>
         </div>
-        <div class="tipo-opt" id="tipo-grav" onclick="selectTipo('grav')">
-          <div class="tipo-emoji">🤰</div>
-          <div class="tipo-nome">Grávida</div>
-          <div class="tipo-desc">Beleza & maternidade</div>
+        <div class="tipo-opt" id="tipo-fam" onclick="selectTipo('fam')">
+          <div class="tipo-emoji">👨‍👩‍👧‍👦</div>
+          <div class="tipo-nome">Família</div>
+          <div class="tipo-desc">União & carinho</div>
         </div>
       </div>
       <label class="field-label">Seu nome</label>
@@ -2463,7 +2461,7 @@
           </div>
 
           <!-- Preview -->
-          <div class="preview-grid" id="preview-grid">
+          <div class="preview-grid" id="preview-grid2">
             <div class="preview-placeholder">+</div>
             <div class="preview-placeholder">+</div>
             <div class="preview-placeholder">+</div>
@@ -2477,7 +2475,7 @@
 
           <div class="btns-row">
             <button class="btn-secondary" onclick="voltarDados()">← Voltar</button>
-            <button class="btn-primary" id="btn-enviar" onclick="enviarFotos()">
+            <button class="btn-primary" id="btn-enviar2" onclick="enviarFotos()">
               <span id="btn-txt">Enviar fotos e finalizar</span>
               <div class="spinner" id="spinner"></div>
             </button>
@@ -2980,7 +2978,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast2"></div>
 
 
 
@@ -2992,134 +2990,9 @@
 </a>
 
 <!-- ===== UNIFIED TOAST ===== -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast3"></div>
 
 <!-- ===== MODAL (from site) ===== -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">x</button>
-    <div class="modal-step active" id="step1">
-      <div class="progress-bar">
-        <div class="prog-step"><div class="prog-circle active">1</div><div class="prog-label">Ensaio</div></div>
-        <div class="prog-line"></div>
-        <div class="prog-step"><div class="prog-circle">2</div><div class="prog-label">Fotos</div></div>
-        <div class="prog-line"></div>
-        <div class="prog-step"><div class="prog-circle">3</div><div class="prog-label">Pagamento</div></div>
-        <div class="prog-line"></div>
-        <div class="prog-step"><div class="prog-circle">4</div><div class="prog-label">Upload</div></div>
-      </div>
-      <div class="eyebrow">Passo 1 de 4</div>
-      <h2>Escolha o ensaio</h2>
-      <p class="subtitle">Selecione o tema que combina com voce.</p>
-      <div class="tipo-grid">
-        <div class="tipo-opt" id="tipo-aniv" onclick="selectTipo('aniv')"><div class="tipo-emoji">🎂</div><div class="tipo-nome">Aniversario</div><div class="tipo-desc">Glamour e elegancia</div></div>
-        <div class="tipo-opt" id="tipo-bebe" onclick="selectTipo('bebe')"><div class="tipo-emoji">👶</div><div class="tipo-nome">Bebe c/ Mamae</div><div class="tipo-desc">Ternura e amor</div></div>
-        <div class="tipo-opt" id="tipo-pet" onclick="selectTipo('pet')"><div class="tipo-emoji">🐾</div><div class="tipo-nome">Com Pet</div><div class="tipo-desc">Amor incondicional</div></div>
-        <div class="tipo-opt" id="tipo-grav" onclick="selectTipo('grav')"><div class="tipo-emoji">🤰</div><div class="tipo-nome">Gravida</div><div class="tipo-desc">Beleza e maternidade</div></div>
-      </div>
-      <label class="field-label">Seu nome</label>
-      <input type="text" id="input-nome" placeholder="Ex: Maria Silva">
-      <label class="field-label">E-mail</label>
-      <input type="email" id="input-email" placeholder="Ex: maria@email.com">
-      <button class="btn-primary" style="width:100%;justify-content:center" onclick="goStep(2)">Continuar</button>
-    </div>
-    <div class="modal-step" id="step2">
-      <div class="progress-bar">
-        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Ensaio</div></div>
-        <div class="prog-line done"></div>
-        <div class="prog-step"><div class="prog-circle active">2</div><div class="prog-label">Fotos</div></div>
-        <div class="prog-line"></div>
-        <div class="prog-step"><div class="prog-circle">3</div><div class="prog-label">Pagamento</div></div>
-        <div class="prog-line"></div>
-        <div class="prog-step"><div class="prog-circle">4</div><div class="prog-label">Upload</div></div>
-      </div>
-      <div class="eyebrow">Passo 2 de 4</div>
-      <h2>Quantas fotos?</h2>
-      <p class="subtitle">Escolha o pacote ideal para voce.</p>
-      <div class="qty-grid">
-        <div class="qty-opt" onclick="selectQty(this,1,29.90)"><div class="num">01</div><div class="lbl">foto</div><div class="price">R$29,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,2,49.90)"><div class="num">02</div><div class="lbl">fotos</div><div class="price">R$49,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,5,89.90)"><div class="num">05</div><div class="lbl">fotos</div><div class="price">R$89,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,10,149.90)"><div class="num">10</div><div class="lbl">fotos</div><div class="price">R$149,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,20,229.90)"><div class="num">20</div><div class="lbl">fotos</div><div class="price">R$229,90</div></div>
-      </div>
-      <div style="display:flex;gap:12px;">
-        <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(1)">Voltar</button>
-        <button class="btn-primary" style="flex:2;justify-content:center" onclick="goStep(3)">Continuar</button>
-      </div>
-    </div>
-    <div class="modal-step" id="step3">
-      <div class="progress-bar">
-        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Ensaio</div></div>
-        <div class="prog-line done"></div>
-        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Fotos</div></div>
-        <div class="prog-line done"></div>
-        <div class="prog-step"><div class="prog-circle active">3</div><div class="prog-label">Pagamento</div></div>
-        <div class="prog-line"></div>
-        <div class="prog-step"><div class="prog-circle">4</div><div class="prog-label">Upload</div></div>
-      </div>
-      <div class="eyebrow">Passo 3 de 4</div>
-      <h2>Pagamento</h2>
-      <p class="subtitle">Finalize com seguranca.</p>
-      <div class="order-summary">
-        <div><div class="label">Total do pedido</div><div style="font-size:12px;color:var(--muted);margin-top:3px;" id="order-desc">5 fotos</div></div>
-        <div class="value" id="order-price">R$ 89,90</div>
-      </div>
-      <div class="pay-options">
-        <div class="pay-opt" onclick="selectPay(this,'pix')"><div class="pay-icon">📱</div><div class="pay-name">PIX</div><div class="pay-desc">Aprovacao imediata</div></div>
-        <div class="pay-opt" onclick="selectPay(this,'cartao')"><div class="pay-icon">💳</div><div class="pay-name">Cartao</div><div class="pay-desc">Ate 6x sem juros</div></div>
-      </div>
-      <div id="pix-info" style="display:none;background:#F0F9F4;border:1px solid #A0D0B0;border-radius:10px;padding:18px;margin-bottom:16px;text-align:center;">
-        <div style="font-size:32px;margin-bottom:8px;">📲</div>
-        <p style="font-size:13px;font-weight:600;">Chave PIX: <span style="color:var(--success);">aistudio@pix.com.br</span></p>
-      </div>
-      <div id="cartao-info" style="display:none;margin-bottom:16px;">
-        <label class="field-label">Numero do cartao</label>
-        <input type="text" placeholder="0000 0000 0000 0000">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div><label class="field-label">Validade</label><input type="text" placeholder="MM/AA"></div>
-          <div><label class="field-label">CVV</label><input type="text" placeholder="000"></div>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;">
-        <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(2)">Voltar</button>
-        <button class="btn-primary" style="flex:2;justify-content:center" onclick="processarPagamento()">Pagar agora</button>
-      </div>
-    </div>
-    <div class="modal-step" id="step4">
-      <div class="progress-bar">
-        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Ensaio</div></div>
-        <div class="prog-line done"></div>
-        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Fotos</div></div>
-        <div class="prog-line done"></div>
-        <div class="prog-step"><div class="prog-circle done">v</div><div class="prog-label">Pagamento</div></div>
-        <div class="prog-line done"></div>
-        <div class="prog-step"><div class="prog-circle active">4</div><div class="prog-label">Upload</div></div>
-      </div>
-      <div class="eyebrow">Passo 4 de 4</div>
-      <h2>Envie suas fotos</h2>
-      <p class="subtitle">Envie ate 5 fotos. Prefira rostos nítidos e boa iluminacao!</p>
-      <div class="upload-area" onclick="simularUpload()">
-        <div class="upload-icon">📸</div>
-        <p><strong>Clique para selecionar</strong> ou arraste aqui</p>
-        <p style="margin-top:6px;font-size:12px;">JPG, PNG ate 10MB</p>
-        <div class="upload-count" id="upload-count">0 / 5 fotos selecionadas</div>
-      </div>
-      <div class="preview-grid" id="preview-grid"></div>
-      <button class="btn-primary" style="width:100%;justify-content:center;opacity:0.5" onclick="enviarFotos()" id="btn-enviar" disabled>Enviar e finalizar</button>
-    </div>
-    <div class="modal-step" id="step5">
-      <div class="success-screen">
-        <div class="success-icon">✨</div>
-        <h2>Tudo <em style="color:var(--deep-rose);font-style:italic;font-family:'Playfair Display',serif;">certo!</em></h2>
-        <p>Suas fotos foram enviadas com sucesso, e serao analisadas para a confeccao do seu ensaio.</p>
-        <p>Voce recebera um e-mail quando estiver pronto! 💌</p>
-        <button class="btn-primary" style="margin-bottom:12px;width:100%;justify-content:center" onclick="appNav('cliente');closeModal()">Acompanhar meu pedido</button>
-        <button class="btn-outline" style="width:100%;justify-content:center" onclick="closeModal()">Fechar</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
 // ============================================================
@@ -3210,13 +3083,14 @@ window.addEventListener('scroll', function(){
   
 
   function changeSlide(id, dir) {
+    var car = document.getElementById('car-' + id);
+    if (!car) return;
     slides[id] = (slides[id] + dir + slidesTotal[id]) % slidesTotal[id];
-    document.getElementById('car-' + id).querySelector('.carousel-slides').style.transform = `translateX(-${slides[id]*100}%)`;
+    car.querySelector('.carousel-slides').style.transform = `translateX(-${slides[id]*100}%)`;
     document.querySelectorAll(`#dots-${id} .dot`).forEach((d,i) => d.classList.toggle('active', i===slides[id]));
   }
 
-  // Auto-advance carousels
-  setInterval(function(){ if(currentSection==='site'){ ['aniv','bebe','pet','grav'].forEach(function(id){ changeSlide(id,1); }); } }, 4000);
+  // Auto-advance carousels (desativado - carrosséis removidos)
 
   function openModal(id) {
     document.getElementById('modal').classList.add('open');
@@ -3235,12 +3109,13 @@ window.addEventListener('scroll', function(){
     document.getElementById('step'+n).classList.add('active');
   }
 
-  var tipoNames = {aniv:'Aniversario', bebe:'Bebe com a Mamae', pet:'Com Pet', grav:'Gravida'};
+  var tipoNames = {prof:'Profissional', gest:'Gestante', aniv:'Aniversario', casal:'Casal', form:'Formatura', intim:'Intimista', bebe:'Bebe', aninf:'Aniversario Infantil', fam:'Familia'};
 
   function selectTipo(id) {
     state.tipo = tipoNames[id]; state.tipoId = id;
     document.querySelectorAll('[id^="tipo-"]').forEach(el => el.classList.remove('selected'));
-    document.getElementById('tipo-'+id).classList.add('selected');
+    var el = document.getElementById('tipo-'+id);
+    if (el) el.classList.add('selected');
   }
 
   function selectQty(el, qty, price) {
@@ -3254,9 +3129,11 @@ window.addEventListener('scroll', function(){
   function selectPay(el, method) {
     state.payMethod=method;
     document.querySelectorAll('.pay-opt').forEach(e => e.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('pix-info').style.display = method==='pix' ? 'block' : 'none';
-    document.getElementById('cartao-info').style.display = method==='cartao' ? 'block' : 'none';
+    if (el) el.classList.add('selected');
+    var pix = document.getElementById('pix-info');
+    var cartao = document.getElementById('cartao-info');
+    if (pix) pix.style.display = method==='pix' ? 'block' : 'none';
+    if (cartao) cartao.style.display = method==='cartao' ? 'block' : 'none';
   }
 
   function processarPagamento() {
