@@ -3043,7 +3043,7 @@
   // ============================================================
   const SUPABASE_URL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  const BACKEND_URL_ADMIN = 'http://localhost:3001';
+  const BACKEND_URL_ADMIN = 'https://ai-studio-backend-five.vercel.app';
 
   async function carregarPedidos() {
     try {
@@ -3273,7 +3273,7 @@ window.addEventListener('scroll', function(){
   }
 
   function processarPagamento() {
-    const BACKEND_URL = 'http://localhost:3001';
+    const BACKEND_URL = 'https://ai-studio-backend-five.vercel.app';
     const nome = document.getElementById('input-nome') ? document.getElementById('input-nome').value : '';
     const email = document.getElementById('input-email') ? document.getElementById('input-email').value : '';
     if (!nome || !email) { showToast('Preencha nome e email!'); return; }
