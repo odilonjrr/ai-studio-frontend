@@ -3211,7 +3211,7 @@ window.addEventListener('scroll', function(){
     })
     .then(response => response.json())
     .then(data => {
-      if (data.init_point) { window.location.href = data.init_point; }
+      if (data.init_point) { window.open(data.init_point, '_blank'); }
       else { showToast('Erro: ' + (data.error || 'desconhecido')); }
     })
     .catch(error => { showToast('Erro: ' + error.message); });
