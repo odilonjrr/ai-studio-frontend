@@ -3195,9 +3195,26 @@ window.addEventListener('scroll', function(){
   }
 
   function processarPagamento() {
-    if (!state.payMethod) { showToast('Selecione uma forma de pagamento'); return; }
-    showToast('⏳ Processando pagamento...');
-    setTimeout(() => { showToast('✅ Pagamento aprovado!'); setTimeout(() => goStep(4), 700); }, 1600);
+    const BACKEND_URL = 'http://localhost:3001';
+    const nome = document.getElementById('input-nome') ? document.getElementById('input-nome').value : '';
+    const email = document.getElementById('input-email') ? document.getElementById('input-email').value : '';
+    if (!nome || !email) { showToast('Preencha nome e email!'); return; }
+    showToast('⏳ Conectando ao MercadoPago...');
+    const orderData = {
+      title: state.qty + ' foto' + (state.qty > 1 ? 's' : '') + ' - ' + state.tipo,
+      quantity: 1, price: state.price, currency_id: 'BRL',
+      customer_email: email, customer_name: nome
+    };
+    fetch(BACKEND_URL + '/create_preference', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.init_point) { window.location.href = data.init_point; }
+      else { showToast('Erro: ' + (data.error || 'desconhecido')); }
+    })
+    .catch(error => { showToast('Erro: ' + error.message); });
   }
 
   const emojis = ['😊','🙂','😄','🥰','😌'];
