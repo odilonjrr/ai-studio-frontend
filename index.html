@@ -344,6 +344,36 @@
   }
   .ensaio-card:hover { transform: translateY(-8px); box-shadow: 0 20px 56px var(--shadow-lg); }
 
+  /* LIGHTBOX */
+  .lightbox-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
+    cursor: zoom-out;
+  }
+  .lightbox-overlay.open { display: flex; }
+  .lightbox-overlay img {
+    max-width: 92vw; max-height: 92vh;
+    border-radius: 12px; object-fit: contain;
+    box-shadow: 0 8px 64px rgba(0,0,0,0.7);
+    cursor: default;
+  }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 28px;
+    color: white; font-size: 36px; cursor: pointer;
+    background: none; border: none; line-height: 1;
+    opacity: 0.8; transition: opacity 0.2s;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  .img-zoom-wrap { position: relative; cursor: zoom-in; overflow: hidden; }
+  .img-zoom-wrap::after {
+    content: '🔍'; position: absolute; bottom: 10px; right: 10px;
+    background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
+    width: 36px; height: 36px; display: flex; align-items: center;
+    justify-content: center; font-size: 16px; opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .img-zoom-wrap:hover::after { opacity: 1; }
+
   .carousel-wrapper { position: relative; height: 340px; overflow: hidden; }
   .carousel-slides { display: flex; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0,0.2,1); }
   .carousel-slide {
@@ -1797,7 +1827,7 @@
 
     <!-- PROFISSIONAL -->
     <div class="ensaio-card">
-      <img src="./tema-profissional.jpeg" alt="Profissional" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-profissional.jpeg" alt="Profissional" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">💼 Profissional</div>
         <h3>Ensaio Profissional</h3>
@@ -1811,7 +1841,7 @@
 
     <!-- GESTANTE -->
     <div class="ensaio-card">
-      <img src="./tema-gestante.jpeg" alt="Gestante" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-gestante.jpeg" alt="Gestante" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">🤰 Gestante</div>
         <h3>Ensaio Gestante</h3>
@@ -1825,7 +1855,7 @@
 
     <!-- ANIVERSÁRIO -->
     <div class="ensaio-card">
-      <img src="./tema-aniversario.jpeg" alt="Aniversário" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-aniversario.jpeg" alt="Aniversário" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">🎂 Aniversário</div>
         <h3>Ensaio de Aniversário</h3>
@@ -1839,7 +1869,7 @@
 
     <!-- CASAL -->
     <div class="ensaio-card">
-      <img src="./tema-casal.jpeg" alt="Casal" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-casal.jpeg" alt="Casal" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">💕 Casal</div>
         <h3>Ensaio de Casal</h3>
@@ -1853,7 +1883,7 @@
 
     <!-- FORMATURA -->
     <div class="ensaio-card">
-      <img src="./tema-formatura.jpeg" alt="Formatura" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-formatura.jpeg" alt="Formatura" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">🎓 Formatura</div>
         <h3>Ensaio de Formatura</h3>
@@ -1867,7 +1897,7 @@
 
     <!-- INTIMISTA -->
     <div class="ensaio-card">
-      <img src="./tema-intimista.jpeg" alt="Intimista" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-intimista.jpeg" alt="Intimista" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">✨ Intimista</div>
         <h3>Ensaio Intimista</h3>
@@ -1881,7 +1911,7 @@
 
     <!-- BEBÊ -->
     <div class="ensaio-card">
-      <img src="./tema-bebe.jpeg" alt="Bebê" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-bebe.jpeg" alt="Bebê" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">👶 Bebê</div>
         <h3>Ensaio do Bebê</h3>
@@ -1895,7 +1925,7 @@
 
     <!-- ANIVERSÁRIO INFANTIL -->
     <div class="ensaio-card">
-      <img src="./tema-aniversario-infantil.jpeg" alt="Aniversário Infantil" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-aniversario-infantil.jpeg" alt="Aniversário Infantil" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">🎉 Aniversário Infantil</div>
         <h3>Aniversário Infantil</h3>
@@ -1909,7 +1939,7 @@
 
     <!-- FAMÍLIA -->
     <div class="ensaio-card">
-      <img src="./tema-familia.jpeg" alt="Família" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;">
+      <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-familia.jpeg" alt="Família" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
         <div class="ensaio-tag">👨‍👩‍👧‍👦 Família</div>
         <h3>Ensaio Familiar</h3>
@@ -2994,9 +3024,33 @@
 
 <!-- ===== MODAL (from site) ===== -->
 
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <script>
 // ============================================================
 //  AI STUDIO — UNIFIED APP NAVIGATION
+
+  // LIGHTBOX
+  function openLightbox(wrapper) {
+    var img = wrapper.querySelector('img');
+    var overlay = document.getElementById('lightbox-overlay');
+    var lightboxImg = document.getElementById('lightbox-img');
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
 // ============================================================
 
 var currentSection = 'site';
