@@ -841,15 +841,13 @@
     .hero-visual {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 180px 180px;
+      grid-template-rows: 180px 180px 180px;
       gap: 8px;
       margin: 0 28px 40px;
       overflow: hidden;
-      max-height: 368px;
     }
     .hero-visual .hero-img:first-child { grid-row: span 1; grid-column: span 1; }
-    .hero-visual .hero-img:nth-child(4),
-    .hero-visual .hero-img:nth-child(5) { display: none; }
+    .hero-visual .hero-img:nth-child(5) { grid-column: span 2; }
     .float-card { display: none; }
     .float-card-2 { display: none; }
     .hero-stats { gap: 20px; }
