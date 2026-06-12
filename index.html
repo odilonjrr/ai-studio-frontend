@@ -840,14 +840,16 @@
     .hero { grid-template-columns: 1fr; padding: 50px 28px 20px; min-height: auto; }
     .hero-visual {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
+      grid-template-columns: 1fr 1fr;
       grid-template-rows: 200px 160px;
       gap: 8px;
       margin: 0 28px 40px;
     }
-    .hero-visual .hero-img:nth-child(3),
+    .hero-visual .hero-img:first-child { grid-row: span 1; }
     .hero-visual .hero-img:nth-child(4),
     .hero-visual .hero-img:nth-child(5) { display: none; }
+    .float-card { display: none; }
+    .float-card-2 { display: none; }
     .hero-stats { gap: 20px; }
     .ensaios-grid { grid-template-columns: 1fr; padding: 0 28px 60px; }
     .como-funciona { grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 28px 60px; }
@@ -1687,10 +1689,8 @@
 </div>
 
 <nav id="global-nav">
-  <div class="g-logo" onclick="appNav('site')">
-    <span class="ai">AI</span>
-    <div class="dot"></div>
-    <span class="st">Studio</span>
+  <div class="g-logo" onclick="appNav('site')" style="cursor:pointer;">
+    <img src="./logo.png" alt="AI Studio" style="height:90px;object-fit:contain;">
   </div>
   <div class="g-nav-links">
     <a onclick="appNav('site')">Inicio</a>
