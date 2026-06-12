@@ -534,16 +534,16 @@
   .footer-brand .logo { color: white; margin-bottom: 14px; }
   .footer-brand .logo .ai { color: var(--blush); }
   .footer-brand .logo .studio { color: var(--light-gold); }
-  .footer-brand p { font-size: 13px; line-height: 1.75; max-width: 280px; color: #5a3e2b;}
+  .footer-brand p { font-size: 13px; line-height: 1.75; max-width: 280px; }
   .footer-col h4 {
     font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
     color: var(--gold); margin-bottom: 18px;
   }
   .footer-col a, .footer-col p {
-    display: block; font-size: 13px; color: #5a3e2b;
+    display: block; font-size: 13px; color: rgba(255,255,255,0.55);
     text-decoration: none; margin-bottom: 10px; transition: color 0.2s; cursor: pointer;
   }
-  .footer-col a:hover { color: #5a3e2b; }
+  .footer-col a:hover { color: rgba(255,255,255,0.9); }
   .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;
     display: flex; align-items: center; justify-content: space-between;
@@ -619,7 +619,7 @@
   .tipo-opt .tipo-desc { font-size: 10px; color: var(--muted); margin-top: 3px; }
 
   /* qty */
-  .qty-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 28px; }
+  .qty-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 28px; }
   .qty-opt {
     border: 1.5px solid #E4DAD4; border-radius: 10px; padding: 14px 6px;
     text-align: center; cursor: pointer; transition: all 0.2s; background: white;
@@ -849,7 +849,6 @@
     .footer-grid { grid-template-columns: 1fr; gap: 28px; }
     nav { padding: 14px 22px; }
     .nav-links { display: none; }
-    .g-btn-wpp { display: none !important; }
     .modal { padding: 28px 20px; }
     .qty-grid { grid-template-columns: repeat(3, 1fr); }
     #screen-admin, #screen-cliente { padding: 88px 22px 50px; }
@@ -857,7 +856,6 @@
     .section-title { padding: 52px 28px 32px; }
     .pedido-card { grid-template-columns: 1fr; }
     .split-grid { grid-template-columns: 1fr; }
-    .wpp-float { display: none !important; }
   }
 
 
@@ -1656,7 +1654,6 @@
     footer { flex-direction: column; gap: 6px; text-align: center; }
     .btns-row { flex-direction: column-reverse; }
     .dicas-card { padding: 16px; }
-    .wpp-float { display: none; }
   }
 
 
@@ -1679,9 +1676,11 @@
 </div>
 
 <nav id="global-nav">
-  <div class="logo" onclick="appNav('site')" style="cursor:pointer;">
-    <img src="./logo.png" alt="AI Studio" style="height:90px;object-fit:contain;">
-</div>
+  <div class="g-logo" onclick="appNav('site')">
+    <span class="ai">AI</span>
+    <div class="dot"></div>
+    <span class="st">Studio</span>
+  </div>
   <div class="g-nav-links">
     <a onclick="appNav('site')">Inicio</a>
     <a onclick="goEnsaios()">Ensaios</a>
@@ -1691,7 +1690,7 @@
     <a onclick="appNav('admin')" style="color:#9E4E33;font-weight:600;">Admin</a>
   </div>
   <div class="g-nav-right">
-    <a class="g-btn-wpp" href="https://wa.me/5521999850085" target="_blank">
+    <a class="g-btn-wpp" href="https://wa.me/5521999999999" target="_blank">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       WhatsApp
     </a>
@@ -1706,7 +1705,7 @@
 <!-- NAV -->
 <nav id="navbar">
   <div class="logo" onclick="appNav('site')" style="cursor:pointer;">
-    <img src="./logo.png" alt="AI Studio" style="height:70px;object-fit:contain;">
+    <img src="./logo.png" alt="AI Studio" style="height:50px;object-fit:contain;">
   </div>
   <div class="nav-links">
     <a href="#" onclick="appNav('site')">Início</a>
@@ -1716,7 +1715,7 @@
     <a href="#" onclick="appNav('admin')">Admin</a>
   </div>
   <div class="nav-right">
-    <a class="btn-wpp" href="https://wa.me/5521999850085" target="_blank">
+    <a class="btn-wpp" href="https://wa.me/5521999999999" target="_blank">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       WhatsApp
     </a>
@@ -1725,7 +1724,7 @@
 </nav>
 
 <!-- WHATSAPP FLUTUANTE -->
-<a class="wpp-float" href="https://wa.me/5521999850085" target="_blank" title="Fale no WhatsApp">
+<a class="wpp-float" href="https://wa.me/5521999999999" target="_blank" title="Fale no WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
@@ -1786,7 +1785,7 @@
       </div>
       <div class="float-card-2">
         <div class="fc2-title">A partir de</div>
-        <div class="fc2-val">R$ 29,90</div>
+        <div class="fc2-val">R$ 19,90</div>
       </div>
     </div>
   </section>
@@ -1846,7 +1845,7 @@
         <h3>Ensaio Profissional</h3>
         <p>Fotos corporativas de alta qualidade para LinkedIn, portfólio e materiais profissionais.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('prof')">Quero este 💼</button>
         </div>
       </div>
@@ -1860,7 +1859,7 @@
         <h3>Ensaio Gestante</h3>
         <p>Celebre a maternidade com fotos elegantes que valorizam a barriguinha com iluminação calorosa.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('gest')">Quero este 🤰</button>
         </div>
       </div>
@@ -1874,7 +1873,7 @@
         <h3>Ensaio de Aniversário</h3>
         <p>Celebre sua data especial com fotos deslumbrantes, poses glamourosas e iluminação cinematográfica.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('aniv')">Quero este 🎂</button>
         </div>
       </div>
@@ -1889,7 +1888,7 @@
         <h3>Ensaio de Casal</h3>
         <p>Capture momentos especiais com seu parceiro. Poses românticas com iluminação suave.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" style="background:linear-gradient(90deg,#C2185B,#E91E8C);" onclick="openModal('casal')">Quero este 💕</button>
         </div>
       </div>
@@ -1903,7 +1902,7 @@
         <h3>Ensaio de Formatura</h3>
         <p>Eternize seu momento de sucesso acadêmico com fotos sofisticadas e elegantes.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('form')">Quero este 🎓</button>
         </div>
       </div>
@@ -1917,7 +1916,7 @@
         <h3>Ensaio Intimista</h3>
         <p>Fotos sensíveis e pessoais que capturam a essência da sua personalidade.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('intim')">Quero este ✨</button>
         </div>
       </div>
@@ -1931,7 +1930,7 @@
         <h3>Ensaio do Bebê</h3>
         <p>Registre os momentos mais fofos do seu pequeno com poses seguras e iluminação suave.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('bebe')">Quero este 👶</button>
         </div>
       </div>
@@ -1945,7 +1944,7 @@
         <h3>Aniversário Infantil</h3>
         <p>Celebre o aniversário da criança com fotos alegres e divertidas cheias de magia.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('aninf')">Quero este 🎉</button>
         </div>
       </div>
@@ -1959,7 +1958,7 @@
         <h3>Ensaio Familiar</h3>
         <p>Capture o amor e união da sua família com fotos descontraídas e cheias de carinho.</p>
         <div class="ensaio-footer">
-          <div class="ensaio-preco">a partir de <strong>R$ 29,90</strong></div>
+          <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
           <button class="btn-escolher" onclick="openModal('fam')">Quero este 👨‍👩‍👧‍👦</button>
         </div>
       </div>
@@ -2037,19 +2036,14 @@
       </div>
       <div class="footer-col">
         <h4>Ensaios</h4>
-        <a onclick="openModal('prof')">💼 Profissional</a>
-<a onclick="openModal('gest')">🤰 Gestante</a>
-<a onclick="openModal('aniv')">🎂 Aniversário</a>
-<a onclick="openModal('casal')">💕 Casal</a>
-<a onclick="openModal('form')">🎓 Formatura</a>
-<a onclick="openModal('intim')">✨ Intimista</a>
-<a onclick="openModal('bebe')">👶 Bebê</a>
-<a onclick="openModal('aninf')">🎉 Aniv. Infantil</a>
-<a onclick="openModal('fam')">👨‍👩‍👧‍👦 Família</a>
+        <a onclick="openModal('aniv')">🎂 Aniversário</a>
+        <a onclick="openModal('bebe')">👶 Bebê com a Mamãe</a>
+        <a onclick="openModal('pet')">🐾 Com Pet</a>
+        <a onclick="openModal('grav')">🤰 Grávida</a>
       </div>
       <div class="footer-col">
         <h4>Contato</h4>
-        <a href="https://wa.me/5521999850085" target="_blank">📱 WhatsApp</a>
+        <a href="https://wa.me/5521999999999" target="_blank">📱 WhatsApp</a>
         <p>📧 contato@aistudio.com.br</p>
         <p>⏰ Seg–Sex, 9h–18h</p>
         <p>📍 Rio de Janeiro, RJ</p>
@@ -2287,11 +2281,12 @@
       <h2>Quantas fotos?</h2>
       <p class="subtitle">Escolha o pacote ideal para você.</p>
       <div class="qty-grid">
-        <div class="qty-opt" onclick="selectQty(this,1,29.90)"><div class="num">01</div><div class="lbl">foto</div><div class="price">R$29,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,2,49.90)"><div class="num">02</div><div class="lbl">fotos</div><div class="price">R$49,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,5,89.90)"><div class="num">05</div><div class="lbl">fotos</div><div class="price">R$89,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,10,149.90)"><div class="num">10</div><div class="lbl">fotos</div><div class="price">R$149,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,20,229.90)"><div class="num">20</div><div class="lbl">fotos</div><div class="price">R$229,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,2,19.90)"><div class="num">02</div><div class="lbl">fotos</div><div class="price">R$19,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,5,29.90)"><div class="num">05</div><div class="lbl">fotos</div><div class="price">R$29,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,10,49.90)"><div class="num">10</div><div class="lbl">fotos</div><div class="price">R$49,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,20,79.90)"><div class="num">20</div><div class="lbl">fotos</div><div class="price">R$79,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,50,99.90)"><div class="num">50</div><div class="lbl">fotos</div><div class="price">R$99,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,100,149.90)"><div class="num">100</div><div class="lbl">fotos</div><div class="price">R$149,90</div></div>
       </div>
       <div style="display:flex;gap:12px;">
         <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(1)">← Voltar</button>
@@ -2448,15 +2443,10 @@
             <label class="field-label" for="inp-tipo">Tipo de ensaio <span>*</span></label>
             <select class="field-input" id="inp-tipo">
               <option value="">Selecione o ensaio...</option>
-             <a onclick="openModal('prof')">💼 Profissional</a>
-<a onclick="openModal('gest')">🤰 Gestante</a>
-<a onclick="openModal('aniv')">🎂 Aniversário</a>
-<a onclick="openModal('casal')">💕 Casal</a>
-<a onclick="openModal('form')">🎓 Formatura</a>
-<a onclick="openModal('intim')">✨ Intimista</a>
-<a onclick="openModal('bebe')">👶 Bebê</a>
-<a onclick="openModal('aninf')">🎉 Aniv. Infantil</a>
-<a onclick="openModal('fam')">👨‍👩‍👧‍👦 Família</a>
+              <option value="aniversario">Aniversario</option>
+              <option value="bebe">Bebe com a Mamae</option>
+              <option value="pet">Com Pet</option>
+              <option value="gravida">Gravida</option>
             </select>
             <div class="field-error" id="err-tipo">Selecione o tipo de ensaio.</div>
           </div>
@@ -2571,7 +2561,7 @@
               <div style="font-size:12px;color:var(--muted);margin-top:3px">Voce sera avisada por e-mail assim que estiver pronto!</div>
             </div>
 
-            <a href="https://wa.me/5521999850085" target="_blank"
+            <a href="https://wa.me/5521999999999" target="_blank"
               style="display:flex;align-items:center;justify-content:center;gap:8px;
               width:100%;padding:16px;background:#25D366;color:white;
               border-radius:10px;text-decoration:none;font-size:12px;font-weight:700;
@@ -3040,7 +3030,7 @@
 </div>
 
 <!-- ===== WHATSAPP FLOAT ===== -->
-<a class="wpp-float" href="https://wa.me/5521999850085" target="_blank" title="Fale no WhatsApp">
+<a class="wpp-float" href="https://wa.me/5521999999999" target="_blank" title="Fale no WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
