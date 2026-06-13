@@ -3504,12 +3504,12 @@
     if (modalAmostras.length === 0) { showToast('Nenhuma amostra para enviar'); return; }
     var wpp = pedidoAtualWpp || '';
     if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
-    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento, você receberá ' + modalAmostras.length + ' fotos em alta qualidade!\n\nAcesse o link para visualizar: ' + window.location.origin + '/preview/' + (pedidoAtualId || ''));
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento, você receberá ' + modalAmostras.length + ' fotos em alta qualidade!\n\nAcesse o link para visualizar: ' + window.location.origin + '?preview=' + (pedidoAtualId || ''));
     window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
   }
 
   function copiarLinkAmostras() {
-    var link = window.location.origin + '/preview/' + (pedidoAtualId || 'demo');
+    var link = window.location.origin + '?preview=' + (pedidoAtualId || 'demo');
     navigator.clipboard.writeText(link).then(function() {
       showToast('🔗 Link copiado: ' + link);
     });
