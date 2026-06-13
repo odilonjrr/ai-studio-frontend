@@ -3154,17 +3154,207 @@
 //  AI STUDIO — UNIFIED APP NAVIGATION
 
   // ============================================================
-  //  AMOSTRAS NO MODAL DO PEDIDO
+  //  AMOSTRAS NO MODAL DO PEDIDO - COM SUPABASE STORAGE
   // ============================================================
 
-  var modalAmostras = []; // amostras do cliente atual
+  var modalAmostras = [];
   var pedidoAtualId = null;
   var pedidoAtualWpp = null;
   var pedidoAtualNome = null;
 
+  var SUPABASE_URL_ST = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SUPABASE_KEY_ST = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+
   var logoWM = new Image();
   logoWM.crossOrigin = 'anonymous';
   logoWM.src = './logo.png';
+
+  function carregarAmostrasModal(files) {
+    if (!files || files.length === 0) return;
+    var grid = document.getElementById('modal-amostras-grid');
+    var empty = document.getElementById('modal-amostras-empty');
+    var acoes = document.getElementById('modal-amostras-acoes');
+    if (empty) empty.style.display = 'none';
+
+    var total = files.length;
+    var processados = 0;
+
+    Array.from(files).forEach(function(file, idx) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        aplicarMarcaDaguaModal(e.target.result, function(dataUrl) {
+          // Salvar no Supabase Storage
+          var fileName = pedidoAtualId + '/' + Date.now() + '_' + idx + '.jpg';
+          salvarNoSupabase(dataUrl, fileName, function(publicUrl) {
+            var id = Date.now() + '_' + idx;
+            modalAmostras.push({ id: id, nome: file.name, url: dataUrl, publicUrl: publicUrl, fileName: fileName });
+            processados++;
+
+            var card = document.createElement('div');
+            card.id = 'amostra-card-' + id;
+            card.style.cssText = 'background:#f9f9f9;border-radius:10px;overflow:hidden;border:1px solid #eee;position:relative;';
+            card.innerHTML = `
+              <img src="${dataUrl}" style="width:100%;height:140px;object-fit:cover;display:block;">
+              <div style="padding:8px;display:flex;gap:6px;">
+                <button onclick="baixarAmostraModal('${id}')" title="Baixar" style="flex:1;background:#f0f0f0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">⬇️</button>
+                <button onclick="enviarAmostraWpp('${id}')" title="WhatsApp" style="flex:1;background:#25D366;color:white;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">📱</button>
+                <button onclick="deletarAmostra('${id}')" title="Deletar" style="flex:1;background:#FFE0E0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">🗑️</button>
+              </div>
+            `;
+            grid.appendChild(card);
+
+            if (processados === total) {
+              acoes.style.display = 'flex';
+              showToast('✅ ' + total + ' amostras salvas com sucesso!');
+            }
+          });
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function salvarNoSupabase(dataUrl, fileName, callback) {
+    // Converter base64 para blob
+    var byteString = atob(dataUrl.split(',')[1]);
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+    var blob = new Blob([ab], { type: 'image/jpeg' });
+
+    fetch(SUPABASE_URL_ST + '/storage/v1/object/amostras/' + fileName, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY_ST,
+        'Authorization': 'Bearer ' + SUPABASE_KEY_ST,
+        'Content-Type': 'image/jpeg',
+        'x-upsert': 'true'
+      },
+      body: blob
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var publicUrl = SUPABASE_URL_ST + '/storage/v1/object/public/amostras/' + fileName;
+      callback(publicUrl);
+    })
+    .catch(function(err) {
+      console.error('Erro ao salvar no Supabase:', err);
+      callback(null);
+    });
+  }
+
+  function deletarAmostra(id) {
+    var amostra = modalAmostras.find(function(a) { return a.id === id; });
+    if (amostra && amostra.fileName) {
+      // Deletar do Supabase Storage
+      fetch(SUPABASE_URL_ST + '/storage/v1/object/amostras/' + amostra.fileName, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY_ST,
+          'Authorization': 'Bearer ' + SUPABASE_KEY_ST
+        }
+      }).catch(function(e) { console.error('Erro ao deletar:', e); });
+    }
+    modalAmostras = modalAmostras.filter(function(a) { return a.id !== id; });
+    var card = document.getElementById('amostra-card-' + id);
+    if (card) card.remove();
+    if (modalAmostras.length === 0) {
+      document.getElementById('modal-amostras-empty').style.display = 'block';
+      document.getElementById('modal-amostras-acoes').style.display = 'none';
+    }
+    showToast('🗑️ Amostra removida');
+  }
+
+  function deletarTodasAmostras() {
+    if (!confirm('Deletar todas as amostras deste cliente?')) return;
+    modalAmostras.forEach(function(a) {
+      if (a.fileName) {
+        fetch(SUPABASE_URL_ST + '/storage/v1/object/amostras/' + a.fileName, {
+          method: 'DELETE',
+          headers: { 'apikey': SUPABASE_KEY_ST, 'Authorization': 'Bearer ' + SUPABASE_KEY_ST }
+        });
+      }
+    });
+    modalAmostras = [];
+    var grid = document.getElementById('modal-amostras-grid');
+    Array.from(grid.children).forEach(function(child) {
+      if (child.id !== 'modal-amostras-empty') child.remove();
+    });
+    document.getElementById('modal-amostras-empty').style.display = 'block';
+    document.getElementById('modal-amostras-acoes').style.display = 'none';
+    showToast('🗑️ Todas as amostras removidas');
+  }
+
+  function aplicarMarcaDaguaModal(imageSrc, callback) {
+    var canvas = document.getElementById('modal-watermark-canvas');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+    img.onload = function() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      var logoW = img.width * 0.20;
+      var logoH = logoWM.naturalHeight ? (logoW * logoWM.naturalHeight / logoWM.naturalWidth) : logoW * 0.5;
+      var spacingX = img.width * 0.28;
+      var spacingY = img.height * 0.22;
+      ctx.save();
+      ctx.globalAlpha = 0.28;
+      for (var y = 0; y < img.height + spacingY; y += spacingY) {
+        for (var x = 0; x < img.width + spacingX; x += spacingX) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(-25 * Math.PI / 180);
+          if (logoWM.complete && logoWM.naturalWidth > 0) {
+            ctx.drawImage(logoWM, -logoW/2, -logoH/2, logoW, logoH);
+          } else {
+            ctx.font = 'bold ' + Math.max(16, img.width * 0.035) + 'px Arial';
+            ctx.fillStyle = '#9E4E33';
+            ctx.fillText('JK IA FOTO STUDIO', -60, 0);
+          }
+          ctx.restore();
+        }
+      }
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      callback(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.src = imageSrc;
+  }
+
+  function baixarAmostraModal(id) {
+    var a = modalAmostras.find(function(x) { return x.id === id; });
+    if (!a) return;
+    var link = document.createElement('a');
+    link.href = a.url;
+    link.download = 'amostra_' + a.nome;
+    link.click();
+  }
+
+  function enviarAmostraWpp(id) {
+    var a = modalAmostras.find(function(x) { return x.id === id; });
+    var wpp = pedidoAtualWpp || '';
+    if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
+    var linkFoto = a && a.publicUrl ? '\n\n🔗 Ver foto: ' + a.publicUrl : '';
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Segue sua amostra do ensaio fotográfico com IA.' + linkFoto + '\n\n✨ Foto com marca d\'água. Após o pagamento você recebe em alta qualidade!');
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
+
+  function enviarAmostrasWhatsApp() {
+    if (modalAmostras.length === 0) { showToast('Nenhuma amostra para enviar'); return; }
+    var wpp = pedidoAtualWpp || '';
+    if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
+    var previewUrl = window.location.origin + '?preview=' + encodeURIComponent(pedidoAtualId || '');
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas ' + modalAmostras.length + ' amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento você recebe todas em alta qualidade!\n\n🔗 Visualizar amostras: ' + previewUrl);
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
+
+  function copiarLinkAmostras() {
+    if (modalAmostras.length === 0) { showToast('Nenhuma amostra para compartilhar'); return; }
+    var previewUrl = window.location.origin + '?preview=' + encodeURIComponent(pedidoAtualId || '');
+    navigator.clipboard.writeText(previewUrl).then(function() {
+      showToast('🔗 Link copiado: ' + previewUrl);
+    });
+  }
 
   function carregarAmostrasModal(files) {
     if (!files || files.length === 0) return;
@@ -3496,7 +3686,79 @@
     if (countEl) countEl.textContent = `${pedidos.length} pedido${pedidos.length !== 1 ? 's' : ''} no total`;
   }
 
-  // Carregar pedidos quando abrir o admin
+  // ============================================================
+  //  PREVIEW PÚBLICO - Cliente visualiza amostras pelo link
+  // ============================================================
+  function verificarPreview() {
+    var params = new URLSearchParams(window.location.search);
+    var previewId = params.get('preview');
+    if (!previewId) return;
+
+    // Mostrar página de preview
+    document.body.innerHTML = `
+      <div style="min-height:100vh;background:#FAF8F5;font-family:'DM Sans',sans-serif;">
+        <div style="background:#2C1810;padding:20px 40px;display:flex;align-items:center;gap:16px;">
+          <img src="./logo.png" alt="JK IA Foto Studio" style="height:60px;object-fit:contain;">
+          <div style="color:white;">
+            <div style="font-size:18px;font-weight:700;">Suas Amostras</div>
+            <div style="font-size:13px;opacity:0.7;">Preview exclusivo — JK IA Foto Studio</div>
+          </div>
+        </div>
+        <div style="max-width:900px;margin:0 auto;padding:40px 20px;">
+          <div style="background:linear-gradient(135deg,#9E4E33,#C97B5E);color:white;border-radius:12px;padding:20px 24px;margin-bottom:32px;">
+            <div style="font-size:20px;font-weight:700;margin-bottom:6px;">✨ Suas fotos estão prontas!</div>
+            <div style="font-size:14px;opacity:0.9;">Estas são amostras com marca d'água. Após o pagamento, você recebe todas as fotos em alta qualidade, sem marca d'água.</div>
+          </div>
+          <div id="preview-fotos" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+            <div style="text-align:center;padding:60px;color:#999;grid-column:1/-1;">
+              <div style="font-size:36px;margin-bottom:12px;">⏳</div>
+              <div>Carregando amostras...</div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:40px;padding:24px;background:white;border-radius:12px;">
+            <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Gostou? Finalize seu pedido!</div>
+            <div style="font-size:13px;color:#666;margin-bottom:16px;">Entre em contato pelo WhatsApp para realizar o pagamento e receber suas fotos.</div>
+            <a href="https://wa.me/5521999850085?text=Olá! Vi minhas amostras e quero finalizar o pedido!" target="_blank" style="background:#25D366;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
+              📱 Falar no WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Carregar fotos do Supabase
+    fetch('https://heebcqoduhvbwpkjwmtf.supabase.co/storage/v1/object/list/amostras', {
+      method: 'POST',
+      headers: {
+        'apikey': 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8',
+        'Authorization': 'Bearer sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prefix: previewId + '/', limit: 100 })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(files) {
+      var grid = document.getElementById('preview-fotos');
+      if (!files || files.length === 0) {
+        grid.innerHTML = '<div style="text-align:center;padding:60px;color:#999;grid-column:1/-1;"><div style="font-size:36px;">📭</div><div>Nenhuma amostra encontrada</div></div>';
+        return;
+      }
+      grid.innerHTML = '';
+      files.forEach(function(file) {
+        var url = 'https://heebcqoduhvbwpkjwmtf.supabase.co/storage/v1/object/public/amostras/' + previewId + '/' + file.name;
+        var card = document.createElement('div');
+        card.style.cssText = 'background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.08);';
+        card.innerHTML = '<img src="' + url + '" style="width:100%;display:block;" loading="lazy">';
+        grid.appendChild(card);
+      });
+    })
+    .catch(function(e) {
+      document.getElementById('preview-fotos').innerHTML = '<div style="text-align:center;padding:60px;color:#999;grid-column:1/-1;">Erro ao carregar amostras</div>';
+    });
+  }
+
+  // Verificar ao carregar a página
+  verificarPreview();
   const _origAdminShowPage = typeof adminShowPage === 'function' ? adminShowPage : null;
   function adminShowPage(page) {
     if (_origAdminShowPage) _origAdminShowPage(page);
