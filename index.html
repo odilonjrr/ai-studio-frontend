@@ -3082,6 +3082,38 @@
       </div>
 
       <div class="modal-section">
+        <div class="modal-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>🖼️ Amostras com Marca D'água</span>
+          <label style="background:var(--deep-rose);color:white;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">
+            📁 Adicionar Fotos
+            <input type="file" id="modal-amostra-upload" accept="image/*" multiple style="display:none;" onchange="carregarAmostrasModal(this.files)">
+          </label>
+        </div>
+
+        <!-- Grid de amostras do cliente -->
+        <div id="modal-amostras-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;min-height:80px;">
+          <div id="modal-amostras-empty" style="grid-column:span 3;text-align:center;padding:30px;color:#999;background:#fafafa;border-radius:8px;border:2px dashed #ddd;font-size:13px;">
+            📸 Nenhuma amostra ainda — clique em "Adicionar Fotos"
+          </div>
+        </div>
+
+        <!-- Botões de ação das amostras -->
+        <div id="modal-amostras-acoes" style="display:none;margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button onclick="enviarAmostrasWhatsApp()" style="background:#25D366;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+            📱 Enviar por WhatsApp
+          </button>
+          <button onclick="copiarLinkAmostras()" style="background:var(--deep-rose);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+            🔗 Copiar Link de Preview
+          </button>
+          <button onclick="deletarTodasAmostras()" style="background:#dc3545;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+            🗑️ Deletar Todas
+          </button>
+        </div>
+
+        <canvas id="modal-watermark-canvas" style="display:none;"></canvas>
+      </div>
+
+      <div class="modal-section">
         <div class="modal-section-title">Ações</div>
         <div class="modal-actions">
           <button class="btn-modal liberar" onclick="liberarModal()">Liberar fotos para cliente</button>
@@ -3122,8 +3154,152 @@
 //  AI STUDIO — UNIFIED APP NAVIGATION
 
   // ============================================================
-  //  AMOSTRAS COM MARCA D'ÁGUA
+  //  AMOSTRAS NO MODAL DO PEDIDO
   // ============================================================
+
+  var modalAmostras = []; // amostras do cliente atual
+  var pedidoAtualId = null;
+  var pedidoAtualWpp = null;
+  var pedidoAtualNome = null;
+
+  var logoWM = new Image();
+  logoWM.crossOrigin = 'anonymous';
+  logoWM.src = './logo.png';
+
+  function carregarAmostrasModal(files) {
+    if (!files || files.length === 0) return;
+    var grid = document.getElementById('modal-amostras-grid');
+    var empty = document.getElementById('modal-amostras-empty');
+    var acoes = document.getElementById('modal-amostras-acoes');
+    if (empty) empty.style.display = 'none';
+
+    var total = files.length;
+    var processados = 0;
+
+    Array.from(files).forEach(function(file, idx) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        aplicarMarcaDaguaModal(e.target.result, function(dataUrl) {
+          var id = Date.now() + '_' + idx;
+          modalAmostras.push({ id: id, nome: file.name, url: dataUrl });
+          processados++;
+
+          // Criar card
+          var card = document.createElement('div');
+          card.id = 'amostra-card-' + id;
+          card.style.cssText = 'background:#f9f9f9;border-radius:10px;overflow:hidden;border:1px solid #eee;position:relative;';
+          card.innerHTML = `
+            <img src="${dataUrl}" style="width:100%;height:140px;object-fit:cover;display:block;">
+            <div style="padding:8px;display:flex;gap:6px;">
+              <button onclick="baixarAmostraModal('${id}')" title="Baixar" style="flex:1;background:#f0f0f0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">⬇️</button>
+              <button onclick="enviarAmostraWpp('${id}')" title="WhatsApp" style="flex:1;background:#25D366;color:white;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">📱</button>
+              <button onclick="deletarAmostra('${id}')" title="Deletar" style="flex:1;background:#FFE0E0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">🗑️</button>
+            </div>
+          `;
+          grid.appendChild(card);
+
+          if (processados === total) {
+            acoes.style.display = 'flex';
+            showToast('✅ ' + total + ' amostras com marca d\'água prontas!');
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function aplicarMarcaDaguaModal(imageSrc, callback) {
+    var canvas = document.getElementById('modal-watermark-canvas');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+    img.onload = function() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      var logoW = img.width * 0.20;
+      var logoH = logoWM.naturalHeight ? (logoW * logoWM.naturalHeight / logoWM.naturalWidth) : logoW * 0.5;
+      var spacingX = img.width * 0.28;
+      var spacingY = img.height * 0.22;
+
+      ctx.save();
+      ctx.globalAlpha = 0.28;
+      for (var y = 0; y < img.height + spacingY; y += spacingY) {
+        for (var x = 0; x < img.width + spacingX; x += spacingX) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(-25 * Math.PI / 180);
+          if (logoWM.complete && logoWM.naturalWidth > 0) {
+            ctx.drawImage(logoWM, -logoW/2, -logoH/2, logoW, logoH);
+          } else {
+            ctx.font = 'bold ' + Math.max(16, img.width * 0.035) + 'px Arial';
+            ctx.fillStyle = '#9E4E33';
+            ctx.fillText('JK IA FOTO STUDIO', -60, 0);
+          }
+          ctx.restore();
+        }
+      }
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      callback(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.src = imageSrc;
+  }
+
+  function deletarAmostra(id) {
+    modalAmostras = modalAmostras.filter(function(a) { return a.id !== id; });
+    var card = document.getElementById('amostra-card-' + id);
+    if (card) card.remove();
+    if (modalAmostras.length === 0) {
+      document.getElementById('modal-amostras-empty').style.display = 'block';
+      document.getElementById('modal-amostras-acoes').style.display = 'none';
+    }
+    showToast('🗑️ Amostra removida');
+  }
+
+  function deletarTodasAmostras() {
+    if (!confirm('Deletar todas as amostras deste cliente?')) return;
+    modalAmostras = [];
+    var grid = document.getElementById('modal-amostras-grid');
+    // Remover todos os cards exceto o empty
+    Array.from(grid.children).forEach(function(child) {
+      if (child.id !== 'modal-amostras-empty') child.remove();
+    });
+    document.getElementById('modal-amostras-empty').style.display = 'block';
+    document.getElementById('modal-amostras-acoes').style.display = 'none';
+    showToast('🗑️ Todas as amostras removidas');
+  }
+
+  function baixarAmostraModal(id) {
+    var a = modalAmostras.find(function(x) { return x.id === id; });
+    if (!a) return;
+    var link = document.createElement('a');
+    link.href = a.url;
+    link.download = 'amostra_' + a.nome;
+    link.click();
+  }
+
+  function enviarAmostraWpp(id) {
+    var wpp = pedidoAtualWpp || '';
+    if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Segue sua amostra do ensaio fotográfico com IA.\n\n✨ Esta foto está com marca d\'água. Após o pagamento, você receberá todas as fotos em alta qualidade sem marca d\'água!\n\nQualquer dúvida estou à disposição! 😊');
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
+
+  function enviarAmostrasWhatsApp() {
+    if (modalAmostras.length === 0) { showToast('Nenhuma amostra para enviar'); return; }
+    var wpp = pedidoAtualWpp || '';
+    if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento, você receberá ' + modalAmostras.length + ' fotos em alta qualidade!\n\nAcesse o link para visualizar: ' + window.location.origin + '/preview/' + (pedidoAtualId || ''));
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
+
+  function copiarLinkAmostras() {
+    var link = window.location.origin + '/preview/' + (pedidoAtualId || 'demo');
+    navigator.clipboard.writeText(link).then(function() {
+      showToast('🔗 Link copiado: ' + link);
+    });
+  }
 
   var amostrasList = [];
   var logoWatermark = new Image();
@@ -3655,6 +3831,25 @@ window.addEventListener('scroll', function(){
     document.getElementById('m-pay').textContent = p.pay + ' ✓';
     document.getElementById('m-data').textContent = p.data;
     document.getElementById('m-status').textContent = b.txt;
+
+    // Salvar dados do cliente para as amostras
+    pedidoAtualId = p.id || p.nome.replace(/\s/g,'_');
+    pedidoAtualNome = p.nome;
+    pedidoAtualWpp = p.tel ? p.tel.replace(/\D/g,'') : '';
+
+    // Limpar amostras anteriores
+    modalAmostras = [];
+    var grid = document.getElementById('modal-amostras-grid');
+    if (grid) {
+      Array.from(grid.children).forEach(function(child) {
+        if (child.id !== 'modal-amostras-empty') child.remove();
+      });
+      var empty = document.getElementById('modal-amostras-empty');
+      if (empty) empty.style.display = 'block';
+      var acoes = document.getElementById('modal-amostras-acoes');
+      if (acoes) acoes.style.display = 'none';
+    }
+
     document.getElementById('modal-pedido').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
