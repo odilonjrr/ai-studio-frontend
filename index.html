@@ -3349,11 +3349,35 @@
   }
 
   function copiarLinkAmostras() {
-    if (modalAmostras.length === 0) { showToast('Nenhuma amostra para compartilhar'); return; }
-    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || '');
-    navigator.clipboard.writeText(previewUrl).then(function() {
-      showToast('🔗 Link copiado: ' + previewUrl);
-    });
+    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || 'cliente');
+    
+    // Tentar clipboard moderno
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(previewUrl).then(function() {
+        showToast('🔗 Link copiado: ' + previewUrl);
+      }).catch(function() {
+        copiarFallback(previewUrl);
+      });
+    } else {
+      copiarFallback(previewUrl);
+    }
+  }
+
+  function copiarFallback(texto) {
+    var input = document.createElement('textarea');
+    input.value = texto;
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
+    try {
+      document.execCommand('copy');
+      showToast('🔗 Link copiado: ' + texto);
+    } catch(e) {
+      showToast('Link: ' + texto);
+    }
+    document.body.removeChild(input);
   }
 
   function carregarAmostrasModal(files) {
