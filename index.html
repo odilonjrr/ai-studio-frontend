@@ -2663,6 +2663,9 @@
   <a class="nav-item" onclick="adminShowPage('liberados')">
     <span class="nav-icon">✅</span> Liberados
   </a>
+  <a class="nav-item" onclick="adminShowPage('amostras')">
+    <span class="nav-icon">🖼️</span> Amostras
+  </a>
 
   <div class="sidebar-section">Config</div>
   <a class="nav-item" onclick="showToast('Em breve: configuracoes do estudio')">
@@ -2976,6 +2979,53 @@
         </table>
       </div>
     </div>
+
+    <!-- PÁGINA AMOSTRAS -->
+    <div class="page" id="page-amostras">
+      <div class="table-card" style="margin-bottom:24px;">
+        <div class="table-header">
+          <div>
+            <div class="table-title">🖼️ Amostras com Marca D'água</div>
+            <div class="table-count">Preview para enviar ao cliente antes do pagamento</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <input type="text" id="amostra-cliente-nome" placeholder="Nome do cliente" style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;width:180px;">
+            <input type="text" id="amostra-cliente-wpp" placeholder="WhatsApp (5521...)" style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;width:180px;">
+            <label style="background:var(--deep-rose);color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">
+              📁 Carregar Fotos
+              <input type="file" id="amostra-upload" accept="image/*" multiple style="display:none;" onchange="carregarAmostras(this.files)">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de amostras -->
+      <div id="amostras-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+        <div style="grid-column:span 3;text-align:center;padding:60px;color:#999;background:white;border-radius:12px;border:2px dashed #ddd;">
+          <div style="font-size:48px;margin-bottom:12px;">🖼️</div>
+          <p style="font-size:15px;font-weight:600;">Nenhuma amostra carregada</p>
+          <p style="font-size:13px;margin-top:4px;">Clique em "Carregar Fotos" para adicionar imagens</p>
+        </div>
+      </div>
+
+      <!-- Botões de ação -->
+      <div id="amostras-acoes" style="display:none;background:white;border-radius:12px;padding:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <button onclick="enviarWhatsApp()" style="background:#25D366;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+          📱 Enviar por WhatsApp
+        </button>
+        <button onclick="copiarLink()" style="background:var(--deep-rose);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+          🔗 Copiar Link de Preview
+        </button>
+        <button onclick="baixarTodasAmostras()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+          ⬇️ Baixar Todas
+        </button>
+        <span id="amostras-info" style="font-size:13px;color:#666;margin-left:auto;"></span>
+      </div>
+
+      <!-- Canvas oculto para processar marca d'água -->
+      <canvas id="watermark-canvas" style="display:none;"></canvas>
+    </div>
+
   </div>
 </div>
 
@@ -3072,8 +3122,141 @@
 //  AI STUDIO — UNIFIED APP NAVIGATION
 
   // ============================================================
-  //  SUPABASE - Carregar pedidos reais
+  //  AMOSTRAS COM MARCA D'ÁGUA
   // ============================================================
+
+  var amostrasList = [];
+  var logoWatermark = new Image();
+  logoWatermark.src = './logo.png';
+
+  function carregarAmostras(files) {
+    if (!files || files.length === 0) return;
+
+    var grid = document.getElementById('amostras-grid');
+    var acoes = document.getElementById('amostras-acoes');
+
+    // Limpar placeholder
+    if (amostrasList.length === 0) {
+      grid.innerHTML = '';
+    }
+
+    var total = files.length;
+    var processados = 0;
+
+    Array.from(files).forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        aplicarMarcaDagua(e.target.result, file.name, function(dataUrl) {
+          amostrasList.push({ nome: file.name, url: dataUrl });
+          processados++;
+
+          // Criar card da amostra
+          var card = document.createElement('div');
+          card.style.cssText = 'background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);';
+          card.innerHTML = `
+            <img src="${dataUrl}" alt="${file.name}" style="width:100%;height:220px;object-fit:cover;display:block;">
+            <div style="padding:12px;">
+              <div style="font-size:12px;color:#666;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div>
+              <div style="display:flex;gap:8px;">
+                <button onclick="baixarAmostra('${dataUrl}','${file.name}')" style="flex:1;background:#f0f0f0;border:none;padding:6px;border-radius:6px;font-size:12px;cursor:pointer;">⬇️ Baixar</button>
+                <button onclick="compartilharWhatsApp('${dataUrl}')" style="flex:1;background:#25D366;color:white;border:none;padding:6px;border-radius:6px;font-size:12px;cursor:pointer;">📱 WPP</button>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+
+          if (processados === total) {
+            acoes.style.display = 'flex';
+            document.getElementById('amostras-info').textContent = amostrasList.length + ' amostras prontas';
+            showToast('✅ ' + total + ' amostras com marca d\'água prontas!');
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function aplicarMarcaDagua(imageSrc, nome, callback) {
+    var canvas = document.getElementById('watermark-canvas');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+
+    img.onload = function() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      // Desenhar imagem original
+      ctx.drawImage(img, 0, 0);
+
+      // Aplicar marca d'água repetida por toda a imagem
+      var logoW = img.width * 0.18;
+      var logoH = logoWatermark.height ? (logoW * logoWatermark.height / logoWatermark.width) : logoW * 0.5;
+      var spacingX = img.width * 0.25;
+      var spacingY = img.height * 0.20;
+
+      ctx.globalAlpha = 0.25;
+      ctx.save();
+
+      for (var y = -spacingY; y < img.height + spacingY; y += spacingY) {
+        for (var x = -spacingX; x < img.width + spacingX; x += spacingX) {
+          ctx.save();
+          ctx.translate(x + spacingX/2, y + spacingY/2);
+          ctx.rotate(-25 * Math.PI / 180);
+          if (logoWatermark.complete && logoWatermark.naturalWidth > 0) {
+            ctx.drawImage(logoWatermark, -logoW/2, -logoH/2, logoW, logoH);
+          } else {
+            // Fallback texto se logo não carregar
+            ctx.font = 'bold ' + (img.width * 0.04) + 'px Arial';
+            ctx.fillStyle = 'rgba(158,78,51,0.5)';
+            ctx.fillText('JK IA FOTO STUDIO', -logoW/2, 0);
+          }
+          ctx.restore();
+        }
+      }
+
+      ctx.restore();
+      ctx.globalAlpha = 1;
+
+      callback(canvas.toDataURL('image/jpeg', 0.9));
+    };
+
+    img.src = imageSrc;
+  }
+
+  function baixarAmostra(dataUrl, nome) {
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'amostra_' + nome;
+    a.click();
+  }
+
+  function baixarTodasAmostras() {
+    if (amostrasList.length === 0) { showToast('Nenhuma amostra para baixar'); return; }
+    amostrasList.forEach(function(a) { baixarAmostra(a.url, a.nome); });
+  }
+
+  function enviarWhatsApp() {
+    var nome = document.getElementById('amostra-cliente-nome').value || 'cliente';
+    var wpp = document.getElementById('amostra-cliente-wpp').value;
+    if (!wpp) { showToast('Informe o WhatsApp do cliente!'); return; }
+    var msg = encodeURIComponent('Olá ' + nome + '! 📸 Seguem suas amostras do ensaio fotográfico com IA. Estas são fotos com marca d\'água — após o pagamento você receberá as fotos em alta qualidade sem marca d\'água! ✨');
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
+
+  function compartilharWhatsApp(dataUrl) {
+    var wpp = document.getElementById('amostra-cliente-wpp').value;
+    var nome = document.getElementById('amostra-cliente-nome').value || 'cliente';
+    if (!wpp) { showToast('Informe o WhatsApp do cliente primeiro!'); return; }
+    var msg = encodeURIComponent('Olá ' + nome + '! Aqui está sua amostra do ensaio com IA 📸✨ (foto com marca d\'água — após pagamento você recebe em alta qualidade!)');
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
+
+  function copiarLink() {
+    var link = window.location.origin + '?preview=amostras';
+    navigator.clipboard.writeText(link).then(function() {
+      showToast('🔗 Link copiado!');
+    });
+  }
   const SUPABASE_URL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
   const BACKEND_URL_ADMIN = 'https://ai-studio-backend-five.vercel.app';
