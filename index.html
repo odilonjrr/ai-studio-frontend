@@ -2713,26 +2713,26 @@
         <div class="stat-card rose">
           <div class="stat-icon">💰</div>
           <div class="stat-label">Receita Total</div>
-          <div class="stat-value">R$2.847</div>
-          <div class="stat-change up">+18% vs mes anterior</div>
+          <div class="stat-value" id="dash-receita">R$0,00</div>
+          <div class="stat-change" id="dash-receita-sub">Nenhum pedido ainda</div>
         </div>
         <div class="stat-card gold">
           <div class="stat-icon">📋</div>
           <div class="stat-label">Total de Pedidos</div>
-          <div class="stat-value">32</div>
-          <div class="stat-change up">+7 este mes</div>
+          <div class="stat-value" id="dash-total">0</div>
+          <div class="stat-change" id="dash-total-sub">Aguardando primeiro pedido</div>
         </div>
         <div class="stat-card green">
           <div class="stat-icon">✅</div>
-          <div class="stat-label">Liberados</div>
-          <div class="stat-value">27</div>
-          <div class="stat-sub">5 aguardando revisão</div>
+          <div class="stat-label">Aprovados</div>
+          <div class="stat-value" id="dash-aprovados">0</div>
+          <div class="stat-sub" id="dash-pendentes">0 pendentes</div>
         </div>
         <div class="stat-card blue">
           <div class="stat-icon">⭐</div>
           <div class="stat-label">Ticket Médio</div>
-          <div class="stat-value">R$89</div>
-          <div class="stat-change up">+R$12 vs anterior</div>
+          <div class="stat-value" id="dash-ticket">R$0</div>
+          <div class="stat-change" id="dash-ticket-sub">-</div>
         </div>
       </div>
 
@@ -2834,47 +2834,8 @@
               <th>Cliente</th><th>Ensaio</th><th>Fotos</th><th>Valor</th><th>Status</th><th>Ações</th>
             </tr>
           </thead>
-          <tbody>
-            <tr onclick="abrirPedido(1)">
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#C97B5E)">M</div><div><div class="client-name">Maria Silva</div><div class="client-email">maria@email.com</div></div></div></td>
-              <td><span class="ensaio-pill">🎂 Aniversário</span></td>
-              <td>5 fotos</td>
-              <td><span class="receita-val">R$89,90</span></td>
-              <td><span class="badge badge-revisao">Em revisao</span></td>
-              <td><div class="action-btns"><button class="action-btn green" onclick="event.stopPropagation();liberarDiretoId(1)">✅</button><button class="action-btn" onclick="event.stopPropagation();abrirPedido(1)">👁</button></div></td>
-            </tr>
-            <tr onclick="abrirPedido(2)">
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#D5C8F5,#8474C4)">A</div><div><div class="client-name">Ana Beatriz Santos</div><div class="client-email">ana@email.com</div></div></div></td>
-              <td><span class="ensaio-pill">🤰 Grávida</span></td>
-              <td>10 fotos</td>
-              <td><span class="receita-val">R$149,90</span></td>
-              <td><span class="badge badge-producao">Em producao</span></td>
-              <td><div class="action-btns"><button class="action-btn" onclick="event.stopPropagation();showToast('Gerando ensaio de Ana...')">🔄</button><button class="action-btn" onclick="event.stopPropagation();abrirPedido(2)">👁</button></div></td>
-            </tr>
-            <tr onclick="abrirPedido(3)">
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#CCE4D0,#6A9E7A)">J</div><div><div class="client-name">Juliana Mendes</div><div class="client-email">ju@email.com</div></div></div></td>
-              <td><span class="ensaio-pill">🐾 Com Pet</span></td>
-              <td>5 fotos</td>
-              <td><span class="receita-val">R$89,90</span></td>
-              <td><span class="badge badge-pago">Pago</span></td>
-              <td><div class="action-btns"><button class="action-btn" onclick="event.stopPropagation();showToast('Aguardando fotos de Juliana')">📸</button><button class="action-btn" onclick="event.stopPropagation();abrirPedido(3)">👁</button></div></td>
-            </tr>
-            <tr onclick="abrirPedido(4)">
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F5E8C8,#C8A86B)">C</div><div><div class="client-name">Camila Rodrigues</div><div class="client-email">cami@email.com</div></div></div></td>
-              <td><span class="ensaio-pill">👶 Bebê c/ Mamãe</span></td>
-              <td>10 fotos</td>
-              <td><span class="receita-val">R$149,90</span></td>
-              <td><span class="badge badge-liberado">Liberado</span></td>
-              <td><div class="action-btns"><button class="action-btn" onclick="event.stopPropagation();showToast('Reenviar link para Camila?')">📧</button><button class="action-btn" onclick="event.stopPropagation();abrirPedido(4)">👁</button></div></td>
-            </tr>
-            <tr onclick="abrirPedido(5)">
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#9E4E33)">F</div><div><div class="client-name">Fernanda Lima</div><div class="client-email">fe@email.com</div></div></div></td>
-              <td><span class="ensaio-pill">🤰 Grávida</span></td>
-              <td>20 fotos</td>
-              <td><span class="receita-val">R$229,90</span></td>
-              <td><span class="badge badge-liberado">Liberado</span></td>
-              <td><div class="action-btns"><button class="action-btn" onclick="event.stopPropagation();showToast('Reenviar link para Fernanda?')">📧</button><button class="action-btn" onclick="event.stopPropagation();abrirPedido(5)">👁</button></div></td>
-            </tr>
+          <tbody id="pedidos-revisao-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">Nenhum pedido em revisão</td></tr>
           </tbody>
         </table>
       </div>
@@ -2907,15 +2868,12 @@
     <div class="page" id="page-clientes">
       <div class="table-card">
         <div class="table-header">
-          <div><div class="table-title">Clientes</div><div class="table-count">18 clientes cadastradas</div></div>
+          <div><div class="table-title">Clientes</div><div class="table-count" id="clientes-count">0 clientes cadastrados</div></div>
         </div>
         <table>
           <thead><tr><th>Cliente</th><th>Ensaios</th><th>Total gasto</th><th>Último pedido</th><th>Ações</th></tr></thead>
-          <tbody>
-            <tr><td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#C97B5E)">M</div><div><div class="client-name">Maria Silva</div><div class="client-email">maria@email.com</div></div></div></td><td>2 ensaios</td><td><span class="receita-val">R$179,80</span></td><td>20/04/2026</td><td><div class="action-btns"><button class="action-btn" onclick="showToast('Ver historico: Maria Silva')">👁</button><button class="action-btn" onclick="showToast('E-mail enviado para Maria!')">📧</button></div></td></tr>
-            <tr><td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#D5C8F5,#8474C4)">A</div><div><div class="client-name">Ana Beatriz Santos</div><div class="client-email">ana@email.com</div></div></div></td><td>1 ensaio</td><td><span class="receita-val">R$149,90</span></td><td>18/04/2026</td><td><div class="action-btns"><button class="action-btn" onclick="showToast('Ver historico: Ana Beatriz')">👁</button><button class="action-btn" onclick="showToast('E-mail enviado para Ana!')">📧</button></div></td></tr>
-            <tr><td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F5E8C8,#C8A86B)">C</div><div><div class="client-name">Camila Rodrigues</div><div class="client-email">cami@email.com</div></div></div></td><td>1 ensaio</td><td><span class="receita-val">R$149,90</span></td><td>15/04/2026</td><td><div class="action-btns"><button class="action-btn" onclick="showToast('Ver historico: Camila')">👁</button><button class="action-btn" onclick="showToast('E-mail enviado para Camila!')">📧</button></div></td></tr>
-            <tr><td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#9E4E33)">F</div><div><div class="client-name">Fernanda Lima</div><div class="client-email">fe@email.com</div></div></div></td><td>1 ensaio</td><td><span class="receita-val">R$229,90</span></td><td>10/04/2026</td><td><div class="action-btns"><button class="action-btn" onclick="showToast('Ver historico: Fernanda')">👁</button><button class="action-btn" onclick="showToast('E-mail enviado para Fernanda!')">📧</button></div></td></tr>
+          <tbody id="clientes-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:#999;">Nenhum cliente ainda</td></tr>
           </tbody>
         </table>
       </div>
@@ -2925,40 +2883,12 @@
     <div class="page" id="page-producao">
       <div class="table-card">
         <div class="table-header">
-          <div><div class="table-title">Em Produção / Revisão</div><div class="table-count">2 pedidos aguardando acao</div></div>
+          <div><div class="table-title">Em Produção / Revisão</div><div class="table-count" id="producao-count">0 pedidos aguardando ação</div></div>
         </div>
         <table>
           <thead><tr><th>Cliente</th><th>Ensaio</th><th>Fotos enviadas</th><th>Status</th><th>Ações</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#C97B5E)">M</div><div><div class="client-name">Maria Silva</div><div class="client-email">5 fotos enviadas</div></div></div></td>
-              <td><span class="ensaio-pill">🎂 Aniversário</span></td>
-              <td><div style="display:flex;gap:6px">
-                <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#FCEAE5,#C4846A);display:flex;align-items:center;justify-content:center;font-size:16px">😊</div>
-                <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#E8C4B8,#8B4F3A);display:flex;align-items:center;justify-content:center;font-size:16px">🙂</div>
-                <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#F5D0C5,#9B5A42);display:flex;align-items:center;justify-content:center;font-size:16px">😄</div>
-              </div></td>
-              <td><span class="badge badge-revisao">Aguarda revisao</span></td>
-              <td><div class="action-btns" style="gap:8px">
-                <button class="action-btn green" onclick="liberarDireto('Maria Silva')" title="Liberar fotos">✅</button>
-                <button class="action-btn" onclick="showToast('Regerando fotos de Maria...')" title="Regerar">🔄</button>
-                <button class="action-btn" onclick="showToast('Upload manual para Maria')" title="Upload manual">⬆️</button>
-                <button class="action-btn" onclick="abrirPedido(1)" title="Ver detalhes">👁</button>
-              </div></td>
-            </tr>
-            <tr>
-              <td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#D5C8F5,#8474C4)">A</div><div><div class="client-name">Ana Beatriz Santos</div><div class="client-email">5 fotos enviadas</div></div></div></td>
-              <td><span class="ensaio-pill">🤰 Grávida</span></td>
-              <td><div style="display:flex;gap:6px">
-                <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#EAE5FF,#7460C4);display:flex;align-items:center;justify-content:center;font-size:16px">🥰</div>
-                <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#C4B8E8,#5540A0);display:flex;align-items:center;justify-content:center;font-size:16px">😌</div>
-              </div></td>
-              <td><span class="badge badge-producao">Gerando IA</span></td>
-              <td><div class="action-btns" style="gap:8px">
-                <button class="action-btn" onclick="showToast('Gerando fotos de Ana...')" title="Gerar">✨</button>
-                <button class="action-btn" onclick="abrirPedido(2)" title="Ver detalhes">👁</button>
-              </div></td>
-            </tr>
+          <tbody id="producao-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:#999;">Nenhum pedido em produção</td></tr>
           </tbody>
         </table>
       </div>
@@ -2968,13 +2898,12 @@
     <div class="page" id="page-liberados">
       <div class="table-card">
         <div class="table-header">
-          <div><div class="table-title">Ensaios Liberados</div><div class="table-count">27 ensaios entregues</div></div>
+          <div><div class="table-title">Ensaios Liberados</div><div class="table-count" id="liberados-count">0 ensaios entregues</div></div>
         </div>
         <table>
           <thead><tr><th>Cliente</th><th>Ensaio</th><th>Fotos</th><th>Valor</th><th>Data liberação</th><th>Ações</th></tr></thead>
-          <tbody>
-            <tr><td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F5E8C8,#C8A86B)">C</div><div><div class="client-name">Camila Rodrigues</div></div></div></td><td><span class="ensaio-pill">👶 Bebê c/ Mamãe</span></td><td>10 fotos</td><td><span class="receita-val">R$149,90</span></td><td>15/04/2026</td><td><div class="action-btns"><button class="action-btn" onclick="showToast('Reenviar link para Camila?')">📧</button></div></td></tr>
-            <tr><td><div class="client-cell"><div class="client-avatar" style="background:linear-gradient(135deg,#F0D5CB,#9E4E33)">F</div><div><div class="client-name">Fernanda Lima</div></div></div></td><td><span class="ensaio-pill">🤰 Grávida</span></td><td>20 fotos</td><td><span class="receita-val">R$229,90</span></td><td>12/04/2026</td><td><div class="action-btns"><button class="action-btn" onclick="showToast('Reenviar link para Fernanda?')">📧</button></div></td></tr>
+          <tbody id="liberados-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">Nenhum ensaio liberado ainda</td></tr>
           </tbody>
         </table>
       </div>
@@ -3504,12 +3433,12 @@
     if (modalAmostras.length === 0) { showToast('Nenhuma amostra para enviar'); return; }
     var wpp = pedidoAtualWpp || '';
     if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
-    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento, você receberá ' + modalAmostras.length + ' fotos em alta qualidade!\n\nAcesse o link para visualizar: ' + window.location.origin + '?preview=' + (pedidoAtualId || ''));
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento, você receberá ' + modalAmostras.length + ' fotos em alta qualidade!\n\nAcesse o link para visualizar: ' + window.location.origin + '/preview/' + (pedidoAtualId || ''));
     window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
   }
 
   function copiarLinkAmostras() {
-    var link = window.location.origin + '?preview=' + (pedidoAtualId || 'demo');
+    var link = window.location.origin + '/preview/' + (pedidoAtualId || 'demo');
     navigator.clipboard.writeText(link).then(function() {
       showToast('🔗 Link copiado: ' + link);
     });
@@ -3660,11 +3589,31 @@
           'Content-Type': 'application/json'
         }
       });
-      const pedidos = await response.json();
-      renderizarPedidos(pedidos);
+      const pedidosDB = await response.json();
+      renderizarPedidos(pedidosDB);
+      atualizarDashboard(pedidosDB);
     } catch (error) {
       console.error('Erro ao carregar pedidos:', error);
     }
+  }
+
+  function atualizarDashboard(pedidosDB) {
+    if (!pedidosDB || pedidosDB.length === 0) return;
+    var total = pedidosDB.length;
+    var aprovados = pedidosDB.filter(function(p) { return p.status === 'aprovado'; }).length;
+    var pendentes = pedidosDB.filter(function(p) { return p.status === 'pendente'; }).length;
+    var receita = pedidosDB
+      .filter(function(p) { return p.status === 'aprovado'; })
+      .reduce(function(acc, p) { return acc + Number(p.valor || 0); }, 0);
+    var ticket = aprovados > 0 ? (receita / aprovados) : 0;
+
+    var el = function(id) { return document.getElementById(id); };
+    if (el('dash-receita')) el('dash-receita').textContent = 'R$' + receita.toFixed(2).replace('.', ',');
+    if (el('dash-total')) el('dash-total').textContent = total;
+    if (el('dash-total-sub')) el('dash-total-sub').textContent = total + ' pedido' + (total !== 1 ? 's' : '') + ' recebido' + (total !== 1 ? 's' : '');
+    if (el('dash-aprovados')) el('dash-aprovados').textContent = aprovados;
+    if (el('dash-pendentes')) el('dash-pendentes').textContent = pendentes + ' pendente' + (pendentes !== 1 ? 's' : '');
+    if (el('dash-ticket')) el('dash-ticket').textContent = 'R$' + ticket.toFixed(0);
   }
 
   function renderizarPedidos(pedidos) {
@@ -4026,15 +3975,7 @@ window.addEventListener('scroll', function(){
 // ============================================================
 
   // ===== DATA =====
-  const pedidos = [
-    {id:1, nome:'Maria Silva',       email:'maria@email.com', tel:'(21) 99999-0001', tipo:'Aniversario', emoji:'🎂', qty:'5 fotos', valor:'R$ 89,90', pay:'PIX', data:'20/04/2026', status:'revisao'},
-    {id:2, nome:'Ana Beatriz Santos',email:'ana@email.com',   tel:'(21) 99999-0002', tipo:'Gravida',     emoji:'🤰', qty:'10 fotos',valor:'R$149,90', pay:'Cartao', data:'18/04/2026', status:'producao'},
-    {id:3, nome:'Juliana Mendes',    email:'ju@email.com',    tel:'(21) 99999-0003', tipo:'Com Pet',     emoji:'🐾', qty:'5 fotos', valor:'R$ 89,90', pay:'PIX', data:'17/04/2026', status:'pago'},
-    {id:4, nome:'Camila Rodrigues',  email:'cami@email.com',  tel:'(21) 99999-0004', tipo:'Bebe c/ Mamae',emoji:'👶',qty:'10 fotos',valor:'R$149,90', pay:'Cartao', data:'15/04/2026', status:'liberado'},
-    {id:5, nome:'Fernanda Lima',     email:'fe@email.com',    tel:'(21) 99999-0005', tipo:'Gravida',     emoji:'🤰', qty:'20 fotos',valor:'R$229,90', pay:'PIX', data:'10/04/2026', status:'liberado'},
-    {id:6, nome:'Patricia Souza',    email:'pat@email.com',   tel:'(21) 99999-0006', tipo:'Aniversario', emoji:'🎂', qty:'2 fotos', valor:'R$ 49,90', pay:'PIX', data:'08/04/2026', status:'liberado'},
-    {id:7, nome:'Renata Costa',      email:'re@email.com',    tel:'(21) 99999-0007', tipo:'Aniversario', emoji:'🎂', qty:'1 foto',  valor:'R$ 29,90', pay:'PIX', data:'05/04/2026', status:'liberado'},
-  ];
+  const pedidos = [];
 
   const badgeMap = {
     revisao:  {cls:'badge-revisao',  txt:'Em revisao'},
@@ -4042,6 +3983,8 @@ window.addEventListener('scroll', function(){
     pago:     {cls:'badge-pago',     txt:'Fotos recebidas'},
     liberado: {cls:'badge-liberado', txt:'Liberado'},
     pendente: {cls:'badge-pendente', txt:'Pendente'},
+    aprovado: {cls:'badge-pago',     txt:'Aprovado'},
+    recusado: {cls:'badge-revisao',  txt:'Recusado'},
   };
 
   // ===== PAGES =====
