@@ -2649,7 +2649,7 @@
   </a>
   <a class="nav-item" onclick="adminShowPage('pedidos')">
     <span class="nav-icon">📋</span> Pedidos
-    <span class="nav-badge">3</span>
+    <span class="nav-badge" id="badge-pedidos" style="display:none;">0</span>
   </a>
 
   <div class="sidebar-section">Gestão</div>
@@ -2658,7 +2658,7 @@
   </a>
   <a class="nav-item" onclick="adminShowPage('producao')">
     <span class="nav-icon">✨</span> Em Produção
-    <span class="nav-badge">2</span>
+    <span class="nav-badge" id="badge-producao" style="display:none;">0</span>
   </a>
   <a class="nav-item" onclick="adminShowPage('liberados')">
     <span class="nav-icon">✅</span> Liberados
@@ -2700,7 +2700,7 @@
         🔔<div class="notif-dot"></div>
       </button>
       <button class="topbar-btn ghost" onclick="showToast('Exportando relatorio...')">📥 Exportar</button>
-      <button class="topbar-btn primary" onclick="adminShowPage('pedidos')">+ Novo pedido</button>
+      <button class="topbar-btn primary" onclick="abrirModalNovoPedido()">+ Novo Pedido</button>
     </div>
   </div>
 
@@ -2738,20 +2738,17 @@
 
       <!-- CHARTS -->
       <div class="charts-row">
-
         <!-- Bar Chart -->
         <div class="chart-card">
           <div class="chart-header">
             <div>
               <div class="chart-title">Receita & Pedidos por Mês</div>
-              <div class="chart-sub">Ultimos 6 meses</div>
-            </div>
-            <div class="chart-legend">
-              <div class="legend-item"><div class="legend-dot" style="background:var(--deep-rose)"></div>Receita</div>
-              <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Pedidos</div>
+              <div class="chart-sub">Últimos 6 meses</div>
             </div>
           </div>
-          <div class="bar-chart" id="bar-chart"></div>
+          <div id="bar-chart" style="display:flex;align-items:center;justify-content:center;height:160px;color:#999;font-size:13px;">
+            📊 Aguardando pedidos para gerar gráfico
+          </div>
         </div>
 
         <!-- Donut Chart -->
@@ -2759,65 +2756,11 @@
           <div class="chart-header">
             <div>
               <div class="chart-title">Ensaios por Tipo</div>
-              <div class="chart-sub">Distribuicao total</div>
+              <div class="chart-sub">Distribuição total</div>
             </div>
           </div>
-          <div class="donut-wrap">
-            <svg class="donut-svg" viewBox="0 0 120 120">
-              <!-- Aniversário 40% -->
-              <circle cx="60" cy="60" r="45" fill="none" stroke="#9E4E33" stroke-width="18"
-                stroke-dasharray="113 170" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-              <!-- Grávida 28% -->
-              <circle cx="60" cy="60" r="45" fill="none" stroke="#C8A86B" stroke-width="18"
-                stroke-dasharray="79 204" stroke-dashoffset="-113" transform="rotate(-90 60 60)"/>
-              <!-- Bebê 20% -->
-              <circle cx="60" cy="60" r="45" fill="none" stroke="#5C9970" stroke-width="18"
-                stroke-dasharray="56 226" stroke-dashoffset="-192" transform="rotate(-90 60 60)"/>
-              <!-- Pet 12% -->
-              <circle cx="60" cy="60" r="45" fill="none" stroke="#4A7CB0" stroke-width="18"
-                stroke-dasharray="34 249" stroke-dashoffset="-248" transform="rotate(-90 60 60)"/>
-              <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1612" font-family="Playfair Display">32</text>
-              <text x="60" y="70" text-anchor="middle" font-size="8" fill="#8A7B74" font-family="DM Sans">pedidos</text>
-            </svg>
-            <div class="donut-legend">
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-item-dot" style="background:#9E4E33"></div>🎂 Aniversário</div>
-                <div class="donut-item-val">40% — 13</div>
-              </div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-item-dot" style="background:#C8A86B"></div>🤰 Grávida</div>
-                <div class="donut-item-val">28% — 9</div>
-              </div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-item-dot" style="background:#5C9970"></div>👶 Bebê</div>
-                <div class="donut-item-val">20% — 6</div>
-              </div>
-              <div class="donut-item">
-                <div class="donut-item-left"><div class="donut-item-dot" style="background:#4A7CB0"></div>🐾 Pet</div>
-                <div class="donut-item-val">12% — 4</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- METAS -->
-      <div class="chart-card" style="margin-bottom:28px;">
-        <div class="chart-header">
-          <div><div class="chart-title">Metas do Mês</div><div class="chart-sub">Abril 2026</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
-          <div class="progress-wrap">
-            <div class="progress-label"><span>Receita</span><span style="font-weight:600">R$847 / R$2.000</span></div>
-            <div class="progress-bar-track"><div class="progress-fill" style="width:42%;background:var(--deep-rose)"></div></div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-label"><span>Pedidos</span><span style="font-weight:600">7 / 20</span></div>
-            <div class="progress-bar-track"><div class="progress-fill" style="width:35%;background:var(--gold)"></div></div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-label"><span>Liberados</span><span style="font-weight:600">5 / 20</span></div>
-            <div class="progress-bar-track"><div class="progress-fill" style="width:25%;background:var(--success)"></div></div>
+          <div id="donut-chart" style="display:flex;align-items:center;justify-content:center;height:160px;color:#999;font-size:13px;">
+            📊 Aguardando pedidos para gerar gráfico
           </div>
         </div>
       </div>
@@ -2825,7 +2768,7 @@
       <!-- PEDIDOS RECENTES (mini) -->
       <div class="table-card">
         <div class="table-header">
-          <div><div class="table-title">Pedidos Recentes</div><div class="table-count">Últimos 5 pedidos</div></div>
+          <div><div class="table-title">Pedidos Recentes</div><div class="table-count">Últimos pedidos</div></div>
           <button class="filter-tab active" onclick="adminShowPage('pedidos')">Ver todos →</button>
         </div>
         <table>
@@ -2834,8 +2777,8 @@
               <th>Cliente</th><th>Ensaio</th><th>Fotos</th><th>Valor</th><th>Status</th><th>Ações</th>
             </tr>
           </thead>
-          <tbody id="pedidos-revisao-tbody">
-            <tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">Nenhum pedido em revisão</td></tr>
+          <tbody id="pedidos-recentes-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">Nenhum pedido ainda</td></tr>
           </tbody>
         </table>
       </div>
@@ -2845,7 +2788,7 @@
     <div class="page" id="page-pedidos">
       <div class="table-card">
         <div class="table-header">
-          <div><div class="table-title">Todos os Pedidos</div><div class="table-count">32 pedidos no total</div></div>
+          <div><div class="table-title">Todos os Pedidos</div><div class="table-count" id="pedidos-count">0 pedidos no total</div></div>
           <div class="filter-tabs">
             <button class="filter-tab active" onclick="filterTab(this,'todos')">Todos</button>
             <button class="filter-tab" onclick="filterTab(this,'revisao')">Em revisao</button>
@@ -2955,6 +2898,88 @@
       <canvas id="watermark-canvas" style="display:none;"></canvas>
     </div>
 
+  </div>
+</div>
+
+<!-- ===== MODAL NOVO PEDIDO ===== -->
+<div class="modal-overlay" id="modal-novo-pedido" style="z-index:1000;">
+  <div class="modal-panel" style="max-width:500px;">
+    <div class="modal-panel-header">
+      <div>
+        <h2>+ Novo Pedido</h2>
+        <div style="font-size:13px;color:#999;margin-top:4px;">Cadastrar pedido manualmente</div>
+      </div>
+      <button class="modal-close-btn" onclick="fecharModalNovoPedido()">×</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME DO CLIENTE *</label>
+          <input type="text" id="np-nome" placeholder="Ex: Maria Silva" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL *</label>
+          <input type="email" id="np-email" placeholder="cliente@email.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">WHATSAPP</label>
+          <input type="text" id="np-wpp" placeholder="5521999999999" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">TEMA *</label>
+            <select id="np-tema" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+              <option value="">Selecione...</option>
+              <option value="Profissional">💼 Profissional</option>
+              <option value="Gestante">🤰 Gestante</option>
+              <option value="Aniversario">🎂 Aniversário</option>
+              <option value="Casal">💕 Casal</option>
+              <option value="Formatura">🎓 Formatura</option>
+              <option value="Intimista">✨ Intimista</option>
+              <option value="Bebe">👶 Bebê</option>
+              <option value="Aniversario Infantil">🎉 Aniv. Infantil</option>
+              <option value="Familia">👨‍👩‍👧‍👦 Família</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">QUANTIDADE *</label>
+            <select id="np-qty" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+              <option value="2">2 fotos — R$19,90</option>
+              <option value="5">5 fotos — R$29,90</option>
+              <option value="10">10 fotos — R$49,90</option>
+              <option value="20">20 fotos — R$79,90</option>
+              <option value="50">50 fotos — R$99,90</option>
+              <option value="100">100 fotos — R$149,90</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">VALOR (R$) *</label>
+            <input type="number" id="np-valor" placeholder="49.90" step="0.01" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">STATUS</label>
+            <select id="np-status" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+              <option value="pendente">Pendente</option>
+              <option value="aprovado">Aprovado</option>
+              <option value="recusado">Recusado</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="fecharModalNovoPedido()" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
+          <button onclick="salvarNovoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Pedido</button>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3598,22 +3623,65 @@
   }
 
   function atualizarDashboard(pedidosDB) {
-    if (!pedidosDB || pedidosDB.length === 0) return;
+    if (!pedidosDB) return;
     var total = pedidosDB.length;
     var aprovados = pedidosDB.filter(function(p) { return p.status === 'aprovado'; }).length;
     var pendentes = pedidosDB.filter(function(p) { return p.status === 'pendente'; }).length;
-    var receita = pedidosDB
-      .filter(function(p) { return p.status === 'aprovado'; })
+    var liberados = pedidosDB.filter(function(p) { return p.status === 'liberado'; }).length;
+    var receita = pedidosDB.filter(function(p) { return p.status === 'aprovado' || p.status === 'liberado'; })
       .reduce(function(acc, p) { return acc + Number(p.valor || 0); }, 0);
-    var ticket = aprovados > 0 ? (receita / aprovados) : 0;
+    var ticket = (aprovados + liberados) > 0 ? (receita / (aprovados + liberados)) : 0;
 
     var el = function(id) { return document.getElementById(id); };
+
+    // Cards do dashboard
     if (el('dash-receita')) el('dash-receita').textContent = 'R$' + receita.toFixed(2).replace('.', ',');
+    if (el('dash-receita-sub')) el('dash-receita-sub').textContent = total > 0 ? total + ' pedido' + (total !== 1 ? 's' : '') + ' no total' : 'Nenhum pedido ainda';
     if (el('dash-total')) el('dash-total').textContent = total;
-    if (el('dash-total-sub')) el('dash-total-sub').textContent = total + ' pedido' + (total !== 1 ? 's' : '') + ' recebido' + (total !== 1 ? 's' : '');
-    if (el('dash-aprovados')) el('dash-aprovados').textContent = aprovados;
-    if (el('dash-pendentes')) el('dash-pendentes').textContent = pendentes + ' pendente' + (pendentes !== 1 ? 's' : '');
+    if (el('dash-total-sub')) el('dash-total-sub').textContent = pendentes + ' pendente' + (pendentes !== 1 ? 's' : '');
+    if (el('dash-aprovados')) el('dash-aprovados').textContent = aprovados + liberados;
+    if (el('dash-pendentes')) el('dash-pendentes').textContent = pendentes + ' aguardando pagamento';
     if (el('dash-ticket')) el('dash-ticket').textContent = 'R$' + ticket.toFixed(0);
+    if (el('dash-ticket-sub')) el('dash-ticket-sub').textContent = (aprovados + liberados) + ' pedido' + ((aprovados + liberados) !== 1 ? 's' : '') + ' pago' + ((aprovados + liberados) !== 1 ? 's' : '');
+
+    // Contador de pedidos
+    if (el('pedidos-count')) el('pedidos-count').textContent = total + ' pedido' + (total !== 1 ? 's' : '') + ' no total';
+
+    // Badges do menu lateral
+    var badgePedidos = el('badge-pedidos');
+    if (badgePedidos) {
+      if (pendentes > 0) { badgePedidos.textContent = pendentes; badgePedidos.style.display = ''; }
+      else { badgePedidos.style.display = 'none'; }
+    }
+    var badgeProducao = el('badge-producao');
+    if (badgeProducao) {
+      var emProducao = pedidosDB.filter(function(p) { return p.status === 'aprovado'; }).length;
+      if (emProducao > 0) { badgeProducao.textContent = emProducao; badgeProducao.style.display = ''; }
+      else { badgeProducao.style.display = 'none'; }
+    }
+
+    // Pedidos recentes no dashboard (últimos 5)
+    var recentes = pedidosDB.slice(0, 5);
+    var tbodyRecentes = el('pedidos-recentes-tbody');
+    if (tbodyRecentes) {
+      if (recentes.length === 0) {
+        tbodyRecentes.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">Nenhum pedido ainda</td></tr>';
+      } else {
+        tbodyRecentes.innerHTML = recentes.map(function(p) {
+          var statusLabel = { 'aprovado': '✅ Aprovado', 'pendente': '⏳ Pendente', 'recusado': '❌ Recusado', 'liberado': '🔓 Liberado' }[p.status] || p.status;
+          var statusBg = { 'aprovado': '#D1FAE5', 'pendente': '#FEF3C7', 'recusado': '#FEE2E2', 'liberado': '#DBEAFE' }[p.status] || '#F3F4F6';
+          var statusColor = { 'aprovado': '#2D6A4F', 'pendente': '#B7791F', 'recusado': '#9B2C2C', 'liberado': '#1e40af' }[p.status] || '#666';
+          return `<tr onclick="abrirPedidoSupabase('${p.id}')" style="cursor:pointer;">
+            <td><div style="font-weight:600">${p.nome}</div><div style="font-size:12px;color:#999">${p.email}</div></td>
+            <td>${p.tema}</td>
+            <td>${p.quantidade} foto${p.quantidade > 1 ? 's' : ''}</td>
+            <td style="font-weight:600;color:#C97B5E">R$ ${Number(p.valor).toFixed(2).replace('.',',')}</td>
+            <td><span style="background:${statusBg};color:${statusColor};padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">${statusLabel}</span></td>
+            <td><button class="action-btn" onclick="event.stopPropagation();abrirPedidoSupabase('${p.id}')">👁</button></td>
+          </tr>`;
+        }).join('');
+      }
+    }
   }
 
   function renderizarPedidos(pedidos) {
@@ -3628,16 +3696,18 @@
     tbody.innerHTML = pedidos.map((p, i) => {
       const data = new Date(p.created_at).toLocaleDateString('pt-BR');
       const statusColor = {
-        'aprovado': '#2D6A4F', 'pendente': '#B7791F', 'recusado': '#9B2C2C'
+        'aprovado': '#2D6A4F', 'pendente': '#B7791F', 'recusado': '#9B2C2C', 'liberado': '#1e40af'
       }[p.status] || '#666';
       const statusBg = {
-        'aprovado': '#D1FAE5', 'pendente': '#FEF3C7', 'recusado': '#FEE2E2'
+        'aprovado': '#D1FAE5', 'pendente': '#FEF3C7', 'recusado': '#FEE2E2', 'liberado': '#DBEAFE'
       }[p.status] || '#F3F4F6';
       const statusLabel = {
-        'aprovado': '✅ Aprovado', 'pendente': '⏳ Pendente', 'recusado': '❌ Recusado'
+        'aprovado': '✅ Aprovado', 'pendente': '⏳ Pendente', 'recusado': '❌ Recusado', 'liberado': '🔓 Liberado'
       }[p.status] || p.status;
 
-      return `<tr>
+      const pedidoJson = JSON.stringify(p).replace(/'/g, "\\'");
+
+      return `<tr onclick="abrirPedidoSupabase('${p.id}')" style="cursor:pointer;">
         <td style="color:#999;font-size:12px">#${i+1}</td>
         <td>
           <div style="font-weight:600">${p.nome}</div>
@@ -3649,7 +3719,10 @@
         <td style="font-size:12px">${data}</td>
         <td><span style="background:${statusBg};color:${statusColor};padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600">${statusLabel}</span></td>
         <td>
-          <button class="action-btn" onclick="showToast('Email: ${p.email}')" title="Ver email">📧</button>
+          <div class="action-btns">
+            ${p.status === 'aprovado' ? `<button class="action-btn green" onclick="event.stopPropagation();liberarDiretoId('${p.id}')" title="Liberar">✅</button>` : ''}
+            <button class="action-btn" onclick="event.stopPropagation();abrirPedidoSupabase('${p.id}')" title="Ver detalhes">👁</button>
+          </div>
         </td>
       </tr>`;
     }).join('');
@@ -4041,10 +4114,39 @@ window.addEventListener('scroll', function(){
     renderPedidos(filtro);
   }
 
-  // ===== MODAL =====
-  function abrirPedido(id) {
-    const p = pedidos.find(x => x.id === id);
-    if (!p) return;
+  // ===== ABRIR PEDIDO DO SUPABASE =====
+  async function abrirPedidoSupabase(id) {
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos?id=eq.' + id, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      var dados = await resp.json();
+      if (!dados || dados.length === 0) { showToast('Pedido não encontrado'); return; }
+      var p = dados[0];
+      var data = new Date(p.created_at).toLocaleDateString('pt-BR');
+
+      // Mapear para formato do modal
+      var pedidoModal = {
+        id: p.id,
+        nome: p.nome,
+        email: p.email,
+        tel: p.telefone || '-',
+        tipo: p.tema,
+        emoji: '📸',
+        qty: p.quantidade + ' foto' + (p.quantidade > 1 ? 's' : ''),
+        valor: 'R$ ' + Number(p.valor).toFixed(2).replace('.', ','),
+        pay: 'MercadoPago',
+        data: data,
+        status: p.status === 'aprovado' ? 'pago' : p.status
+      };
+      abrirPedido(pedidoModal);
+    } catch(e) {
+      showToast('❌ Erro ao abrir pedido');
+    }
+  }
+
+  // ===== ABRIR PEDIDO (modal) =====
+  function abrirPedido(p) {
     document.getElementById('modal-nome').textContent = p.nome;
     document.getElementById('modal-ensaio').textContent = p.emoji + ' ' + p.tipo;
     const b = badgeMap[p.status];
@@ -4091,12 +4193,72 @@ window.addEventListener('scroll', function(){
     if (e.target === document.getElementById('modal-pedido')) fecharModal();
   });
 
+  // ===== PRECOS =====
+  var precosPorQty = {2:19.90, 5:29.90, 10:49.90, 20:79.90, 50:99.90, 100:149.90};
+
+  // ===== NOVO PEDIDO =====
+  function abrirModalNovoPedido() {
+    document.getElementById('modal-novo-pedido').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    ['np-nome','np-email','np-wpp'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+    var qtyEl = document.getElementById('np-qty');
+    var valorEl = document.getElementById('np-valor');
+    if (qtyEl) qtyEl.value = '2';
+    if (valorEl) valorEl.value = '19.90';
+    if (qtyEl) qtyEl.onchange = function() {
+      if (valorEl) valorEl.value = precosPorQty[this.value] || '';
+    };
+  }
+
+  function fecharModalNovoPedido() {
+    document.getElementById('modal-novo-pedido').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  async function salvarNovoPedido() {
+    var nome = document.getElementById('np-nome').value.trim();
+    var email = document.getElementById('np-email').value.trim();
+    var tema = document.getElementById('np-tema').value;
+    var qty = parseInt(document.getElementById('np-qty').value);
+    var valor = parseFloat(document.getElementById('np-valor').value);
+    var status = document.getElementById('np-status').value;
+    if (!nome || !email || !tema) { showToast('❌ Preencha nome, email e tema!'); return; }
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos', {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ nome: nome, email: email, tema: tema, quantidade: qty, valor: valor, status: status })
+      });
+      if (resp.ok || resp.status === 201) {
+        showToast('✅ Pedido de ' + nome + ' criado!');
+        fecharModalNovoPedido();
+        carregarPedidos();
+      } else { showToast('❌ Erro ao salvar pedido'); }
+    } catch(e) { showToast('❌ Erro: ' + e.message); }
+  }
+
+  // ===== LIBERAR PEDIDO =====
+  async function liberarDiretoId(pedidoId) {
+    if (!confirm('Liberar este pedido para o cliente?')) return;
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos?id=eq.' + pedidoId, {
+        method: 'PATCH',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'liberado' })
+      });
+      if (resp.ok) { showToast('✅ Pedido liberado!'); carregarPedidos(); }
+    } catch(e) { showToast('❌ Erro: ' + e.message); }
+  }
+
   function liberarModal() {
-    showToast('Fotos liberadas! A cliente ja pode baixar.');
+    if (!pedidoAtualId) return;
+    liberarDiretoId(pedidoAtualId);
     fecharModal();
   }
 
-  function liberarDireto(nome) { showToast('Ensaio liberado com sucesso!'); }
+  function liberarDireto(nome) { showToast('✅ Ensaio de ' + nome + ' liberado!'); }
 
   function deletarFotoGerada(btn) {
     const thumb = btn.closest('.foto-thumb');
