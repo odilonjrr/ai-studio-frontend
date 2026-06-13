@@ -3343,14 +3343,14 @@
     if (modalAmostras.length === 0) { showToast('Nenhuma amostra para enviar'); return; }
     var wpp = pedidoAtualWpp || '';
     if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
-    var previewUrl = window.location.origin + '?preview=' + encodeURIComponent(pedidoAtualId || '');
+    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || '');
     var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas ' + modalAmostras.length + ' amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento você recebe todas em alta qualidade!\n\n🔗 Visualizar amostras: ' + previewUrl);
     window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
   }
 
   function copiarLinkAmostras() {
     if (modalAmostras.length === 0) { showToast('Nenhuma amostra para compartilhar'); return; }
-    var previewUrl = window.location.origin + '?preview=' + encodeURIComponent(pedidoAtualId || '');
+    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || '');
     navigator.clipboard.writeText(previewUrl).then(function() {
       showToast('🔗 Link copiado: ' + previewUrl);
     });
