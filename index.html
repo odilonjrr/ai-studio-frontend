@@ -4123,7 +4123,6 @@ window.addEventListener('scroll', function(){
     if (id === 'pedidos') carregarPedidos();
     if (id === 'dashboard') carregarPedidos();
   }
-  }
 
   // ===== TABELA PEDIDOS =====
   function renderPedidos(filtro) {
@@ -4276,4 +4275,124 @@ window.addEventListener('scroll', function(){
   // ===== PRECOS =====
   var precosPorQty = {2:19.90, 5:29.90, 10:49.90, 20:79.90, 50:99.90, 100:149.90};
 
-  // ===== NOVO PEDIDO ==
+  // ===== NOVO PEDIDO =====
+  function abrirModalNovoPedido() {
+    document.getElementById('modal-novo-pedido').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    ['np-nome','np-email','np-wpp'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+    var qtyEl = document.getElementById('np-qty');
+    var valorEl = document.getElementById('np-valor');
+    if (qtyEl) qtyEl.value = '2';
+    if (valorEl) valorEl.value = '19.90';
+    if (qtyEl) qtyEl.onchange = function() {
+      if (valorEl) valorEl.value = precosPorQty[this.value] || '';
+    };
+  }
+
+  function fecharModalNovoPedido() {
+    document.getElementById('modal-novo-pedido').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  async function salvarNovoPedido() {
+    var nome = document.getElementById('np-nome').value.trim();
+    var email = document.getElementById('np-email').value.trim();
+    var tema = document.getElementById('np-tema').value;
+    var qty = parseInt(document.getElementById('np-qty').value);
+    var valor = parseFloat(document.getElementById('np-valor').value);
+    var status = document.getElementById('np-status').value;
+    if (!nome || !email || !tema) { showToast('❌ Preencha nome, email e tema!'); return; }
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos', {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ nome: nome, email: email, tema: tema, quantidade: qty, valor: valor, status: status })
+      });
+      if (resp.ok || resp.status === 201) {
+        showToast('✅ Pedido de ' + nome + ' criado!');
+        fecharModalNovoPedido();
+        carregarPedidos();
+      } else { showToast('❌ Erro ao salvar pedido'); }
+    } catch(e) { showToast('❌ Erro: ' + e.message); }
+  }
+
+  // ===== LIBERAR PEDIDO =====
+  async function liberarDiretoId(pedidoId) {
+    if (!confirm('Liberar este pedido para o cliente?')) return;
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos?id=eq.' + pedidoId, {
+        method: 'PATCH',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'liberado' })
+      });
+      if (resp.ok) { showToast('✅ Pedido liberado!'); carregarPedidos(); }
+    } catch(e) { showToast('❌ Erro: ' + e.message); }
+  }
+
+  function liberarModal() {
+    if (!pedidoAtualId) return;
+    liberarDiretoId(pedidoAtualId);
+    fecharModal();
+  }
+
+  function liberarDireto(nome) { showToast('✅ Ensaio de ' + nome + ' liberado!'); }
+
+  function deletarFotoGerada(btn) {
+    const thumb = btn.closest('.foto-thumb');
+    thumb.style.opacity = '0';
+    thumb.style.transform = 'scale(0.8)';
+    thumb.style.transition = 'all 0.3s';
+    setTimeout(() => { thumb.remove(); showToast('Foto removida. Faca upload ou regere.'); }, 300);
+  }
+
+  // ===== BAR CHART =====
+  const meses = ['Nov','Dez','Jan','Fev','Mar','Abr'];
+  const receitas = [420, 680, 890, 1100, 1340, 847];
+  const pedidosMes = [5, 8, 10, 12, 15, 7];
+  const maxR = Math.max(...receitas);
+
+  const chart = document.getElementById('bar-chart');
+  meses.forEach((m, i) => {
+    const hR = Math.round((receitas[i]/maxR)*140);
+    const hP = Math.round((pedidosMes[i]/Math.max(...pedidosMes))*140);
+    chart.innerHTML += `
+      <div class="bar-group">
+        <div class="bar-wrap">
+          <div class="bar receita" style="height:${hR}px" data-val="R$${receitas[i]}"></div>
+          <div class="bar pedidos" style="height:${hP}px" data-val="${pedidosMes[i]} pedidos"></div>
+        </div>
+        <div class="bar-label">${m}</div>
+      </div>`;
+  });
+
+  // ===== TOAST =====
+  // showToast defined below
+
+  // Init
+  renderPedidos('todos');
+
+
+// ============================================================
+//  UPLOAD JS
+// ============================================================
+
+
+// ============================================================
+//  UNIFIED TOAST (override all)
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+
+// Init
+appNav('site');
+if (typeof renderPedidos === 'function') renderPedidos('todos');
+</script>
+</body>
+</html>
