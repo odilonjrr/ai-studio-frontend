@@ -1880,21 +1880,31 @@ function voltarDados() {
   if (typeof goStep === 'function') goStep(2);
 }
 
+function deletarPedido(id, nome) {
+  if (!confirm('Deletar pedido de ' + nome + '? Esta ação não pode ser desfeita.')) return;
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  fetch(SURL + '/rest/v1/pedidos?id=eq.' + id, {
+    method: 'DELETE',
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
+  }).then(function(resp) {
+    if (resp.ok) {
+      showToast('🗑️ Pedido de ' + nome + ' deletado!');
+      if (typeof carregarPedidos === 'function') carregarPedidos();
+    } else { showToast('❌ Erro ao deletar pedido'); }
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
+}
+
 function enviarAmostrasWhatsApp() {
   var modalAmostras = window._modalAmostras || [];
   var pedidoAtualWpp = window._pedidoAtualWpp || '';
   var pedidoAtualNome = window._pedidoAtualNome || 'cliente';
   var pedidoAtualId = window._pedidoAtualId || '';
   if (modalAmostras.length === 0) { showToast('⚠️ Adicione amostras primeiro!'); return; }
+  if (!pedidoAtualWpp) { showToast('⚠️ Cliente sem WhatsApp cadastrado!'); return; }
   var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId);
   var msg = encodeURIComponent('Olá ' + pedidoAtualNome + '! 📸 Suas ' + modalAmostras.length + ' amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento você recebe todas em alta qualidade!\n\n🔗 Visualizar amostras: ' + previewUrl);
-  var wpp = pedidoAtualWpp;
-  if (!wpp) {
-    var numero = prompt('Digite o WhatsApp do cliente (ex: 5521999999999):');
-    if (!numero) return;
-    wpp = numero.replace(/\D/g,'');
-  }
-  window.open('https://wa.me/' + wpp + '?text=' + msg, '_blank');
+  window.open('https://wa.me/' + pedidoAtualWpp + '?text=' + msg, '_blank');
 }
 
 function copiarLinkAmostras() {
@@ -3296,24 +3306,16 @@ function _copiarFallback(texto) {
       </div>
 
       <div class="modal-section">
-        <div class="modal-section-title">Fotos Enviadas pela Cliente</div>
-        <div class="fotos-enviadas">
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#FCEAE5,#C4846A)">😊</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download foto 1')">⬇️</button></div></div>
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#E8C4B8,#8B4F3A)">🙂</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download foto 2')">⬇️</button></div></div>
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#F5D0C5,#9B5A42)">😄</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download foto 3')">⬇️</button></div></div>
-          <div class="foto-thumb" style="opacity:0.3;cursor:default"><div class="mock-foto" style="background:#EDE5DC">+</div></div>
-          <div class="foto-thumb" style="opacity:0.3;cursor:default"><div class="mock-foto" style="background:#EDE5DC">+</div></div>
+        <div class="modal-section-title">Fotos Enviadas pelo Cliente</div>
+        <div class="fotos-enviadas" id="fotos-enviadas-grid">
+          <div style="color:#999;font-size:13px;padding:12px 0;">Nenhuma foto enviada ainda</div>
         </div>
       </div>
 
       <div class="modal-section">
-        <div class="modal-section-title">Ensaio Gerado pela IA - Hover para acoes</div>
+        <div class="modal-section-title">Ensaio Gerado pela IA</div>
         <div class="fotos-geradas" id="fotos-geradas-grid">
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#FCEAE5,#C4846A)">🌟</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download')">⬇️</button><button class="foto-action-btn" onclick="deletarFotoGerada(this)" style="background:#FFE0E0">🗑</button></div></div>
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#E8C4B8,#8B4F3A)">✨</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download')">⬇️</button><button class="foto-action-btn" onclick="deletarFotoGerada(this)" style="background:#FFE0E0">🗑</button></div></div>
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#F5D0C5,#9B5A42)">💫</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download')">⬇️</button><button class="foto-action-btn" onclick="deletarFotoGerada(this)" style="background:#FFE0E0">🗑</button></div></div>
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#FCEAE5,#C4846A)">🎇</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download')">⬇️</button><button class="foto-action-btn" onclick="deletarFotoGerada(this)" style="background:#FFE0E0">🗑</button></div></div>
-          <div class="foto-thumb"><div class="mock-foto" style="background:linear-gradient(135deg,#E8C4B8,#8B4F3A)">🌠</div><div class="foto-actions"><button class="foto-action-btn" onclick="showToast('Download')">⬇️</button><button class="foto-action-btn" onclick="deletarFotoGerada(this)" style="background:#FFE0E0">🗑</button></div></div>
+          <div style="color:#999;font-size:13px;padding:12px 0;">Nenhuma foto gerada ainda</div>
         </div>
       </div>
 
@@ -3996,6 +3998,7 @@ function _copiarFallback(texto) {
           <div class="action-btns">
             ${p.status === 'aprovado' ? `<button class="action-btn green" onclick="event.stopPropagation();liberarDiretoId('${p.id}')" title="Liberar">✅</button>` : ''}
             <button class="action-btn" onclick="event.stopPropagation();abrirPedidoSupabase('${p.id}')" title="Ver detalhes">👁</button>
+            <button class="action-btn" onclick="event.stopPropagation();deletarPedido('${p.id}','${p.nome}')" title="Deletar" style="background:#FFE0E0;">🗑️</button>
           </div>
         </td>
       </tr>`;
@@ -4401,36 +4404,96 @@ window.addEventListener('scroll', function(){
       var dados = await resp.json();
       if (!dados || dados.length === 0) { showToast('Pedido não encontrado'); return; }
       var p = dados[0];
+
+      // Buscar telefone do cliente pelo email
+      var tel = p.telefone || '';
+      if (!tel && p.email) {
+        try {
+          var cr = await fetch(SUPABASE_URL + '/rest/v1/clientes?email=eq.' + encodeURIComponent(p.email), {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+          });
+          var clientes = await cr.json();
+          if (clientes && clientes.length > 0) tel = clientes[0].telefone || '';
+        } catch(e) {}
+      }
+
       var data = new Date(p.created_at).toLocaleDateString('pt-BR');
 
-      // Salvar dados globais para amostras ANTES de abrir o modal
+      // Salvar globais
       pedidoAtualId = p.id;
       pedidoAtualNome = p.nome;
-      pedidoAtualWpp = (p.telefone || '').replace(/\D/g,'');
-
-      // Sincronizar com window para acesso no head script
+      pedidoAtualWpp = tel.replace(/\D/g,'');
       window._pedidoAtualId = pedidoAtualId;
       window._pedidoAtualNome = pedidoAtualNome;
       window._pedidoAtualWpp = pedidoAtualWpp;
-      window._modalAmostras = modalAmostras;
+      modalAmostras = [];
+      window._modalAmostras = [];
 
       var pedidoModal = {
         id: p.id,
         nome: p.nome,
         email: p.email,
-        tel: p.telefone || '-',
+        tel: tel || '-',
         tipo: p.tema,
         emoji: '📸',
         qty: p.quantidade + ' foto' + (p.quantidade > 1 ? 's' : ''),
         valor: 'R$ ' + Number(p.valor).toFixed(2).replace('.', ','),
         pay: 'MercadoPago',
         data: data,
-        status: p.status === 'aprovado' ? 'pago' : p.status
+        status: p.status === 'aprovado' ? 'pago' : (p.status || 'pendente')
       };
       abrirPedido(pedidoModal);
+
+      // Carregar amostras do Supabase Storage
+      setTimeout(function() { carregarAmostrasDoStorage(p.id); }, 300);
+
     } catch(e) {
       showToast('❌ Erro ao abrir pedido');
+      console.error(e);
     }
+  }
+
+  async function carregarAmostrasDoStorage(pedidoId) {
+    try {
+      var resp = await fetch(SUPABASE_URL + '/storage/v1/object/list/amostras', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prefix: pedidoId + '/', limit: 50 })
+      });
+      var files = await resp.json();
+      if (!files || files.length === 0) return;
+
+      var grid = document.getElementById('modal-amostras-grid');
+      var acoes = document.getElementById('modal-amostras-acoes');
+      var empty = document.getElementById('modal-amostras-empty');
+      if (!grid) return;
+      if (empty) empty.style.display = 'none';
+
+      files.forEach(function(file) {
+        var publicUrl = SUPABASE_URL + '/storage/v1/object/public/amostras/' + pedidoId + '/' + file.name;
+        var id = 'stored_' + file.name.replace(/[^a-z0-9]/gi,'_');
+        var fileName = pedidoId + '/' + file.name;
+
+        modalAmostras.push({ id: id, nome: file.name, url: publicUrl, publicUrl: publicUrl, fileName: fileName });
+
+        var card = document.createElement('div');
+        card.id = 'amostra-card-' + id;
+        card.style.cssText = 'background:#f9f9f9;border-radius:10px;overflow:hidden;border:1px solid #eee;';
+        card.innerHTML = '<img src="' + publicUrl + '" style="width:100%;height:140px;object-fit:cover;display:block;" loading="lazy">' +
+          '<div style="padding:8px;display:flex;gap:6px;">' +
+          '<a href="' + publicUrl + '" download="amostra_' + file.name + '" style="flex:1;background:#f0f0f0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;text-align:center;text-decoration:none;">⬇️</a>' +
+          '<button onclick="deletarAmostra(\'' + id + '\')" style="flex:1;background:#FFE0E0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">🗑️</button>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+
+      window._modalAmostras = modalAmostras;
+      if (acoes) acoes.style.display = 'flex';
+    } catch(e) { console.error('Erro ao carregar amostras:', e); }
   }
 
   // ===== ABRIR PEDIDO (modal) =====
@@ -4559,6 +4622,20 @@ window.addEventListener('scroll', function(){
         </tr>`;
       }).join('');
     } catch(e) { console.error('Erro ao carregar clientes:', e); }
+  }
+
+  async function deletarPedido(id, nome) {
+    if (!confirm('Deletar pedido de ' + nome + '? Esta ação não pode ser desfeita.')) return;
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos?id=eq.' + id, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      if (resp.ok) {
+        showToast('🗑️ Pedido de ' + nome + ' deletado!');
+        carregarPedidos();
+      } else { showToast('❌ Erro ao deletar pedido'); }
+    } catch(e) { showToast('❌ Erro: ' + e.message); }
   }
 
   async function deletarCliente(id, nome) {
