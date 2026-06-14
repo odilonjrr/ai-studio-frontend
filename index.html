@@ -1731,6 +1731,33 @@ function closeModal() {
   if (m) m.classList.remove('open');
   document.body.style.overflow = '';
 }
+
+function adminShowPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var navEl = document.querySelector('[onclick="adminShowPage(\'' + id + '\')"]');
+  if (navEl) navEl.classList.add('active');
+  var pageTitles = {
+    dashboard: ['Dashboard','Visao geral do AI Studio'],
+    pedidos:   ['Pedidos','Todos os pedidos recebidos'],
+    clientes:  ['Clientes','Base de clientes cadastradas'],
+    producao:  ['Em Producao','Pedidos aguardando acao'],
+    liberados: ['Liberados','Ensaios entregues'],
+    amostras:  ['Amostras','Preview com marca dagua'],
+  };
+  var t = pageTitles[id] || [id,''];
+  var titleEl = document.getElementById('page-title');
+  var subEl = document.getElementById('page-sub');
+  if (titleEl) titleEl.textContent = t[0];
+  if (subEl) subEl.textContent = t[1];
+  setTimeout(function() {
+    if (id === 'pedidos' && typeof carregarPedidos === 'function') carregarPedidos();
+    if (id === 'dashboard' && typeof carregarPedidos === 'function') carregarPedidos();
+    if (id === 'clientes' && typeof carregarClientes === 'function') carregarClientes();
+  }, 50);
+}
 </script>
 <body>
 
@@ -4362,30 +4389,4 @@ window.addEventListener('scroll', function(){
         var inicial = c.nome.charAt(0).toUpperCase();
         return `<tr>
           <td><div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#F0D5CB,#C97B5E);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;">${inicial}</div>
-            <div><div style="font-weight:600">${c.nome}</div><div style="font-size:12px;color:#999">${c.email}</div></div>
-          </div></td>
-          <td style="font-size:13px;color:#666">${c.telefone || '-'}</td>
-          <td style="font-size:13px;color:#666">${c.observacoes || '-'}</td>
-          <td style="font-size:12px;color:#999">${data}</td>
-          <td>
-            <button onclick="deletarCliente('${c.id}','${c.nome}')" style="background:#FFE0E0;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>
-          </td>
-        </tr>`;
-      }).join('');
-    } catch(e) { console.error('Erro ao carregar clientes:', e); }
-  }
-
-  async function deletarCliente(id, nome) {
-    if (!confirm('Deletar cliente ' + nome + '?')) return;
-    try {
-      var resp = await fetch(SUPABASE_URL + '/rest/v1/clientes?id=eq.' + id, {
-        method: 'DELETE',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-      });
-      if (resp.ok) { showToast('🗑️ Cliente removido'); carregarClientes(); }
-    } catch(e) { showToast('❌ Erro ao deletar'); }
-  }
-
-  // ===== PRECOS =====
-  var precosPorQty = {2:19.90, 
+            <div style="width:36px;height:36px;border-radius:50%;background
