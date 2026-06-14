@@ -1758,8 +1758,45 @@ function adminShowPage(id) {
     if (id === 'clientes' && typeof carregarClientes === 'function') carregarClientes();
   }, 50);
 }
+function abrirModalNovoPedido() {
+  var m = document.getElementById('modal-novo-pedido');
+  if (m) m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() {
+    if (typeof carregarClientesNoPedido === 'function') carregarClientesNoPedido();
+    var qtyEl = document.getElementById('np-qty');
+    var valorEl = document.getElementById('np-valor');
+    if (qtyEl) qtyEl.value = '2';
+    if (valorEl) valorEl.value = '19.90';
+    var nomeEl = document.getElementById('np-nome');
+    if (nomeEl) nomeEl.style.display = 'none';
+    ['np-email','np-wpp','np-nome'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+  }, 50);
+}
+
+function fecharModalNovoPedido() {
+  var m = document.getElementById('modal-novo-pedido');
+  if (m) m.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function abrirModalNovoCliente() {
+  var m = document.getElementById('modal-novo-cliente');
+  if (m) m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  ['nc-nome','nc-email','nc-wpp','nc-obs'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
+function fecharModalNovoCliente() {
+  var m = document.getElementById('modal-novo-cliente');
+  if (m) m.classList.remove('open');
+  document.body.style.overflow = '';
+}
 </script>
-<body>
 
 <!-- ===== GLOBAL NAV ===== -->
 <!-- BANNER DIA DOS NAMORADOS -->
@@ -4361,32 +4398,4 @@ window.addEventListener('scroll', function(){
       });
       if (resp.ok || resp.status === 201) {
         showToast('✅ Cliente ' + nome + ' cadastrado!');
-        fecharModalNovoCliente();
-        carregarClientes();
-      } else {
-        var err = await resp.json();
-        showToast('❌ Erro: ' + (err.message || 'Tente novamente'));
-      }
-    } catch(e) { showToast('❌ Erro: ' + e.message); }
-  }
-
-  async function carregarClientes() {
-    try {
-      var resp = await fetch(SUPABASE_URL + '/rest/v1/clientes?order=created_at.desc', {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-      });
-      var clientes = await resp.json();
-      var tbody = document.getElementById('clientes-tbody');
-      var count = document.getElementById('clientes-count');
-      if (count) count.textContent = clientes.length + ' cliente' + (clientes.length !== 1 ? 's' : '') + ' cadastrado' + (clientes.length !== 1 ? 's' : '');
-      if (!tbody) return;
-      if (!clientes || clientes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:#999;">Nenhum cliente ainda</td></tr>';
-        return;
-      }
-      tbody.innerHTML = clientes.map(function(c) {
-        var data = new Date(c.created_at).toLocaleDateString('pt-BR');
-        var inicial = c.nome.charAt(0).toUpperCase();
-        return `<tr>
-          <td><div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;border-radius:50%;background
+        fecharModalNovoClien
