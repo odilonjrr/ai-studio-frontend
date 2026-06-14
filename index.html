@@ -811,7 +811,7 @@
 
   /* ========== TOAST ========== */
   .toast {
-    position: fixed; bottom: 28px; right: 28px; z-index: 999;
+    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
     background: var(--charcoal); color: white; padding: 14px 22px;
     border-radius: 10px; font-size: 13px; font-weight: 500;
     transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
@@ -1227,7 +1227,7 @@
 
   /* ===== TOAST ===== */
   .toast {
-    position:fixed; bottom:24px; right:24px; z-index:999;
+    position:fixed; bottom:24px; right:24px; z-index:9999;
     background:var(--charcoal); color:white; padding:14px 20px;
     border-radius:10px; font-size:13px; font-weight:500;
     transform:translateY(80px); opacity:0; transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
@@ -1985,6 +1985,100 @@ function _copiarFallback(texto) {
   catch(e) { showToast('Link: ' + texto); }
   document.body.removeChild(input);
 }
+
+// ===== EDITAR PEDIDO =====
+function abrirEditarPedido(id) {
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  fetch(SURL + '/rest/v1/pedidos?id=eq.' + id, {
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
+  }).then(function(r) { return r.json(); }).then(function(dados) {
+    if (!dados || dados.length === 0) { showToast('❌ Pedido não encontrado'); return; }
+    var p = dados[0];
+    document.getElementById('ep-id').value = p.id;
+    document.getElementById('ep-nome').value = p.nome || '';
+    document.getElementById('ep-email').value = p.email || '';
+    document.getElementById('ep-valor').value = p.valor || '';
+    var temaEl = document.getElementById('ep-tema'); if (temaEl) temaEl.value = p.tema || '';
+    var qtyEl = document.getElementById('ep-qty'); if (qtyEl) qtyEl.value = p.quantidade || '2';
+    var stEl = document.getElementById('ep-status'); if (stEl) stEl.value = p.status || 'pendente';
+    document.getElementById('modal-editar-pedido').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
+}
+window.abrirEditarPedido = abrirEditarPedido;
+
+function salvarEdicaoPedido() {
+  var id = document.getElementById('ep-id').value;
+  var nome = document.getElementById('ep-nome').value.trim();
+  var email = document.getElementById('ep-email').value.trim();
+  var tema = document.getElementById('ep-tema').value;
+  var qty = parseInt(document.getElementById('ep-qty').value);
+  var valor = parseFloat(document.getElementById('ep-valor').value);
+  var status = document.getElementById('ep-status').value;
+  if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  showToast('⏳ Salvando...');
+  fetch(SURL + '/rest/v1/pedidos?id=eq.' + id, {
+    method: 'PATCH',
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome: nome, email: email, tema: tema, quantidade: qty, valor: valor, status: status })
+  }).then(function(resp) {
+    if (resp.ok) {
+      showToast('✅ Pedido atualizado!');
+      document.getElementById('modal-editar-pedido').classList.remove('open');
+      document.body.style.overflow = '';
+      if (typeof carregarPedidos === 'function') carregarPedidos();
+    } else { showToast('❌ Erro ao salvar'); }
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
+}
+window.salvarEdicaoPedido = salvarEdicaoPedido;
+
+// ===== EDITAR CLIENTE =====
+function abrirEditarCliente(id) {
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  fetch(SURL + '/rest/v1/clientes?id=eq.' + id, {
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
+  }).then(function(r) { return r.json(); }).then(function(dados) {
+    if (!dados || dados.length === 0) { showToast('❌ Cliente não encontrado'); return; }
+    var c = dados[0];
+    document.getElementById('ec-id').value = c.id;
+    document.getElementById('ec-nome').value = c.nome || '';
+    document.getElementById('ec-email').value = c.email || '';
+    document.getElementById('ec-wpp').value = c.telefone || '';
+    document.getElementById('ec-obs').value = c.observacoes || '';
+    document.getElementById('modal-editar-cliente').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
+}
+window.abrirEditarCliente = abrirEditarCliente;
+
+function salvarEdicaoCliente() {
+  var id = document.getElementById('ec-id').value;
+  var nome = document.getElementById('ec-nome').value.trim();
+  var email = document.getElementById('ec-email').value.trim();
+  var wpp = document.getElementById('ec-wpp').value.trim();
+  var obs = document.getElementById('ec-obs').value.trim();
+  if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  showToast('⏳ Salvando...');
+  fetch(SURL + '/rest/v1/clientes?id=eq.' + id, {
+    method: 'PATCH',
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome: nome, email: email, telefone: wpp, observacoes: obs })
+  }).then(function(resp) {
+    if (resp.ok) {
+      showToast('✅ Cliente atualizado!');
+      document.getElementById('modal-editar-cliente').classList.remove('open');
+      document.body.style.overflow = '';
+      if (typeof carregarClientes === 'function') carregarClientes();
+    } else { showToast('❌ Erro ao salvar'); }
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
+}
+window.salvarEdicaoCliente = salvarEdicaoCliente;
 </script>
 
 <!-- ===== GLOBAL NAV ===== -->
@@ -3909,6 +4003,7 @@ function _copiarFallback(texto) {
           <div class="action-btns">
             ${p.status === 'aprovado' ? `<button class="action-btn green" onclick="event.stopPropagation();liberarDiretoId('${p.id}')" title="Liberar">✅</button>` : ''}
             <button class="action-btn" onclick="event.stopPropagation();abrirPedidoSupabase('${p.id}')" title="Ver detalhes">👁</button>
+            <button class="action-btn" onclick="event.stopPropagation();abrirEditarPedido('${p.id}')" title="Editar" style="background:#E8F4FD;">✏️</button>
             <button class="action-btn" onclick="event.stopPropagation();deletarPedido('${p.id}','${p.nome}')" title="Deletar" style="background:#FFE0E0;">🗑️</button>
           </div>
         </td>
@@ -4450,7 +4545,7 @@ window.addEventListener('scroll', function(){
           <td style="font-size:13px;color:#666">${c.observacoes || '-'}</td>
           <td style="font-size:12px;color:#999">${data}</td>
           <td>
-            <button onclick="deletarCliente('${c.id}','${c.nome}')" style="background:#FFE0E0;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>
+            <button onclick="abrirEditarCliente('${c.id}')" style="background:#E8F4FD;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:4px;">✏️</button><button onclick="deletarCliente('${c.id}','${c.nome}')" style="background:#FFE0E0;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>
           </td>
         </tr>`;
       }).join('');
@@ -4596,5 +4691,109 @@ window.addEventListener('scroll', function(){
 appNav('site');
 if (typeof renderPedidos === 'function') renderPedidos('todos');
 </script>
+<!-- ===== MODAL EDITAR PEDIDO ===== -->
+<div class="modal-overlay" id="modal-editar-pedido" style="z-index:1001;">
+  <div class="modal-panel" style="max-width:500px;">
+    <div class="modal-panel-header">
+      <div><h2>✏️ Editar Pedido</h2></div>
+      <button class="modal-close-btn" onclick="document.getElementById('modal-editar-pedido').classList.remove('open');document.body.style.overflow='';">×</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <input type="hidden" id="ep-id">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME</label>
+          <input type="text" id="ep-nome" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
+          <input type="email" id="ep-email" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">TEMA</label>
+            <select id="ep-tema" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+              <option value="Profissional">💼 Profissional</option>
+              <option value="Gestante">🤰 Gestante</option>
+              <option value="Aniversario">🎂 Aniversário</option>
+              <option value="Casal">💕 Casal</option>
+              <option value="Formatura">🎓 Formatura</option>
+              <option value="Intimista">✨ Intimista</option>
+              <option value="Bebe">👶 Bebê</option>
+              <option value="Aniversario Infantil">🎉 Aniv. Infantil</option>
+              <option value="Familia">👨‍👩‍👧‍👦 Família</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">QUANTIDADE</label>
+            <select id="ep-qty" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+              <option value="2">2 fotos — R$19,90</option>
+              <option value="5">5 fotos — R$29,90</option>
+              <option value="10">10 fotos — R$49,90</option>
+              <option value="20">20 fotos — R$79,90</option>
+              <option value="50">50 fotos — R$99,90</option>
+              <option value="100">100 fotos — R$149,90</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">VALOR (R$)</label>
+            <input type="number" id="ep-valor" step="0.01" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">STATUS</label>
+            <select id="ep-status" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+              <option value="pendente">⏳ Pendente</option>
+              <option value="aprovado">✅ Aprovado</option>
+              <option value="liberado">🔓 Liberado</option>
+              <option value="recusado">❌ Recusado</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="document.getElementById('modal-editar-pedido').classList.remove('open');document.body.style.overflow='';" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
+          <button onclick="window.salvarEdicaoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">💾 Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL EDITAR CLIENTE ===== -->
+<div class="modal-overlay" id="modal-editar-cliente" style="z-index:1001;">
+  <div class="modal-panel" style="max-width:500px;">
+    <div class="modal-panel-header">
+      <div><h2>✏️ Editar Cliente</h2></div>
+      <button class="modal-close-btn" onclick="document.getElementById('modal-editar-cliente').classList.remove('open');document.body.style.overflow='';">×</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <input type="hidden" id="ec-id">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME</label>
+          <input type="text" id="ec-nome" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
+          <input type="email" id="ec-email" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">WHATSAPP</label>
+          <input type="text" id="ec-wpp" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">OBSERVAÇÕES</label>
+          <textarea id="ec-obs" rows="3" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="document.getElementById('modal-editar-cliente').classList.remove('open');document.body.style.overflow='';" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
+          <button onclick="window.salvarEdicaoCliente()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">💾 Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
