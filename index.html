@@ -1762,19 +1762,49 @@ function abrirModalNovoPedido() {
   var m = document.getElementById('modal-novo-pedido');
   if (m) m.classList.add('open');
   document.body.style.overflow = 'hidden';
-  setTimeout(function() {
-    if (typeof carregarClientesNoPedido === 'function') carregarClientesNoPedido();
-    var qtyEl = document.getElementById('np-qty');
-    var valorEl = document.getElementById('np-valor');
-    if (qtyEl) qtyEl.value = '2';
-    if (valorEl) valorEl.value = '19.90';
-    var nomeEl = document.getElementById('np-nome');
-    if (nomeEl) nomeEl.style.display = 'none';
-    ['np-email','np-wpp','np-nome'].forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.value = '';
+
+  // Limpar campos
+  ['np-email','np-wpp','np-nome'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.value = ''; el.style.display = 'none'; }
+  });
+  var nomeEl = document.getElementById('np-nome');
+  if (nomeEl) nomeEl.style.display = 'none';
+
+  var qtyEl = document.getElementById('np-qty');
+  var valorEl = document.getElementById('np-valor');
+  if (qtyEl) { qtyEl.value = '2'; qtyEl.onchange = function() { if (valorEl) valorEl.value = ({2:19.90,5:29.90,10:49.90,20:79.90,50:99.90,100:149.90})[this.value] || ''; }; }
+  if (valorEl) valorEl.value = '19.90';
+
+  // Carregar clientes no dropdown
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  var select = document.getElementById('np-cliente');
+  if (select) {
+    select.innerHTML = '<option value="">Carregando clientes...</option>';
+    fetch(SURL + '/rest/v1/clientes?order=nome.asc', {
+      headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
+    }).then(function(r) { return r.json(); }).then(function(clientes) {
+      if (!clientes || clientes.length === 0) {
+        select.innerHTML = '<option value="">Nenhum cliente cadastrado</option>';
+        return;
+      }
+      select.innerHTML = '<option value="">Selecione um cliente...</option>';
+      clientes.forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.nome + ' — ' + c.email;
+        opt.setAttribute('data-nome', c.nome);
+        opt.setAttribute('data-email', c.email);
+        opt.setAttribute('data-tel', c.telefone || '');
+        select.appendChild(opt);
+      });
+    }).catch(function(e) {
+      select.innerHTML = '<option value="">Erro ao carregar clientes</option>';
     });
-  }, 50);
+  }
 }
+window.abrirModalNovoPedido = abrirModalNovoPedido;
 
 function fecharModalNovoPedido() {
   var m = document.getElementById('modal-novo-pedido');
@@ -1831,7 +1861,7 @@ function salvarNovoPedido() {
 
   if (!nome && select && select.selectedIndex > 0) {
     var opt = select.options[select.selectedIndex];
-    nome = opt.dataset.nome || opt.textContent.split(' — ')[0].trim();
+    nome = opt.getAttribute('data-nome') || opt.textContent.split(' — ')[0].trim();
   }
 
   var email = ((document.getElementById('np-email') || {}).value || '').trim();
@@ -1876,9 +1906,10 @@ function preencherEmailCliente(select) {
   var opt = select.options[select.selectedIndex];
   var emailEl = document.getElementById('np-email');
   var wppEl = document.getElementById('np-wpp');
-  if (emailEl) emailEl.value = opt.dataset.email || '';
-  if (wppEl) wppEl.value = opt.dataset.tel || '';
+  if (emailEl) emailEl.value = opt.getAttribute('data-email') || '';
+  if (wppEl) wppEl.value = opt.getAttribute('data-tel') || '';
 }
+window.preencherEmailCliente = preencherEmailCliente;
 
 function toggleNomeManual() {
   var nomeEl = document.getElementById('np-nome');
