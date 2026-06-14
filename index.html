@@ -1824,27 +1824,49 @@ function salvarNovoCliente() {
 
 function salvarNovoPedido() {
   var select = document.getElementById('np-cliente');
-  var opt = select ? select.options[select.selectedIndex] : null;
   var nomeManual = (document.getElementById('np-nome') || {}).value || '';
-  var nome = nomeManual.trim() || (opt && opt.dataset.nome) || '';
-  var email = (document.getElementById('np-email') || {}).value || '';
+  var nome = nomeManual.trim();
+
+  // Se não digitou manual, pegar do dropdown
+  if (!nome && select && select.selectedIndex > 0) {
+    var opt = select.options[select.selectedIndex];
+    nome = opt.dataset.nome || opt.textContent.split(' — ')[0].trim();
+  }
+
+  var email = ((document.getElementById('np-email') || {}).value || '').trim();
   var tema = (document.getElementById('np-tema') || {}).value || '';
   var qty = parseInt((document.getElementById('np-qty') || {}).value || '2');
-  var valor = parseFloat((document.getElementById('np-valor') || {}).value || '0');
+  var valor = parseFloat((document.getElementById('np-valor') || {}).value || '19.90');
   var status = (document.getElementById('np-status') || {}).value || 'pendente';
-  if (!nome || !email.trim() || !tema) { showToast('❌ Preencha cliente, email e tema!'); return; }
+
+  if (!nome) { showToast('❌ Selecione ou digite o nome do cliente!'); return; }
+  if (!email) { showToast('❌ Preencha o email!'); return; }
+  if (!tema) { showToast('❌ Selecione o tema!'); return; }
+
   var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+
+  showToast('⏳ Salvando pedido...');
+
   fetch(SURL + '/rest/v1/pedidos', {
     method: 'POST',
-    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ nome: nome, email: email.trim(), tema: tema, quantidade: qty, valor: valor, status: status })
+    headers: {
+      'apikey': SKEY,
+      'Authorization': 'Bearer ' + SKEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ nome: nome, email: email, tema: tema, quantidade: qty, valor: valor, status: status })
   }).then(function(resp) {
     if (resp.ok || resp.status === 201) {
       showToast('✅ Pedido de ' + nome + ' criado!');
       fecharModalNovoPedido();
-      if (typeof carregarPedidos === 'function') carregarPedidos();
-    } else { showToast('❌ Erro ao salvar pedido'); }
+      setTimeout(function() {
+        if (typeof carregarPedidos === 'function') carregarPedidos();
+      }, 500);
+    } else {
+      resp.text().then(function(t) { showToast('❌ Erro: ' + t); });
+    }
   }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
 
@@ -3561,52 +3583,9 @@ function _copiarFallback(texto) {
     img.src = imageSrc;
   }
 
-  function baixarAmostraModal(id) {
-    var a = modalAmostras.find(function(x) { return x.id === id; });
-    if (!a) return;
-    var link = document.createElement('a');
-    link.href = a.url;
-    link.download = 'amostra_' + a.nome;
-    link.click();
-  }
 
-  function enviarAmostraWpp(id) {
-    var a = modalAmostras.find(function(x) { return x.id === id; });
-    var wpp = pedidoAtualWpp || '';
-    if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
-    var linkFoto = a && a.publicUrl ? '\n\n🔗 Ver foto: ' + a.publicUrl : '';
-    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Segue sua amostra do ensaio fotográfico com IA.' + linkFoto + '\n\n✨ Foto com marca d\'água. Após o pagamento você recebe em alta qualidade!');
-    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
-  }
 
-  function enviarAmostrasWhatsApp() {
-    if (modalAmostras.length === 0) { showToast('⚠️ Adicione amostras primeiro!'); return; }
-    var wpp = pedidoAtualWpp || '';
-    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || '');
-    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas ' + modalAmostras.length + ' amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento você recebe todas em alta qualidade!\n\n🔗 Visualizar amostras: ' + previewUrl);
-    if (!wpp) {
-      // Abrir WhatsApp sem número definido — usuário digita
-      var numero = prompt('Digite o WhatsApp do cliente (ex: 5521999999999):');
-      if (!numero) return;
-      wpp = numero.replace(/\D/g,'');
-    }
-    window.open('https://wa.me/' + wpp + '?text=' + msg, '_blank');
-  }
 
-  function copiarLinkAmostras() {
-    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || 'cliente');
-    
-    // Tentar clipboard moderno
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(previewUrl).then(function() {
-        showToast('🔗 Link copiado: ' + previewUrl);
-      }).catch(function() {
-        copiarFallback(previewUrl);
-      });
-    } else {
-      copiarFallback(previewUrl);
-    }
-  }
 
   function copiarFallback(texto) {
     var input = document.createElement('textarea');
@@ -3625,109 +3604,8 @@ function _copiarFallback(texto) {
     document.body.removeChild(input);
   }
 
-  function carregarAmostrasModal(files) {
-    if (!files || files.length === 0) return;
-    var grid = document.getElementById('modal-amostras-grid');
-    var empty = document.getElementById('modal-amostras-empty');
-    var acoes = document.getElementById('modal-amostras-acoes');
-    if (empty) empty.style.display = 'none';
 
-    var total = files.length;
-    var processados = 0;
 
-    Array.from(files).forEach(function(file, idx) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        aplicarMarcaDaguaModal(e.target.result, function(dataUrl) {
-          var id = Date.now() + '_' + idx;
-          modalAmostras.push({ id: id, nome: file.name, url: dataUrl });
-          processados++;
-
-          // Criar card
-          var card = document.createElement('div');
-          card.id = 'amostra-card-' + id;
-          card.style.cssText = 'background:#f9f9f9;border-radius:10px;overflow:hidden;border:1px solid #eee;position:relative;';
-          card.innerHTML = `
-            <img src="${dataUrl}" style="width:100%;height:140px;object-fit:cover;display:block;">
-            <div style="padding:8px;display:flex;gap:6px;">
-              <button onclick="baixarAmostraModal('${id}')" title="Baixar" style="flex:1;background:#f0f0f0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">⬇️</button>
-              <button onclick="enviarAmostraWpp('${id}')" title="WhatsApp" style="flex:1;background:#25D366;color:white;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">📱</button>
-              <button onclick="deletarAmostra('${id}')" title="Deletar" style="flex:1;background:#FFE0E0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">🗑️</button>
-            </div>
-          `;
-          grid.appendChild(card);
-
-          if (processados === total) {
-            acoes.style.display = 'flex';
-            showToast('✅ ' + total + ' amostras com marca d\'água prontas!');
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function aplicarMarcaDaguaModal(imageSrc, callback) {
-    var canvas = document.getElementById('modal-watermark-canvas');
-    var ctx = canvas.getContext('2d');
-    var img = new Image();
-    img.onload = function() {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      var logoW = img.width * 0.20;
-      var logoH = logoWM.naturalHeight ? (logoW * logoWM.naturalHeight / logoWM.naturalWidth) : logoW * 0.5;
-      var spacingX = img.width * 0.28;
-      var spacingY = img.height * 0.22;
-
-      ctx.save();
-      ctx.globalAlpha = 0.28;
-      for (var y = 0; y < img.height + spacingY; y += spacingY) {
-        for (var x = 0; x < img.width + spacingX; x += spacingX) {
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.rotate(-25 * Math.PI / 180);
-          if (logoWM.complete && logoWM.naturalWidth > 0) {
-            ctx.drawImage(logoWM, -logoW/2, -logoH/2, logoW, logoH);
-          } else {
-            ctx.font = 'bold ' + Math.max(16, img.width * 0.035) + 'px Arial';
-            ctx.fillStyle = '#9E4E33';
-            ctx.fillText('JK IA FOTO STUDIO', -60, 0);
-          }
-          ctx.restore();
-        }
-      }
-      ctx.restore();
-      ctx.globalAlpha = 1;
-      callback(canvas.toDataURL('image/jpeg', 0.92));
-    };
-    img.src = imageSrc;
-  }
-
-  function deletarAmostra(id) {
-    modalAmostras = modalAmostras.filter(function(a) { return a.id !== id; });
-    var card = document.getElementById('amostra-card-' + id);
-    if (card) card.remove();
-    if (modalAmostras.length === 0) {
-      document.getElementById('modal-amostras-empty').style.display = 'block';
-      document.getElementById('modal-amostras-acoes').style.display = 'none';
-    }
-    showToast('🗑️ Amostra removida');
-  }
-
-  function deletarTodasAmostras() {
-    if (!confirm('Deletar todas as amostras deste cliente?')) return;
-    modalAmostras = [];
-    var grid = document.getElementById('modal-amostras-grid');
-    // Remover todos os cards exceto o empty
-    Array.from(grid.children).forEach(function(child) {
-      if (child.id !== 'modal-amostras-empty') child.remove();
-    });
-    document.getElementById('modal-amostras-empty').style.display = 'block';
-    document.getElementById('modal-amostras-acoes').style.display = 'none';
-    showToast('🗑️ Todas as amostras removidas');
-  }
 
   function baixarAmostraModal(id) {
     var a = modalAmostras.find(function(x) { return x.id === id; });
@@ -4109,47 +3987,6 @@ function _copiarFallback(texto) {
 
 var currentSection = 'site';
 
-function appNav(section) {
-  // Hide all sections
-  document.querySelectorAll('.app-section').forEach(function(s){ s.classList.remove('active'); });
-
-  // Show target
-  var el = document.getElementById('app-' + section);
-  if (el) el.classList.add('active');
-  currentSection = section;
-
-  // Nav visibility
-  var nav = document.getElementById('global-nav');
-  if (nav) {
-    if (section === 'admin') {
-      nav.classList.add('hidden');
-    } else {
-      nav.classList.remove('hidden');
-    }
-  }
-
-  // Reset scroll
-  window.scrollTo(0, 0);
-
-  // Admin: init
-  if (section === 'admin') {
-    if (typeof carregarPedidos === 'function') carregarPedidos();
-    if (typeof adminShowPage === 'function') adminShowPage('dashboard');
-  }
-
-  // Upload: reset to page 1
-  if (section === 'upload') {
-    if (typeof showUploadPage === 'function') showUploadPage(1);
-  }
-
-  // Site: reset screens
-  if (section === 'site' || section === 'cliente') {
-    document.querySelectorAll('#app-site .screen').forEach(function(s){ s.classList.remove('active'); });
-    var screenId = section === 'cliente' ? 'screen-cliente' : 'screen-home';
-    var target = document.getElementById(screenId);
-    if (target) target.classList.add('active');
-  }
-}
 
 function goEnsaios() {
   appNav('site');
@@ -4202,16 +4039,6 @@ window.addEventListener('scroll', function(){
 
   // Auto-advance carousels (desativado - carrosséis removidos)
 
-  function openModal(id) {
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    goStep(1);
-    if (id) { selectTipo(id); }
-  }
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
   document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) closeModal(); });
 
   function goStep(n) {
@@ -4344,22 +4171,6 @@ window.addEventListener('scroll', function(){
     amostras:   ['Amostras', 'Preview com marca dagua para clientes'],
   };
 
-  function adminShowPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    var page = document.getElementById('page-' + id);
-    if (page) page.classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    var navEl = document.querySelector(`[onclick="adminShowPage('${id}')"]`);
-    if (navEl) navEl.classList.add('active');
-    const t = pageTitles[id] || [id, ''];
-    var titleEl = document.getElementById('page-title');
-    var subEl = document.getElementById('page-sub');
-    if (titleEl) titleEl.textContent = t[0];
-    if (subEl) subEl.textContent = t[1];
-    if (id === 'pedidos') carregarPedidos();
-    if (id === 'dashboard') carregarPedidos();
-    if (id === 'clientes') carregarClientes();
-  }
 
   // ===== TABELA PEDIDOS =====
   function renderPedidos(filtro) {
@@ -4545,18 +4356,7 @@ window.addEventListener('scroll', function(){
   });
 
   // ===== NOVO CLIENTE =====
-  function abrirModalNovoCliente() {
-    document.getElementById('modal-novo-cliente').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    ['nc-nome','nc-email','nc-wpp','nc-obs'].forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.value = '';
-    });
-  }
 
-  function fecharModalNovoCliente() {
-    document.getElementById('modal-novo-cliente').classList.remove('open');
-    document.body.style.overflow = '';
-  }
 
   async function salvarNovoClienteAsync() {
     var nome = document.getElementById('nc-nome').value.trim();
@@ -4624,20 +4424,6 @@ window.addEventListener('scroll', function(){
     } catch(e) { console.error('Erro ao carregar clientes:', e); }
   }
 
-  async function deletarPedido(id, nome) {
-    if (!confirm('Deletar pedido de ' + nome + '? Esta ação não pode ser desfeita.')) return;
-    try {
-      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos?id=eq.' + id, {
-        method: 'DELETE',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-      });
-      if (resp.ok) {
-        showToast('🗑️ Pedido de ' + nome + ' deletado!');
-        carregarPedidos();
-      } else { showToast('❌ Erro ao deletar pedido'); }
-    } catch(e) { showToast('❌ Erro: ' + e.message); }
-  }
-
   async function deletarCliente(id, nome) {
     if (!confirm('Deletar cliente ' + nome + '?')) return;
     try {
@@ -4653,26 +4439,6 @@ window.addEventListener('scroll', function(){
   var precosPorQty = {2:19.90, 5:29.90, 10:49.90, 20:79.90, 50:99.90, 100:149.90};
 
   // ===== NOVO PEDIDO =====
-  function abrirModalNovoPedido() {
-    document.getElementById('modal-novo-pedido').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    // Limpar campos
-    ['np-email','np-wpp','np-nome'].forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.value = '';
-    });
-    var qtyEl = document.getElementById('np-qty');
-    var valorEl = document.getElementById('np-valor');
-    if (qtyEl) qtyEl.value = '2';
-    if (valorEl) valorEl.value = '19.90';
-    if (qtyEl) qtyEl.onchange = function() {
-      if (valorEl) valorEl.value = precosPorQty[this.value] || '';
-    };
-    // Esconder campo manual
-    var nomeManual = document.getElementById('np-nome');
-    if (nomeManual) nomeManual.style.display = 'none';
-    // Carregar clientes no dropdown
-    carregarClientesNoPedido();
-  }
 
   async function carregarClientesNoPedido() {
     try {
@@ -4698,30 +4464,8 @@ window.addEventListener('scroll', function(){
     } catch(e) { console.error('Erro ao carregar clientes:', e); }
   }
 
-  function preencherEmailCliente(select) {
-    var opt = select.options[select.selectedIndex];
-    var emailEl = document.getElementById('np-email');
-    var wppEl = document.getElementById('np-wpp');
-    if (emailEl) emailEl.value = opt.dataset.email || '';
-    if (wppEl) wppEl.value = opt.dataset.tel || '';
-  }
 
-  function toggleNomeManual() {
-    var nomeEl = document.getElementById('np-nome');
-    var selectEl = document.getElementById('np-cliente');
-    if (nomeEl.style.display === 'none') {
-      nomeEl.style.display = 'block';
-      nomeEl.focus();
-    } else {
-      nomeEl.style.display = 'none';
-      nomeEl.value = '';
-    }
-  }
 
-  function fecharModalNovoPedido() {
-    document.getElementById('modal-novo-pedido').classList.remove('open');
-    document.body.style.overflow = '';
-  }
 
   async function salvarNovoPedidoAsync() {
     var select = document.getElementById('np-cliente');
@@ -4814,13 +4558,6 @@ window.addEventListener('scroll', function(){
 // ============================================================
 //  UNIFIED TOAST (override all)
 // ============================================================
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3200);
-}
 
 // Init
 appNav('site');
