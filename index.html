@@ -1805,6 +1805,7 @@ function salvarNovoCliente() {
   if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
   var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  showToast('⏳ Salvando cliente...');
   fetch(SURL + '/rest/v1/clientes', {
     method: 'POST',
     headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
@@ -1821,13 +1822,13 @@ function salvarNovoCliente() {
     }
   }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
+window.salvarNovoCliente = salvarNovoCliente;
 
 function salvarNovoPedido() {
   var select = document.getElementById('np-cliente');
   var nomeManual = (document.getElementById('np-nome') || {}).value || '';
   var nome = nomeManual.trim();
 
-  // Se não digitou manual, pegar do dropdown
   if (!nome && select && select.selectedIndex > 0) {
     var opt = select.options[select.selectedIndex];
     nome = opt.dataset.nome || opt.textContent.split(' — ')[0].trim();
@@ -1869,6 +1870,7 @@ function salvarNovoPedido() {
     }
   }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
+window.salvarNovoPedido = salvarNovoPedido;
 
 function preencherEmailCliente(select) {
   var opt = select.options[select.selectedIndex];
@@ -3201,7 +3203,7 @@ function _copiarFallback(texto) {
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button onclick="fecharModalNovoCliente()" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
-          <button onclick="salvarNovoCliente()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Cliente</button>
+          <button onclick="window.salvarNovoCliente()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Cliente</button>
         </div>
       </div>
     </div>
@@ -3289,7 +3291,7 @@ function _copiarFallback(texto) {
 
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button onclick="fecharModalNovoPedido()" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
-          <button onclick="salvarNovoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Pedido</button>
+          <button onclick="window.salvarNovoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Pedido</button>
         </div>
 
       </div>
