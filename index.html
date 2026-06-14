@@ -3893,10 +3893,12 @@ function appNav(section) {
 
   // Nav visibility
   var nav = document.getElementById('global-nav');
-  if (section === 'admin') {
-    nav.classList.add('hidden');
-  } else {
-    nav.classList.remove('hidden');
+  if (nav) {
+    if (section === 'admin') {
+      nav.classList.add('hidden');
+    } else {
+      nav.classList.remove('hidden');
+    }
   }
 
   // Reset scroll
@@ -3904,7 +3906,7 @@ function appNav(section) {
 
   // Admin: init
   if (section === 'admin') {
-    if (typeof renderPedidos === 'function') renderPedidos('todos');
+    if (typeof carregarPedidos === 'function') carregarPedidos();
     if (typeof adminShowPage === 'function') adminShowPage('dashboard');
   }
 
@@ -4371,5 +4373,4 @@ window.addEventListener('scroll', function(){
       if (!select) return;
       select.innerHTML = '<option value="">Selecione um cliente...</option>';
       clientes.forEach(function(c) {
-        var opt = document.createElement('option');
-        opt
+        var opt = document.createElemen
