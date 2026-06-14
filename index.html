@@ -811,7 +811,7 @@
 
   /* ========== TOAST ========== */
   .toast {
-    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+    position: fixed; bottom: 28px; right: 28px; z-index: 999;
     background: var(--charcoal); color: white; padding: 14px 22px;
     border-radius: 10px; font-size: 13px; font-weight: 500;
     transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
@@ -1227,7 +1227,7 @@
 
   /* ===== TOAST ===== */
   .toast {
-    position:fixed; bottom:24px; right:24px; z-index:9999;
+    position:fixed; bottom:24px; right:24px; z-index:999;
     background:var(--charcoal); color:white; padding:14px 20px;
     border-radius:10px; font-size:13px; font-weight:500;
     transform:translateY(80px); opacity:0; transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
@@ -1762,49 +1762,19 @@ function abrirModalNovoPedido() {
   var m = document.getElementById('modal-novo-pedido');
   if (m) m.classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // Limpar campos
-  ['np-email','np-wpp','np-nome'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) { el.value = ''; el.style.display = 'none'; }
-  });
-  var nomeEl = document.getElementById('np-nome');
-  if (nomeEl) nomeEl.style.display = 'none';
-
-  var qtyEl = document.getElementById('np-qty');
-  var valorEl = document.getElementById('np-valor');
-  if (qtyEl) { qtyEl.value = '2'; qtyEl.onchange = function() { if (valorEl) valorEl.value = ({2:19.90,5:29.90,10:49.90,20:79.90,50:99.90,100:149.90})[this.value] || ''; }; }
-  if (valorEl) valorEl.value = '19.90';
-
-  // Carregar clientes no dropdown
-  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
-  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  var select = document.getElementById('np-cliente');
-  if (select) {
-    select.innerHTML = '<option value="">Carregando clientes...</option>';
-    fetch(SURL + '/rest/v1/clientes?order=nome.asc', {
-      headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
-    }).then(function(r) { return r.json(); }).then(function(clientes) {
-      if (!clientes || clientes.length === 0) {
-        select.innerHTML = '<option value="">Nenhum cliente cadastrado</option>';
-        return;
-      }
-      select.innerHTML = '<option value="">Selecione um cliente...</option>';
-      clientes.forEach(function(c) {
-        var opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = c.nome + ' — ' + c.email;
-        opt.setAttribute('data-nome', c.nome);
-        opt.setAttribute('data-email', c.email);
-        opt.setAttribute('data-tel', c.telefone || '');
-        select.appendChild(opt);
-      });
-    }).catch(function(e) {
-      select.innerHTML = '<option value="">Erro ao carregar clientes</option>';
+  setTimeout(function() {
+    if (typeof carregarClientesNoPedido === 'function') carregarClientesNoPedido();
+    var qtyEl = document.getElementById('np-qty');
+    var valorEl = document.getElementById('np-valor');
+    if (qtyEl) qtyEl.value = '2';
+    if (valorEl) valorEl.value = '19.90';
+    var nomeEl = document.getElementById('np-nome');
+    if (nomeEl) nomeEl.style.display = 'none';
+    ['np-email','np-wpp','np-nome'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = '';
     });
-  }
+  }, 50);
 }
-window.abrirModalNovoPedido = abrirModalNovoPedido;
 
 function fecharModalNovoPedido() {
   var m = document.getElementById('modal-novo-pedido');
@@ -1835,7 +1805,6 @@ function salvarNovoCliente() {
   if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
   var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  showToast('⏳ Salvando cliente...');
   fetch(SURL + '/rest/v1/clientes', {
     method: 'POST',
     headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
@@ -1852,64 +1821,40 @@ function salvarNovoCliente() {
     }
   }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
-window.salvarNovoCliente = salvarNovoCliente;
 
 function salvarNovoPedido() {
   var select = document.getElementById('np-cliente');
+  var opt = select ? select.options[select.selectedIndex] : null;
   var nomeManual = (document.getElementById('np-nome') || {}).value || '';
-  var nome = nomeManual.trim();
-
-  if (!nome && select && select.selectedIndex > 0) {
-    var opt = select.options[select.selectedIndex];
-    nome = opt.getAttribute('data-nome') || opt.textContent.split(' — ')[0].trim();
-  }
-
-  var email = ((document.getElementById('np-email') || {}).value || '').trim();
+  var nome = nomeManual.trim() || (opt && opt.dataset.nome) || '';
+  var email = (document.getElementById('np-email') || {}).value || '';
   var tema = (document.getElementById('np-tema') || {}).value || '';
   var qty = parseInt((document.getElementById('np-qty') || {}).value || '2');
-  var valor = parseFloat((document.getElementById('np-valor') || {}).value || '19.90');
+  var valor = parseFloat((document.getElementById('np-valor') || {}).value || '0');
   var status = (document.getElementById('np-status') || {}).value || 'pendente';
-
-  if (!nome) { showToast('❌ Selecione ou digite o nome do cliente!'); return; }
-  if (!email) { showToast('❌ Preencha o email!'); return; }
-  if (!tema) { showToast('❌ Selecione o tema!'); return; }
-
+  if (!nome || !email.trim() || !tema) { showToast('❌ Preencha cliente, email e tema!'); return; }
   var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-
-  showToast('⏳ Salvando pedido...');
-
   fetch(SURL + '/rest/v1/pedidos', {
     method: 'POST',
-    headers: {
-      'apikey': SKEY,
-      'Authorization': 'Bearer ' + SKEY,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify({ nome: nome, email: email, tema: tema, quantidade: qty, valor: valor, status: status })
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ nome: nome, email: email.trim(), tema: tema, quantidade: qty, valor: valor, status: status })
   }).then(function(resp) {
     if (resp.ok || resp.status === 201) {
       showToast('✅ Pedido de ' + nome + ' criado!');
       fecharModalNovoPedido();
-      setTimeout(function() {
-        if (typeof carregarPedidos === 'function') carregarPedidos();
-      }, 500);
-    } else {
-      resp.text().then(function(t) { showToast('❌ Erro: ' + t); });
-    }
+      if (typeof carregarPedidos === 'function') carregarPedidos();
+    } else { showToast('❌ Erro ao salvar pedido'); }
   }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
-window.salvarNovoPedido = salvarNovoPedido;
 
 function preencherEmailCliente(select) {
   var opt = select.options[select.selectedIndex];
   var emailEl = document.getElementById('np-email');
   var wppEl = document.getElementById('np-wpp');
-  if (emailEl) emailEl.value = opt.getAttribute('data-email') || '';
-  if (wppEl) wppEl.value = opt.getAttribute('data-tel') || '';
+  if (emailEl) emailEl.value = opt.dataset.email || '';
+  if (wppEl) wppEl.value = opt.dataset.tel || '';
 }
-window.preencherEmailCliente = preencherEmailCliente;
 
 function toggleNomeManual() {
   var nomeEl = document.getElementById('np-nome');
@@ -1985,393 +1930,6 @@ function _copiarFallback(texto) {
   catch(e) { showToast('Link: ' + texto); }
   document.body.removeChild(input);
 }
-
-// ===== SUPABASE AUTH =====
-var SB_URL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
-var SB_KEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-var _authToken = null;
-var _authUser = null;
-var _authRole = null;
-
-function sbFetch(path, opts) {
-  opts = opts || {};
-  opts.headers = opts.headers || {};
-  opts.headers['apikey'] = SB_KEY;
-  opts.headers['Authorization'] = 'Bearer ' + (_authToken || SB_KEY);
-  opts.headers['Content-Type'] = opts.headers['Content-Type'] || 'application/json';
-  return fetch(SB_URL + path, opts);
-}
-
-async function sbLogin(email, password) {
-  var resp = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, password: password })
-  });
-  var data = await resp.json();
-  if (data.access_token) {
-    _authToken = data.access_token;
-    _authUser = data.user;
-    localStorage.setItem('sb_token', data.access_token);
-    localStorage.setItem('sb_user', JSON.stringify(data.user));
-    return { ok: true, user: data.user };
-  }
-  return { ok: false, error: data.error_description || 'Email ou senha incorretos' };
-}
-
-async function sbLogout() {
-  await fetch(SB_URL + '/auth/v1/logout', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + _authToken }
-  }).catch(function(){});
-  _authToken = null;
-  _authUser = null;
-  _authRole = null;
-  localStorage.removeItem('sb_token');
-  localStorage.removeItem('sb_user');
-  localStorage.removeItem('sb_role');
-}
-
-async function sbGetPerfil() {
-  if (!_authToken) return null;
-  var resp = await sbFetch('/rest/v1/perfis?id=eq.' + _authUser.id);
-  var data = await resp.json();
-  return data && data.length > 0 ? data[0] : null;
-}
-
-async function verificarSessao() {
-  var token = localStorage.getItem('sb_token');
-  var user = localStorage.getItem('sb_user');
-  if (!token || !user) return false;
-  _authToken = token;
-  _authUser = JSON.parse(user);
-  // Verificar se token ainda é válido
-  var resp = await sbFetch('/auth/v1/user');
-  if (resp.ok) {
-    var perfil = await sbGetPerfil();
-    if (perfil) {
-      _authRole = perfil.role;
-      localStorage.setItem('sb_role', perfil.role);
-    }
-    return true;
-  }
-  await sbLogout();
-  return false;
-}
-
-// Verificar sessão ao carregar
-window.addEventListener('DOMContentLoaded', async function() {
-  // Não rodar na página de preview
-  var params = new URLSearchParams(window.location.search);
-  if (params.get('preview')) return;
-
-  var logado = await verificarSessao();
-  if (logado) {
-    var role = _authRole || localStorage.getItem('sb_role');
-    if (role === 'admin') {
-      // Mostrar link Admin no nav
-      var adminLinks = document.querySelectorAll('.link-admin');
-      adminLinks.forEach(function(el) { el.style.display = ''; });
-    } else {
-      // Cliente logado - mostrar área do cliente
-      var clienteLinks = document.querySelectorAll('.link-cliente');
-      clienteLinks.forEach(function(el) { el.style.display = ''; });
-    }
-  }
-});
-</script>
-function abrirEditarPedido(id) {
-  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
-  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  fetch(SURL + '/rest/v1/pedidos?id=eq.' + id, {
-    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
-  }).then(function(r) { return r.json(); }).then(function(dados) {
-    if (!dados || dados.length === 0) { showToast('❌ Pedido não encontrado'); return; }
-    var p = dados[0];
-    document.getElementById('ep-id').value = p.id;
-    document.getElementById('ep-nome').value = p.nome || '';
-    document.getElementById('ep-email').value = p.email || '';
-    document.getElementById('ep-valor').value = p.valor || '';
-    var temaEl = document.getElementById('ep-tema'); if (temaEl) temaEl.value = p.tema || '';
-    var qtyEl = document.getElementById('ep-qty'); if (qtyEl) qtyEl.value = p.quantidade || '2';
-    var stEl = document.getElementById('ep-status'); if (stEl) stEl.value = p.status || 'pendente';
-    document.getElementById('modal-editar-pedido').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
-}
-window.abrirEditarPedido = abrirEditarPedido;
-
-function salvarEdicaoPedido() {
-  var id = document.getElementById('ep-id').value;
-  var nome = document.getElementById('ep-nome').value.trim();
-  var email = document.getElementById('ep-email').value.trim();
-  var tema = document.getElementById('ep-tema').value;
-  var qty = parseInt(document.getElementById('ep-qty').value);
-  var valor = parseFloat(document.getElementById('ep-valor').value);
-  var status = document.getElementById('ep-status').value;
-  if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
-  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
-  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  showToast('⏳ Salvando...');
-  fetch(SURL + '/rest/v1/pedidos?id=eq.' + id, {
-    method: 'PATCH',
-    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome: nome, email: email, tema: tema, quantidade: qty, valor: valor, status: status })
-  }).then(function(resp) {
-    if (resp.ok) {
-      showToast('✅ Pedido atualizado!');
-      document.getElementById('modal-editar-pedido').classList.remove('open');
-      document.body.style.overflow = '';
-      if (typeof carregarPedidos === 'function') carregarPedidos();
-    } else { showToast('❌ Erro ao salvar'); }
-  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
-}
-window.salvarEdicaoPedido = salvarEdicaoPedido;
-
-// ===== EDITAR CLIENTE =====
-function abrirEditarCliente(id) {
-  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
-  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  fetch(SURL + '/rest/v1/clientes?id=eq.' + id, {
-    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY }
-  }).then(function(r) { return r.json(); }).then(function(dados) {
-    if (!dados || dados.length === 0) { showToast('❌ Cliente não encontrado'); return; }
-    var c = dados[0];
-    document.getElementById('ec-id').value = c.id;
-    document.getElementById('ec-nome').value = c.nome || '';
-    document.getElementById('ec-email').value = c.email || '';
-    document.getElementById('ec-wpp').value = c.telefone || '';
-    document.getElementById('ec-obs').value = c.observacoes || '';
-    document.getElementById('modal-editar-cliente').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
-}
-window.abrirEditarCliente = abrirEditarCliente;
-
-function salvarEdicaoCliente() {
-  var id = document.getElementById('ec-id').value;
-  var nome = document.getElementById('ec-nome').value.trim();
-  var email = document.getElementById('ec-email').value.trim();
-  var wpp = document.getElementById('ec-wpp').value.trim();
-  var obs = document.getElementById('ec-obs').value.trim();
-  if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
-  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
-  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
-  showToast('⏳ Salvando...');
-  fetch(SURL + '/rest/v1/clientes?id=eq.' + id, {
-    method: 'PATCH',
-    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome: nome, email: email, telefone: wpp, observacoes: obs })
-  }).then(function(resp) {
-    if (resp.ok) {
-      showToast('✅ Cliente atualizado!');
-      document.getElementById('modal-editar-cliente').classList.remove('open');
-      document.body.style.overflow = '';
-      if (typeof carregarClientes === 'function') carregarClientes();
-    } else { showToast('❌ Erro ao salvar'); }
-  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
-}
-window.salvarEdicaoCliente = salvarEdicaoCliente;
-
-// ===== AUTH FUNCTIONS =====
-function switchLoginTab(tab) {
-  var entrar = document.getElementById('form-entrar');
-  var cadastrar = document.getElementById('form-cadastrar');
-  var tabEntrar = document.getElementById('tab-entrar');
-  var tabCadastrar = document.getElementById('tab-cadastrar');
-  if (tab === 'entrar') {
-    entrar.style.display = 'block';
-    cadastrar.style.display = 'none';
-    tabEntrar.style.background = 'white';
-    tabEntrar.style.color = '#333';
-    tabCadastrar.style.background = 'transparent';
-    tabCadastrar.style.color = '#999';
-  } else {
-    entrar.style.display = 'none';
-    cadastrar.style.display = 'block';
-    tabCadastrar.style.background = 'white';
-    tabCadastrar.style.color = '#333';
-    tabEntrar.style.background = 'transparent';
-    tabEntrar.style.color = '#999';
-  }
-}
-window.switchLoginTab = switchLoginTab;
-
-function irParaCliente() {
-  if (_authToken && _authRole === 'cliente') {
-    appNav('cliente');
-    carregarPainelCliente();
-  } else {
-    appNav('login');
-  }
-}
-window.irParaCliente = irParaCliente;
-
-function irParaAdmin() {
-  if (_authToken && _authRole === 'admin') {
-    appNav('admin');
-  } else {
-    appNav('login');
-  }
-}
-window.irParaAdmin = irParaAdmin;
-
-async function fazerLogin() {
-  var email = (document.getElementById('login-email') || {}).value || '';
-  var senha = (document.getElementById('login-senha') || {}).value || '';
-  var erroEl = document.getElementById('login-erro');
-  if (!email || !senha) { if(erroEl){erroEl.textContent='Preencha email e senha';erroEl.style.display='block';} return; }
-  if(erroEl) erroEl.style.display = 'none';
-  showToast('⏳ Entrando...');
-  var result = await sbLogin(email, senha);
-  if (!result.ok) {
-    if(erroEl){erroEl.textContent = result.error; erroEl.style.display='block';}
-    showToast('❌ ' + result.error);
-    return;
-  }
-  var perfil = await sbGetPerfil();
-  if (perfil) {
-    _authRole = perfil.role;
-    localStorage.setItem('sb_role', perfil.role);
-    if (perfil.role === 'admin') {
-      var adminLinks = document.querySelectorAll('.link-admin');
-      adminLinks.forEach(function(el){ el.style.display = ''; });
-      showToast('✅ Bem-vindo, ' + perfil.nome + '!');
-      appNav('admin');
-    } else {
-      showToast('✅ Bem-vindo, ' + perfil.nome + '!');
-      var header = document.getElementById('cliente-nome-header');
-      if (header) header.textContent = perfil.nome;
-      appNav('cliente');
-      carregarPainelCliente();
-    }
-  }
-}
-window.fazerLogin = fazerLogin;
-
-async function fazerCadastro() {
-  var nome = (document.getElementById('cad-nome') || {}).value || '';
-  var email = (document.getElementById('cad-email') || {}).value || '';
-  var wpp = (document.getElementById('cad-wpp') || {}).value || '';
-  var senha = (document.getElementById('cad-senha') || {}).value || '';
-  var erroEl = document.getElementById('cad-erro');
-  if (!nome || !email || !senha) { if(erroEl){erroEl.textContent='Preencha todos os campos';erroEl.style.display='block';} return; }
-  if (senha.length < 6) { if(erroEl){erroEl.textContent='Senha deve ter mínimo 6 caracteres';erroEl.style.display='block';} return; }
-  if(erroEl) erroEl.style.display = 'none';
-  showToast('⏳ Criando conta...');
-  // Criar usuário no Supabase Auth
-  var resp = await fetch(SB_URL + '/auth/v1/signup', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, password: senha })
-  });
-  var data = await resp.json();
-  if (!data.access_token && !data.user) {
-    var msg = data.msg || data.error_description || 'Erro ao criar conta';
-    if(erroEl){erroEl.textContent=msg;erroEl.style.display='block';}
-    showToast('❌ ' + msg); return;
-  }
-  _authToken = data.access_token;
-  _authUser = data.user;
-  localStorage.setItem('sb_token', data.access_token);
-  localStorage.setItem('sb_user', JSON.stringify(data.user));
-  // Criar perfil
-  await fetch(SB_URL + '/rest/v1/perfis', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + data.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ id: data.user.id, nome: nome, email: email, telefone: wpp, role: 'cliente' })
-  });
-  _authRole = 'cliente';
-  localStorage.setItem('sb_role', 'cliente');
-  showToast('✅ Conta criada! Bem-vindo, ' + nome + '!');
-  var header = document.getElementById('cliente-nome-header');
-  if (header) header.textContent = nome;
-  appNav('cliente');
-  carregarPainelCliente();
-}
-window.fazerCadastro = fazerCadastro;
-
-async function fazerLogout() {
-  await sbLogout();
-  var adminLinks = document.querySelectorAll('.link-admin');
-  adminLinks.forEach(function(el){ el.style.display = 'none'; });
-  showToast('👋 Até logo!');
-  appNav('site');
-}
-window.fazerLogout = fazerLogout;
-
-async function carregarPainelCliente() {
-  if (!_authUser) return;
-  var container = document.getElementById('cliente-pedidos');
-  if (!container) return;
-  container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:36px;">⏳</div><p>Carregando seus pedidos...</p></div>';
-  try {
-    var resp = await sbFetch('/rest/v1/pedidos?email=eq.' + encodeURIComponent(_authUser.email) + '&order=created_at.desc');
-    var pedidos = await resp.json();
-    if (!pedidos || pedidos.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:60px;background:white;border-radius:12px;"><div style="font-size:48px;margin-bottom:12px;">📸</div><p style="font-size:16px;font-weight:600;">Nenhum pedido encontrado</p><p style="color:#999;font-size:13px;">Quando você criar um ensaio, ele aparecerá aqui</p><button onclick="appNav(\'site\')" style="margin-top:16px;background:#9E4E33;color:white;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:14px;">Criar meu ensaio</button></div>';
-      return;
-    }
-    var statusInfo = {
-      'pendente': { icon: '⏳', label: 'Aguardando pagamento', color: '#B7791F', bg: '#FEF3C7' },
-      'aprovado': { icon: '🎨', label: 'Em produção com IA', color: '#5E35B1', bg: '#EDE7F6' },
-      'liberado': { icon: '✅', label: 'Fotos prontas!', color: '#2D6A4F', bg: '#D1FAE5' },
-      'recusado': { icon: '❌', label: 'Recusado', color: '#9B2C2C', bg: '#FEE2E2' }
-    };
-    container.innerHTML = pedidos.map(function(p) {
-      var st = statusInfo[p.status] || statusInfo['pendente'];
-      var data = new Date(p.created_at).toLocaleDateString('pt-BR');
-      return '<div style="background:white;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">' +
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">' +
-          '<div>' +
-            '<div style="font-size:18px;font-weight:700;margin-bottom:4px;">' + p.tema + '</div>' +
-            '<div style="font-size:13px;color:#999;">' + p.quantidade + ' fotos · R$ ' + Number(p.valor).toFixed(2).replace('.',',') + ' · ' + data + '</div>' +
-          '</div>' +
-          '<span style="background:' + st.bg + ';color:' + st.color + ';padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;">' + st.icon + ' ' + st.label + '</span>' +
-        '</div>' +
-        (p.status === 'aprovado' || p.status === 'liberado' ? '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">' +
-          (p.status === 'aprovado' ? '<button onclick="verPreviaCliente(\'' + p.id + '\')" style="background:#9E4E33;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;">🖼️ Ver Prévia</button>' : '') +
-          (p.status === 'liberado' ? '<button onclick="verFotosCliente(\'' + p.id + '\')" style="background:#2D6A4F;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;">📥 Baixar Fotos</button>' : '') +
-        '</div>' : '') +
-      '</div>';
-    }).join('');
-  } catch(e) {
-    container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">Erro ao carregar pedidos</div>';
-  }
-}
-window.carregarPainelCliente = carregarPainelCliente;
-
-async function verPreviaCliente(pedidoId) {
-  appNav('site');
-  window.location.search = '?preview=' + pedidoId;
-}
-window.verPreviaCliente = verPreviaCliente;
-
-async function verFotosCliente(pedidoId) {
-  showToast('⏳ Carregando suas fotos...');
-  try {
-    var resp = await sbFetch('/storage/v1/object/list/fotos-prontas', {
-      method: 'POST',
-      body: JSON.stringify({ prefix: pedidoId + '/', limit: 100 })
-    });
-    var files = await resp.json();
-    if (!files || files.length === 0) {
-      showToast('📭 Nenhuma foto encontrada ainda');
-      return;
-    }
-    // Abrir cada foto em nova aba para download
-    files.forEach(function(file, i) {
-      setTimeout(function() {
-        var url = SB_URL + '/storage/v1/object/fotos-prontas/' + pedidoId + '/' + file.name + '?token=' + _authToken;
-        window.open(url, '_blank');
-      }, i * 300);
-    });
-    showToast('✅ ' + files.length + ' fotos abrindo para download!');
-  } catch(e) {
-    showToast('❌ Erro ao carregar fotos');
-  }
-}
-window.verFotosCliente = verFotosCliente;
 </script>
 
 <!-- ===== GLOBAL NAV ===== -->
@@ -2392,8 +1950,8 @@ window.verFotosCliente = verFotosCliente;
     <a onclick="goEnsaios()">Ensaios</a>
     <a onclick="goDepoimentos()">Depoimentos</a>
     <a onclick="appNav('upload')">Enviar Fotos</a>
-    <a onclick="window.irParaCliente()" id="nav-meu-ensaio">Meu Ensaio</a>
-    <a onclick="window.irParaAdmin()" class="link-admin" style="color:#9E4E33;font-weight:600;display:none;">Admin</a>
+    <a onclick="appNav('cliente')">Meu Ensaio</a>
+    <a onclick="appNav('admin')" style="color:#9E4E33;font-weight:600;">Admin</a>
   </div>
   <div class="g-nav-right">
     <a class="g-btn-wpp" href="https://wa.me/5521999850085" target="_blank">
@@ -3322,101 +2880,6 @@ window.verFotosCliente = verFotosCliente;
 </div>
 
 <!-- ===== ADMIN ===== -->
-<!-- ===== LOGIN ===== -->
-<div id="app-login" class="app-section">
-  <div style="min-height:100vh;background:#FAF8F5;display:flex;align-items:center;justify-content:center;padding:20px;">
-    <div style="background:white;border-radius:16px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.1);">
-      <div style="text-align:center;margin-bottom:32px;">
-        <img src="./logo.png" alt="JK IA Foto Studio" style="height:70px;object-fit:contain;margin-bottom:16px;">
-        <h2 id="login-titulo" style="font-family:'Playfair Display',serif;font-size:22px;margin:0;">Entrar na sua conta</h2>
-        <p id="login-subtitulo" style="color:#999;font-size:13px;margin-top:6px;">Acesse seu painel</p>
-      </div>
-
-      <!-- Tabs -->
-      <div style="display:flex;gap:0;margin-bottom:24px;background:#f5f5f5;border-radius:8px;padding:4px;">
-        <button onclick="switchLoginTab('entrar')" id="tab-entrar" style="flex:1;padding:8px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:white;color:#333;">Entrar</button>
-        <button onclick="switchLoginTab('cadastrar')" id="tab-cadastrar" style="flex:1;padding:8px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:#999;">Cadastrar</button>
-      </div>
-
-      <!-- Form Entrar -->
-      <div id="form-entrar">
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
-            <input type="email" id="login-email" placeholder="seu@email.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">SENHA</label>
-            <input type="password" id="login-senha" placeholder="••••••••" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;"
-              onkeypress="if(event.key==='Enter') window.fazerLogin()">
-          </div>
-          <button onclick="window.fazerLogin()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;">
-            Entrar →
-          </button>
-          <p id="login-erro" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;"></p>
-        </div>
-      </div>
-
-      <!-- Form Cadastrar -->
-      <div id="form-cadastrar" style="display:none;">
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME COMPLETO</label>
-            <input type="text" id="cad-nome" placeholder="Seu nome" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
-            <input type="email" id="cad-email" placeholder="seu@email.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">WHATSAPP</label>
-            <input type="text" id="cad-wpp" placeholder="5521999999999" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">SENHA</label>
-            <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-          </div>
-          <button onclick="window.fazerCadastro()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;">
-            Criar conta →
-          </button>
-          <p id="cad-erro" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;"></p>
-        </div>
-      </div>
-
-      <p style="text-align:center;margin-top:20px;font-size:13px;color:#999;">
-        <a href="#" onclick="appNav('site');return false;" style="color:#9E4E33;">← Voltar ao site</a>
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- ===== ÁREA DO CLIENTE ===== -->
-<div id="app-cliente" class="app-section">
-  <div style="min-height:100vh;background:#FAF8F5;">
-    <!-- Header -->
-    <div style="background:#2C1810;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;">
-      <img src="./logo.png" alt="JK IA" style="height:50px;object-fit:contain;">
-      <div style="display:flex;align-items:center;gap:16px;">
-        <span id="cliente-nome-header" style="color:white;font-size:14px;"></span>
-        <button onclick="window.fazerLogout()" style="background:rgba(255,255,255,0.15);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;">Sair</button>
-      </div>
-    </div>
-
-    <div style="max-width:900px;margin:0 auto;padding:32px 20px;">
-      <h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;">Meu Ensaio</h1>
-      <p style="color:#999;margin-bottom:32px;">Acompanhe o status do seu ensaio fotográfico com IA</p>
-
-      <!-- Cards de Status -->
-      <div id="cliente-pedidos" style="display:flex;flex-direction:column;gap:20px;">
-        <div style="text-align:center;padding:60px;color:#999;">
-          <div style="font-size:48px;margin-bottom:12px;">📸</div>
-          <p>Carregando seus pedidos...</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="app-admin" class="app-section">
 
 
@@ -3716,7 +3179,7 @@ window.verFotosCliente = verFotosCliente;
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button onclick="fecharModalNovoCliente()" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
-          <button onclick="window.salvarNovoCliente()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Cliente</button>
+          <button onclick="salvarNovoCliente()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Cliente</button>
         </div>
       </div>
     </div>
@@ -3804,7 +3267,7 @@ window.verFotosCliente = verFotosCliente;
 
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button onclick="fecharModalNovoPedido()" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
-          <button onclick="window.salvarNovoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Pedido</button>
+          <button onclick="salvarNovoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✅ Salvar Pedido</button>
         </div>
 
       </div>
@@ -4098,9 +3561,52 @@ window.verFotosCliente = verFotosCliente;
     img.src = imageSrc;
   }
 
+  function baixarAmostraModal(id) {
+    var a = modalAmostras.find(function(x) { return x.id === id; });
+    if (!a) return;
+    var link = document.createElement('a');
+    link.href = a.url;
+    link.download = 'amostra_' + a.nome;
+    link.click();
+  }
 
+  function enviarAmostraWpp(id) {
+    var a = modalAmostras.find(function(x) { return x.id === id; });
+    var wpp = pedidoAtualWpp || '';
+    if (!wpp) { showToast('WhatsApp do cliente não cadastrado'); return; }
+    var linkFoto = a && a.publicUrl ? '\n\n🔗 Ver foto: ' + a.publicUrl : '';
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Segue sua amostra do ensaio fotográfico com IA.' + linkFoto + '\n\n✨ Foto com marca d\'água. Após o pagamento você recebe em alta qualidade!');
+    window.open('https://wa.me/' + wpp.replace(/\D/g,'') + '?text=' + msg, '_blank');
+  }
 
+  function enviarAmostrasWhatsApp() {
+    if (modalAmostras.length === 0) { showToast('⚠️ Adicione amostras primeiro!'); return; }
+    var wpp = pedidoAtualWpp || '';
+    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || '');
+    var msg = encodeURIComponent('Olá ' + (pedidoAtualNome || 'cliente') + '! 📸 Suas ' + modalAmostras.length + ' amostras do ensaio com IA estão prontas!\n\n✨ As fotos estão com marca d\'água. Após o pagamento você recebe todas em alta qualidade!\n\n🔗 Visualizar amostras: ' + previewUrl);
+    if (!wpp) {
+      // Abrir WhatsApp sem número definido — usuário digita
+      var numero = prompt('Digite o WhatsApp do cliente (ex: 5521999999999):');
+      if (!numero) return;
+      wpp = numero.replace(/\D/g,'');
+    }
+    window.open('https://wa.me/' + wpp + '?text=' + msg, '_blank');
+  }
 
+  function copiarLinkAmostras() {
+    var previewUrl = 'https://iafotostudio.vercel.app?preview=' + encodeURIComponent(pedidoAtualId || 'cliente');
+    
+    // Tentar clipboard moderno
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(previewUrl).then(function() {
+        showToast('🔗 Link copiado: ' + previewUrl);
+      }).catch(function() {
+        copiarFallback(previewUrl);
+      });
+    } else {
+      copiarFallback(previewUrl);
+    }
+  }
 
   function copiarFallback(texto) {
     var input = document.createElement('textarea');
@@ -4119,8 +3625,109 @@ window.verFotosCliente = verFotosCliente;
     document.body.removeChild(input);
   }
 
+  function carregarAmostrasModal(files) {
+    if (!files || files.length === 0) return;
+    var grid = document.getElementById('modal-amostras-grid');
+    var empty = document.getElementById('modal-amostras-empty');
+    var acoes = document.getElementById('modal-amostras-acoes');
+    if (empty) empty.style.display = 'none';
 
+    var total = files.length;
+    var processados = 0;
 
+    Array.from(files).forEach(function(file, idx) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        aplicarMarcaDaguaModal(e.target.result, function(dataUrl) {
+          var id = Date.now() + '_' + idx;
+          modalAmostras.push({ id: id, nome: file.name, url: dataUrl });
+          processados++;
+
+          // Criar card
+          var card = document.createElement('div');
+          card.id = 'amostra-card-' + id;
+          card.style.cssText = 'background:#f9f9f9;border-radius:10px;overflow:hidden;border:1px solid #eee;position:relative;';
+          card.innerHTML = `
+            <img src="${dataUrl}" style="width:100%;height:140px;object-fit:cover;display:block;">
+            <div style="padding:8px;display:flex;gap:6px;">
+              <button onclick="baixarAmostraModal('${id}')" title="Baixar" style="flex:1;background:#f0f0f0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">⬇️</button>
+              <button onclick="enviarAmostraWpp('${id}')" title="WhatsApp" style="flex:1;background:#25D366;color:white;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">📱</button>
+              <button onclick="deletarAmostra('${id}')" title="Deletar" style="flex:1;background:#FFE0E0;border:none;padding:5px;border-radius:6px;font-size:11px;cursor:pointer;">🗑️</button>
+            </div>
+          `;
+          grid.appendChild(card);
+
+          if (processados === total) {
+            acoes.style.display = 'flex';
+            showToast('✅ ' + total + ' amostras com marca d\'água prontas!');
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function aplicarMarcaDaguaModal(imageSrc, callback) {
+    var canvas = document.getElementById('modal-watermark-canvas');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+    img.onload = function() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      var logoW = img.width * 0.20;
+      var logoH = logoWM.naturalHeight ? (logoW * logoWM.naturalHeight / logoWM.naturalWidth) : logoW * 0.5;
+      var spacingX = img.width * 0.28;
+      var spacingY = img.height * 0.22;
+
+      ctx.save();
+      ctx.globalAlpha = 0.28;
+      for (var y = 0; y < img.height + spacingY; y += spacingY) {
+        for (var x = 0; x < img.width + spacingX; x += spacingX) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(-25 * Math.PI / 180);
+          if (logoWM.complete && logoWM.naturalWidth > 0) {
+            ctx.drawImage(logoWM, -logoW/2, -logoH/2, logoW, logoH);
+          } else {
+            ctx.font = 'bold ' + Math.max(16, img.width * 0.035) + 'px Arial';
+            ctx.fillStyle = '#9E4E33';
+            ctx.fillText('JK IA FOTO STUDIO', -60, 0);
+          }
+          ctx.restore();
+        }
+      }
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      callback(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.src = imageSrc;
+  }
+
+  function deletarAmostra(id) {
+    modalAmostras = modalAmostras.filter(function(a) { return a.id !== id; });
+    var card = document.getElementById('amostra-card-' + id);
+    if (card) card.remove();
+    if (modalAmostras.length === 0) {
+      document.getElementById('modal-amostras-empty').style.display = 'block';
+      document.getElementById('modal-amostras-acoes').style.display = 'none';
+    }
+    showToast('🗑️ Amostra removida');
+  }
+
+  function deletarTodasAmostras() {
+    if (!confirm('Deletar todas as amostras deste cliente?')) return;
+    modalAmostras = [];
+    var grid = document.getElementById('modal-amostras-grid');
+    // Remover todos os cards exceto o empty
+    Array.from(grid.children).forEach(function(child) {
+      if (child.id !== 'modal-amostras-empty') child.remove();
+    });
+    document.getElementById('modal-amostras-empty').style.display = 'block';
+    document.getElementById('modal-amostras-acoes').style.display = 'none';
+    showToast('🗑️ Todas as amostras removidas');
+  }
 
   function baixarAmostraModal(id) {
     var a = modalAmostras.find(function(x) { return x.id === id; });
@@ -4391,7 +3998,6 @@ window.verFotosCliente = verFotosCliente;
           <div class="action-btns">
             ${p.status === 'aprovado' ? `<button class="action-btn green" onclick="event.stopPropagation();liberarDiretoId('${p.id}')" title="Liberar">✅</button>` : ''}
             <button class="action-btn" onclick="event.stopPropagation();abrirPedidoSupabase('${p.id}')" title="Ver detalhes">👁</button>
-            <button class="action-btn" onclick="event.stopPropagation();abrirEditarPedido('${p.id}')" title="Editar" style="background:#E8F4FD;">✏️</button>
             <button class="action-btn" onclick="event.stopPropagation();deletarPedido('${p.id}','${p.nome}')" title="Deletar" style="background:#FFE0E0;">🗑️</button>
           </div>
         </td>
@@ -4503,6 +4109,47 @@ window.verFotosCliente = verFotosCliente;
 
 var currentSection = 'site';
 
+function appNav(section) {
+  // Hide all sections
+  document.querySelectorAll('.app-section').forEach(function(s){ s.classList.remove('active'); });
+
+  // Show target
+  var el = document.getElementById('app-' + section);
+  if (el) el.classList.add('active');
+  currentSection = section;
+
+  // Nav visibility
+  var nav = document.getElementById('global-nav');
+  if (nav) {
+    if (section === 'admin') {
+      nav.classList.add('hidden');
+    } else {
+      nav.classList.remove('hidden');
+    }
+  }
+
+  // Reset scroll
+  window.scrollTo(0, 0);
+
+  // Admin: init
+  if (section === 'admin') {
+    if (typeof carregarPedidos === 'function') carregarPedidos();
+    if (typeof adminShowPage === 'function') adminShowPage('dashboard');
+  }
+
+  // Upload: reset to page 1
+  if (section === 'upload') {
+    if (typeof showUploadPage === 'function') showUploadPage(1);
+  }
+
+  // Site: reset screens
+  if (section === 'site' || section === 'cliente') {
+    document.querySelectorAll('#app-site .screen').forEach(function(s){ s.classList.remove('active'); });
+    var screenId = section === 'cliente' ? 'screen-cliente' : 'screen-home';
+    var target = document.getElementById(screenId);
+    if (target) target.classList.add('active');
+  }
+}
 
 function goEnsaios() {
   appNav('site');
@@ -4555,6 +4202,16 @@ window.addEventListener('scroll', function(){
 
   // Auto-advance carousels (desativado - carrosséis removidos)
 
+  function openModal(id) {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    goStep(1);
+    if (id) { selectTipo(id); }
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
   document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) closeModal(); });
 
   function goStep(n) {
@@ -4687,6 +4344,22 @@ window.addEventListener('scroll', function(){
     amostras:   ['Amostras', 'Preview com marca dagua para clientes'],
   };
 
+  function adminShowPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    var page = document.getElementById('page-' + id);
+    if (page) page.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    var navEl = document.querySelector(`[onclick="adminShowPage('${id}')"]`);
+    if (navEl) navEl.classList.add('active');
+    const t = pageTitles[id] || [id, ''];
+    var titleEl = document.getElementById('page-title');
+    var subEl = document.getElementById('page-sub');
+    if (titleEl) titleEl.textContent = t[0];
+    if (subEl) subEl.textContent = t[1];
+    if (id === 'pedidos') carregarPedidos();
+    if (id === 'dashboard') carregarPedidos();
+    if (id === 'clientes') carregarClientes();
+  }
 
   // ===== TABELA PEDIDOS =====
   function renderPedidos(filtro) {
@@ -4872,7 +4545,18 @@ window.addEventListener('scroll', function(){
   });
 
   // ===== NOVO CLIENTE =====
+  function abrirModalNovoCliente() {
+    document.getElementById('modal-novo-cliente').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    ['nc-nome','nc-email','nc-wpp','nc-obs'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+  }
 
+  function fecharModalNovoCliente() {
+    document.getElementById('modal-novo-cliente').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
   async function salvarNovoClienteAsync() {
     var nome = document.getElementById('nc-nome').value.trim();
@@ -4933,11 +4617,25 @@ window.addEventListener('scroll', function(){
           <td style="font-size:13px;color:#666">${c.observacoes || '-'}</td>
           <td style="font-size:12px;color:#999">${data}</td>
           <td>
-            <button onclick="abrirEditarCliente('${c.id}')" style="background:#E8F4FD;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-right:4px;">✏️</button><button onclick="deletarCliente('${c.id}','${c.nome}')" style="background:#FFE0E0;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>
+            <button onclick="deletarCliente('${c.id}','${c.nome}')" style="background:#FFE0E0;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️</button>
           </td>
         </tr>`;
       }).join('');
     } catch(e) { console.error('Erro ao carregar clientes:', e); }
+  }
+
+  async function deletarPedido(id, nome) {
+    if (!confirm('Deletar pedido de ' + nome + '? Esta ação não pode ser desfeita.')) return;
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/pedidos?id=eq.' + id, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      if (resp.ok) {
+        showToast('🗑️ Pedido de ' + nome + ' deletado!');
+        carregarPedidos();
+      } else { showToast('❌ Erro ao deletar pedido'); }
+    } catch(e) { showToast('❌ Erro: ' + e.message); }
   }
 
   async function deletarCliente(id, nome) {
@@ -4955,6 +4653,26 @@ window.addEventListener('scroll', function(){
   var precosPorQty = {2:19.90, 5:29.90, 10:49.90, 20:79.90, 50:99.90, 100:149.90};
 
   // ===== NOVO PEDIDO =====
+  function abrirModalNovoPedido() {
+    document.getElementById('modal-novo-pedido').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Limpar campos
+    ['np-email','np-wpp','np-nome'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+    var qtyEl = document.getElementById('np-qty');
+    var valorEl = document.getElementById('np-valor');
+    if (qtyEl) qtyEl.value = '2';
+    if (valorEl) valorEl.value = '19.90';
+    if (qtyEl) qtyEl.onchange = function() {
+      if (valorEl) valorEl.value = precosPorQty[this.value] || '';
+    };
+    // Esconder campo manual
+    var nomeManual = document.getElementById('np-nome');
+    if (nomeManual) nomeManual.style.display = 'none';
+    // Carregar clientes no dropdown
+    carregarClientesNoPedido();
+  }
 
   async function carregarClientesNoPedido() {
     try {
@@ -4980,8 +4698,30 @@ window.addEventListener('scroll', function(){
     } catch(e) { console.error('Erro ao carregar clientes:', e); }
   }
 
+  function preencherEmailCliente(select) {
+    var opt = select.options[select.selectedIndex];
+    var emailEl = document.getElementById('np-email');
+    var wppEl = document.getElementById('np-wpp');
+    if (emailEl) emailEl.value = opt.dataset.email || '';
+    if (wppEl) wppEl.value = opt.dataset.tel || '';
+  }
 
+  function toggleNomeManual() {
+    var nomeEl = document.getElementById('np-nome');
+    var selectEl = document.getElementById('np-cliente');
+    if (nomeEl.style.display === 'none') {
+      nomeEl.style.display = 'block';
+      nomeEl.focus();
+    } else {
+      nomeEl.style.display = 'none';
+      nomeEl.value = '';
+    }
+  }
 
+  function fecharModalNovoPedido() {
+    document.getElementById('modal-novo-pedido').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
   async function salvarNovoPedidoAsync() {
     var select = document.getElementById('np-cliente');
@@ -5074,114 +4814,17 @@ window.addEventListener('scroll', function(){
 // ============================================================
 //  UNIFIED TOAST (override all)
 // ============================================================
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
 
 // Init
 appNav('site');
 if (typeof renderPedidos === 'function') renderPedidos('todos');
 </script>
-<!-- ===== MODAL EDITAR PEDIDO ===== -->
-<div class="modal-overlay" id="modal-editar-pedido" style="z-index:1001;">
-  <div class="modal-panel" style="max-width:500px;">
-    <div class="modal-panel-header">
-      <div><h2>✏️ Editar Pedido</h2></div>
-      <button class="modal-close-btn" onclick="document.getElementById('modal-editar-pedido').classList.remove('open');document.body.style.overflow='';">×</button>
-    </div>
-    <div class="modal-body" style="padding:24px;">
-      <input type="hidden" id="ep-id">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div>
-          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME</label>
-          <input type="text" id="ep-nome" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
-          <input type="email" id="ep-email" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">TEMA</label>
-            <select id="ep-tema" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-              <option value="Profissional">💼 Profissional</option>
-              <option value="Gestante">🤰 Gestante</option>
-              <option value="Aniversario">🎂 Aniversário</option>
-              <option value="Casal">💕 Casal</option>
-              <option value="Formatura">🎓 Formatura</option>
-              <option value="Intimista">✨ Intimista</option>
-              <option value="Bebe">👶 Bebê</option>
-              <option value="Aniversario Infantil">🎉 Aniv. Infantil</option>
-              <option value="Familia">👨‍👩‍👧‍👦 Família</option>
-            </select>
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">QUANTIDADE</label>
-            <select id="ep-qty" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-              <option value="2">2 fotos — R$19,90</option>
-              <option value="5">5 fotos — R$29,90</option>
-              <option value="10">10 fotos — R$49,90</option>
-              <option value="20">20 fotos — R$79,90</option>
-              <option value="50">50 fotos — R$99,90</option>
-              <option value="100">100 fotos — R$149,90</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">VALOR (R$)</label>
-            <input type="number" id="ep-valor" step="0.01" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">STATUS</label>
-            <select id="ep-status" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-              <option value="pendente">⏳ Pendente</option>
-              <option value="aprovado">✅ Aprovado</option>
-              <option value="liberado">🔓 Liberado</option>
-              <option value="recusado">❌ Recusado</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:8px;">
-          <button onclick="document.getElementById('modal-editar-pedido').classList.remove('open');document.body.style.overflow='';" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
-          <button onclick="window.salvarEdicaoPedido()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">💾 Salvar Alterações</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL EDITAR CLIENTE ===== -->
-<div class="modal-overlay" id="modal-editar-cliente" style="z-index:1001;">
-  <div class="modal-panel" style="max-width:500px;">
-    <div class="modal-panel-header">
-      <div><h2>✏️ Editar Cliente</h2></div>
-      <button class="modal-close-btn" onclick="document.getElementById('modal-editar-cliente').classList.remove('open');document.body.style.overflow='';">×</button>
-    </div>
-    <div class="modal-body" style="padding:24px;">
-      <input type="hidden" id="ec-id">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div>
-          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME</label>
-          <input type="text" id="ec-nome" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
-          <input type="email" id="ec-email" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">WHATSAPP</label>
-          <input type="text" id="ec-wpp" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">OBSERVAÇÕES</label>
-          <textarea id="ec-obs" rows="3" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;resize:vertical;"></textarea>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:8px;">
-          <button onclick="document.getElementById('modal-editar-cliente').classList.remove('open');document.body.style.overflow='';" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;font-size:14px;cursor:pointer;">Cancelar</button>
-          <button onclick="window.salvarEdicaoCliente()" style="flex:2;padding:12px;background:var(--deep-rose);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">💾 Salvar Alterações</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
