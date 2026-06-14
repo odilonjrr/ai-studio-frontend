@@ -1796,6 +1796,34 @@ function fecharModalNovoCliente() {
   if (m) m.classList.remove('open');
   document.body.style.overflow = '';
 }
+
+function salvarNovoCliente() {
+  if (typeof salvarNovoClienteAsync === 'function') salvarNovoClienteAsync();
+}
+
+function salvarNovoPedido() {
+  if (typeof salvarNovoPedidoAsync === 'function') salvarNovoPedidoAsync();
+}
+
+function preencherEmailCliente(select) {
+  var opt = select.options[select.selectedIndex];
+  var emailEl = document.getElementById('np-email');
+  var wppEl = document.getElementById('np-wpp');
+  if (emailEl) emailEl.value = opt.dataset.email || '';
+  if (wppEl) wppEl.value = opt.dataset.tel || '';
+}
+
+function toggleNomeManual() {
+  var nomeEl = document.getElementById('np-nome');
+  if (!nomeEl) return;
+  if (nomeEl.style.display === 'none') {
+    nomeEl.style.display = 'block';
+    nomeEl.focus();
+  } else {
+    nomeEl.style.display = 'none';
+    nomeEl.value = '';
+  }
+}
 </script>
 
 <!-- ===== GLOBAL NAV ===== -->
@@ -4374,28 +4402,6 @@ window.addEventListener('scroll', function(){
     document.body.style.overflow = '';
   }
 
-  async function salvarNovoCliente() {
+  async function salvarNovoClienteAsync() {
     var nome = document.getElementById('nc-nome').value.trim();
-    var email = document.getElementById('nc-email').value.trim();
-    var wpp = document.getElementById('nc-wpp').value.trim();
-    var obs = document.getElementById('nc-obs').value.trim();
-    if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
-    try {
-      var resp = await fetch(SUPABASE_URL + '/rest/v1/clientes', {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          nome: nome,
-          email: email,
-          telefone: wpp,
-          observacoes: obs
-        })
-      });
-      if (resp.ok || resp.status === 201) {
-        showToast('✅ Cliente ' + nome + ' cadastrado!');
-        fecharModalNovoClien
+    var email = document.getElementById('
