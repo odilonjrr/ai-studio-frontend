@@ -1798,11 +1798,52 @@ function fecharModalNovoCliente() {
 }
 
 function salvarNovoCliente() {
-  if (typeof salvarNovoClienteAsync === 'function') salvarNovoClienteAsync();
+  var nome = document.getElementById('nc-nome').value.trim();
+  var email = document.getElementById('nc-email').value.trim();
+  var wpp = document.getElementById('nc-wpp').value.trim();
+  var obs = document.getElementById('nc-obs').value.trim();
+  if (!nome || !email) { showToast('❌ Preencha nome e email!'); return; }
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  fetch(SURL + '/rest/v1/clientes', {
+    method: 'POST',
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ nome: nome, email: email, telefone: wpp, observacoes: obs })
+  }).then(function(resp) {
+    if (resp.ok || resp.status === 201) {
+      showToast('✅ Cliente ' + nome + ' cadastrado!');
+      fecharModalNovoCliente();
+      if (typeof carregarClientes === 'function') carregarClientes();
+    } else {
+      resp.json().then(function(err) { showToast('❌ Erro: ' + (err.message || 'Tente novamente')); });
+    }
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
 
 function salvarNovoPedido() {
-  if (typeof salvarNovoPedidoAsync === 'function') salvarNovoPedidoAsync();
+  var select = document.getElementById('np-cliente');
+  var opt = select ? select.options[select.selectedIndex] : null;
+  var nomeManual = (document.getElementById('np-nome') || {}).value || '';
+  var nome = nomeManual.trim() || (opt && opt.dataset.nome) || '';
+  var email = (document.getElementById('np-email') || {}).value || '';
+  var tema = (document.getElementById('np-tema') || {}).value || '';
+  var qty = parseInt((document.getElementById('np-qty') || {}).value || '2');
+  var valor = parseFloat((document.getElementById('np-valor') || {}).value || '0');
+  var status = (document.getElementById('np-status') || {}).value || 'pendente';
+  if (!nome || !email.trim() || !tema) { showToast('❌ Preencha cliente, email e tema!'); return; }
+  var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+  var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+  fetch(SURL + '/rest/v1/pedidos', {
+    method: 'POST',
+    headers: { 'apikey': SKEY, 'Authorization': 'Bearer ' + SKEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ nome: nome, email: email.trim(), tema: tema, quantidade: qty, valor: valor, status: status })
+  }).then(function(resp) {
+    if (resp.ok || resp.status === 201) {
+      showToast('✅ Pedido de ' + nome + ' criado!');
+      fecharModalNovoPedido();
+      if (typeof carregarPedidos === 'function') carregarPedidos();
+    } else { showToast('❌ Erro ao salvar pedido'); }
+  }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
 
 function preencherEmailCliente(select) {
@@ -1823,6 +1864,18 @@ function toggleNomeManual() {
     nomeEl.style.display = 'none';
     nomeEl.value = '';
   }
+}
+
+function irParaUpload() {
+  if (typeof appNav === 'function') appNav('upload');
+}
+
+function novoEnvio() {
+  if (typeof appNav === 'function') appNav('site');
+}
+
+function voltarDados() {
+  if (typeof goStep === 'function') goStep(2);
 }
 </script>
 
@@ -3289,6 +3342,7 @@ function toggleNomeManual() {
   <img id="lightbox-img" src="" alt="">
 </div>
 
+
 <script>
 // ============================================================
 //  AI STUDIO — UNIFIED APP NAVIGATION
@@ -3991,11 +4045,6 @@ function toggleNomeManual() {
 
   // Verificar ao carregar a página
   verificarPreview();
-  const _origAdminShowPage = typeof adminShowPage === 'function' ? adminShowPage : null;
-  function adminShowPage(page) {
-    if (_origAdminShowPage) _origAdminShowPage(page);
-    if (page === 'pedidos') carregarPedidos();
-  }
 
   // Carregar ao abrir o painel admin
   document.addEventListener('DOMContentLoaded', function() {
@@ -4343,65 +4392,4 @@ window.addEventListener('scroll', function(){
   // ===== ABRIR PEDIDO (modal) =====
   function abrirPedido(p) {
     document.getElementById('modal-nome').textContent = p.nome;
-    document.getElementById('modal-ensaio').textContent = p.emoji + ' ' + p.tipo;
-    const b = badgeMap[p.status];
-    const badge = document.getElementById('modal-status-badge');
-    badge.className = 'badge ' + b.cls;
-    badge.textContent = b.txt;
-    document.getElementById('m-cliente').textContent = p.nome;
-    document.getElementById('m-email').textContent = p.email;
-    document.getElementById('m-tel').textContent = p.tel;
-    document.getElementById('m-tipo').textContent = p.tipo;
-    document.getElementById('m-qty').textContent = p.qty;
-    document.getElementById('m-valor').textContent = p.valor;
-    document.getElementById('m-pay').textContent = p.pay + ' ✓';
-    document.getElementById('m-data').textContent = p.data;
-    document.getElementById('m-status').textContent = b.txt;
-
-    // Salvar dados do cliente para as amostras
-    pedidoAtualId = p.id || p.nome.replace(/\s/g,'_');
-    pedidoAtualNome = p.nome;
-    pedidoAtualWpp = p.tel ? p.tel.replace(/\D/g,'') : '';
-
-    // Limpar amostras anteriores
-    modalAmostras = [];
-    var grid = document.getElementById('modal-amostras-grid');
-    if (grid) {
-      Array.from(grid.children).forEach(function(child) {
-        if (child.id !== 'modal-amostras-empty') child.remove();
-      });
-      var empty = document.getElementById('modal-amostras-empty');
-      if (empty) empty.style.display = 'block';
-      var acoes = document.getElementById('modal-amostras-acoes');
-      if (acoes) acoes.style.display = 'none';
-    }
-
-    document.getElementById('modal-pedido').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function fecharModal() {
-    document.getElementById('modal-pedido').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  document.getElementById('modal-pedido').addEventListener('click', e => {
-    if (e.target === document.getElementById('modal-pedido')) fecharModal();
-  });
-
-  // ===== NOVO CLIENTE =====
-  function abrirModalNovoCliente() {
-    document.getElementById('modal-novo-cliente').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    ['nc-nome','nc-email','nc-wpp','nc-obs'].forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.value = '';
-    });
-  }
-
-  function fecharModalNovoCliente() {
-    document.getElementById('modal-novo-cliente').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  async function salvarNovoClienteAsync() {
-    var nome = document.getElementById('nc-nome').value.trim();
-    var email = document.getElementById('
+    document.getElementById('modal-ensaio').textContent = p
