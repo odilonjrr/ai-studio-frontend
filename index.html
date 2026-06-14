@@ -1986,7 +1986,100 @@ function _copiarFallback(texto) {
   document.body.removeChild(input);
 }
 
-// ===== EDITAR PEDIDO =====
+// ===== SUPABASE AUTH =====
+var SB_URL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
+var SB_KEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
+var _authToken = null;
+var _authUser = null;
+var _authRole = null;
+
+function sbFetch(path, opts) {
+  opts = opts || {};
+  opts.headers = opts.headers || {};
+  opts.headers['apikey'] = SB_KEY;
+  opts.headers['Authorization'] = 'Bearer ' + (_authToken || SB_KEY);
+  opts.headers['Content-Type'] = opts.headers['Content-Type'] || 'application/json';
+  return fetch(SB_URL + path, opts);
+}
+
+async function sbLogin(email, password) {
+  var resp = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password })
+  });
+  var data = await resp.json();
+  if (data.access_token) {
+    _authToken = data.access_token;
+    _authUser = data.user;
+    localStorage.setItem('sb_token', data.access_token);
+    localStorage.setItem('sb_user', JSON.stringify(data.user));
+    return { ok: true, user: data.user };
+  }
+  return { ok: false, error: data.error_description || 'Email ou senha incorretos' };
+}
+
+async function sbLogout() {
+  await fetch(SB_URL + '/auth/v1/logout', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + _authToken }
+  }).catch(function(){});
+  _authToken = null;
+  _authUser = null;
+  _authRole = null;
+  localStorage.removeItem('sb_token');
+  localStorage.removeItem('sb_user');
+  localStorage.removeItem('sb_role');
+}
+
+async function sbGetPerfil() {
+  if (!_authToken) return null;
+  var resp = await sbFetch('/rest/v1/perfis?id=eq.' + _authUser.id);
+  var data = await resp.json();
+  return data && data.length > 0 ? data[0] : null;
+}
+
+async function verificarSessao() {
+  var token = localStorage.getItem('sb_token');
+  var user = localStorage.getItem('sb_user');
+  if (!token || !user) return false;
+  _authToken = token;
+  _authUser = JSON.parse(user);
+  // Verificar se token ainda é válido
+  var resp = await sbFetch('/auth/v1/user');
+  if (resp.ok) {
+    var perfil = await sbGetPerfil();
+    if (perfil) {
+      _authRole = perfil.role;
+      localStorage.setItem('sb_role', perfil.role);
+    }
+    return true;
+  }
+  await sbLogout();
+  return false;
+}
+
+// Verificar sessão ao carregar
+window.addEventListener('DOMContentLoaded', async function() {
+  // Não rodar na página de preview
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('preview')) return;
+
+  var logado = await verificarSessao();
+  if (logado) {
+    var role = _authRole || localStorage.getItem('sb_role');
+    if (role === 'admin') {
+      // Mostrar link Admin no nav
+      var adminLinks = document.querySelectorAll('.link-admin');
+      adminLinks.forEach(function(el) { el.style.display = ''; });
+    } else {
+      // Cliente logado - mostrar área do cliente
+      var clienteLinks = document.querySelectorAll('.link-cliente');
+      clienteLinks.forEach(function(el) { el.style.display = ''; });
+    }
+  }
+});
+</script>
 function abrirEditarPedido(id) {
   var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
   var SKEY = 'sb_publishable_BCqrqQkvBnqzJFt85fdWpw_UqkBSIU8';
@@ -2079,6 +2172,206 @@ function salvarEdicaoCliente() {
   }).catch(function(e) { showToast('❌ Erro: ' + e.message); });
 }
 window.salvarEdicaoCliente = salvarEdicaoCliente;
+
+// ===== AUTH FUNCTIONS =====
+function switchLoginTab(tab) {
+  var entrar = document.getElementById('form-entrar');
+  var cadastrar = document.getElementById('form-cadastrar');
+  var tabEntrar = document.getElementById('tab-entrar');
+  var tabCadastrar = document.getElementById('tab-cadastrar');
+  if (tab === 'entrar') {
+    entrar.style.display = 'block';
+    cadastrar.style.display = 'none';
+    tabEntrar.style.background = 'white';
+    tabEntrar.style.color = '#333';
+    tabCadastrar.style.background = 'transparent';
+    tabCadastrar.style.color = '#999';
+  } else {
+    entrar.style.display = 'none';
+    cadastrar.style.display = 'block';
+    tabCadastrar.style.background = 'white';
+    tabCadastrar.style.color = '#333';
+    tabEntrar.style.background = 'transparent';
+    tabEntrar.style.color = '#999';
+  }
+}
+window.switchLoginTab = switchLoginTab;
+
+function irParaCliente() {
+  if (_authToken && _authRole === 'cliente') {
+    appNav('cliente');
+    carregarPainelCliente();
+  } else {
+    appNav('login');
+  }
+}
+window.irParaCliente = irParaCliente;
+
+function irParaAdmin() {
+  if (_authToken && _authRole === 'admin') {
+    appNav('admin');
+  } else {
+    appNav('login');
+  }
+}
+window.irParaAdmin = irParaAdmin;
+
+async function fazerLogin() {
+  var email = (document.getElementById('login-email') || {}).value || '';
+  var senha = (document.getElementById('login-senha') || {}).value || '';
+  var erroEl = document.getElementById('login-erro');
+  if (!email || !senha) { if(erroEl){erroEl.textContent='Preencha email e senha';erroEl.style.display='block';} return; }
+  if(erroEl) erroEl.style.display = 'none';
+  showToast('⏳ Entrando...');
+  var result = await sbLogin(email, senha);
+  if (!result.ok) {
+    if(erroEl){erroEl.textContent = result.error; erroEl.style.display='block';}
+    showToast('❌ ' + result.error);
+    return;
+  }
+  var perfil = await sbGetPerfil();
+  if (perfil) {
+    _authRole = perfil.role;
+    localStorage.setItem('sb_role', perfil.role);
+    if (perfil.role === 'admin') {
+      var adminLinks = document.querySelectorAll('.link-admin');
+      adminLinks.forEach(function(el){ el.style.display = ''; });
+      showToast('✅ Bem-vindo, ' + perfil.nome + '!');
+      appNav('admin');
+    } else {
+      showToast('✅ Bem-vindo, ' + perfil.nome + '!');
+      var header = document.getElementById('cliente-nome-header');
+      if (header) header.textContent = perfil.nome;
+      appNav('cliente');
+      carregarPainelCliente();
+    }
+  }
+}
+window.fazerLogin = fazerLogin;
+
+async function fazerCadastro() {
+  var nome = (document.getElementById('cad-nome') || {}).value || '';
+  var email = (document.getElementById('cad-email') || {}).value || '';
+  var wpp = (document.getElementById('cad-wpp') || {}).value || '';
+  var senha = (document.getElementById('cad-senha') || {}).value || '';
+  var erroEl = document.getElementById('cad-erro');
+  if (!nome || !email || !senha) { if(erroEl){erroEl.textContent='Preencha todos os campos';erroEl.style.display='block';} return; }
+  if (senha.length < 6) { if(erroEl){erroEl.textContent='Senha deve ter mínimo 6 caracteres';erroEl.style.display='block';} return; }
+  if(erroEl) erroEl.style.display = 'none';
+  showToast('⏳ Criando conta...');
+  // Criar usuário no Supabase Auth
+  var resp = await fetch(SB_URL + '/auth/v1/signup', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: senha })
+  });
+  var data = await resp.json();
+  if (!data.access_token && !data.user) {
+    var msg = data.msg || data.error_description || 'Erro ao criar conta';
+    if(erroEl){erroEl.textContent=msg;erroEl.style.display='block';}
+    showToast('❌ ' + msg); return;
+  }
+  _authToken = data.access_token;
+  _authUser = data.user;
+  localStorage.setItem('sb_token', data.access_token);
+  localStorage.setItem('sb_user', JSON.stringify(data.user));
+  // Criar perfil
+  await fetch(SB_URL + '/rest/v1/perfis', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + data.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ id: data.user.id, nome: nome, email: email, telefone: wpp, role: 'cliente' })
+  });
+  _authRole = 'cliente';
+  localStorage.setItem('sb_role', 'cliente');
+  showToast('✅ Conta criada! Bem-vindo, ' + nome + '!');
+  var header = document.getElementById('cliente-nome-header');
+  if (header) header.textContent = nome;
+  appNav('cliente');
+  carregarPainelCliente();
+}
+window.fazerCadastro = fazerCadastro;
+
+async function fazerLogout() {
+  await sbLogout();
+  var adminLinks = document.querySelectorAll('.link-admin');
+  adminLinks.forEach(function(el){ el.style.display = 'none'; });
+  showToast('👋 Até logo!');
+  appNav('site');
+}
+window.fazerLogout = fazerLogout;
+
+async function carregarPainelCliente() {
+  if (!_authUser) return;
+  var container = document.getElementById('cliente-pedidos');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:36px;">⏳</div><p>Carregando seus pedidos...</p></div>';
+  try {
+    var resp = await sbFetch('/rest/v1/pedidos?email=eq.' + encodeURIComponent(_authUser.email) + '&order=created_at.desc');
+    var pedidos = await resp.json();
+    if (!pedidos || pedidos.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:60px;background:white;border-radius:12px;"><div style="font-size:48px;margin-bottom:12px;">📸</div><p style="font-size:16px;font-weight:600;">Nenhum pedido encontrado</p><p style="color:#999;font-size:13px;">Quando você criar um ensaio, ele aparecerá aqui</p><button onclick="appNav(\'site\')" style="margin-top:16px;background:#9E4E33;color:white;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:14px;">Criar meu ensaio</button></div>';
+      return;
+    }
+    var statusInfo = {
+      'pendente': { icon: '⏳', label: 'Aguardando pagamento', color: '#B7791F', bg: '#FEF3C7' },
+      'aprovado': { icon: '🎨', label: 'Em produção com IA', color: '#5E35B1', bg: '#EDE7F6' },
+      'liberado': { icon: '✅', label: 'Fotos prontas!', color: '#2D6A4F', bg: '#D1FAE5' },
+      'recusado': { icon: '❌', label: 'Recusado', color: '#9B2C2C', bg: '#FEE2E2' }
+    };
+    container.innerHTML = pedidos.map(function(p) {
+      var st = statusInfo[p.status] || statusInfo['pendente'];
+      var data = new Date(p.created_at).toLocaleDateString('pt-BR');
+      return '<div style="background:white;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">' +
+          '<div>' +
+            '<div style="font-size:18px;font-weight:700;margin-bottom:4px;">' + p.tema + '</div>' +
+            '<div style="font-size:13px;color:#999;">' + p.quantidade + ' fotos · R$ ' + Number(p.valor).toFixed(2).replace('.',',') + ' · ' + data + '</div>' +
+          '</div>' +
+          '<span style="background:' + st.bg + ';color:' + st.color + ';padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;">' + st.icon + ' ' + st.label + '</span>' +
+        '</div>' +
+        (p.status === 'aprovado' || p.status === 'liberado' ? '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">' +
+          (p.status === 'aprovado' ? '<button onclick="verPreviaCliente(\'' + p.id + '\')" style="background:#9E4E33;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;">🖼️ Ver Prévia</button>' : '') +
+          (p.status === 'liberado' ? '<button onclick="verFotosCliente(\'' + p.id + '\')" style="background:#2D6A4F;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;">📥 Baixar Fotos</button>' : '') +
+        '</div>' : '') +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">Erro ao carregar pedidos</div>';
+  }
+}
+window.carregarPainelCliente = carregarPainelCliente;
+
+async function verPreviaCliente(pedidoId) {
+  appNav('site');
+  window.location.search = '?preview=' + pedidoId;
+}
+window.verPreviaCliente = verPreviaCliente;
+
+async function verFotosCliente(pedidoId) {
+  showToast('⏳ Carregando suas fotos...');
+  try {
+    var resp = await sbFetch('/storage/v1/object/list/fotos-prontas', {
+      method: 'POST',
+      body: JSON.stringify({ prefix: pedidoId + '/', limit: 100 })
+    });
+    var files = await resp.json();
+    if (!files || files.length === 0) {
+      showToast('📭 Nenhuma foto encontrada ainda');
+      return;
+    }
+    // Abrir cada foto em nova aba para download
+    files.forEach(function(file, i) {
+      setTimeout(function() {
+        var url = SB_URL + '/storage/v1/object/fotos-prontas/' + pedidoId + '/' + file.name + '?token=' + _authToken;
+        window.open(url, '_blank');
+      }, i * 300);
+    });
+    showToast('✅ ' + files.length + ' fotos abrindo para download!');
+  } catch(e) {
+    showToast('❌ Erro ao carregar fotos');
+  }
+}
+window.verFotosCliente = verFotosCliente;
 </script>
 
 <!-- ===== GLOBAL NAV ===== -->
@@ -2099,8 +2392,8 @@ window.salvarEdicaoCliente = salvarEdicaoCliente;
     <a onclick="goEnsaios()">Ensaios</a>
     <a onclick="goDepoimentos()">Depoimentos</a>
     <a onclick="appNav('upload')">Enviar Fotos</a>
-    <a onclick="appNav('cliente')">Meu Ensaio</a>
-    <a onclick="appNav('admin')" style="color:#9E4E33;font-weight:600;">Admin</a>
+    <a onclick="window.irParaCliente()" id="nav-meu-ensaio">Meu Ensaio</a>
+    <a onclick="window.irParaAdmin()" class="link-admin" style="color:#9E4E33;font-weight:600;display:none;">Admin</a>
   </div>
   <div class="g-nav-right">
     <a class="g-btn-wpp" href="https://wa.me/5521999850085" target="_blank">
@@ -3029,6 +3322,101 @@ window.salvarEdicaoCliente = salvarEdicaoCliente;
 </div>
 
 <!-- ===== ADMIN ===== -->
+<!-- ===== LOGIN ===== -->
+<div id="app-login" class="app-section">
+  <div style="min-height:100vh;background:#FAF8F5;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:white;border-radius:16px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.1);">
+      <div style="text-align:center;margin-bottom:32px;">
+        <img src="./logo.png" alt="JK IA Foto Studio" style="height:70px;object-fit:contain;margin-bottom:16px;">
+        <h2 id="login-titulo" style="font-family:'Playfair Display',serif;font-size:22px;margin:0;">Entrar na sua conta</h2>
+        <p id="login-subtitulo" style="color:#999;font-size:13px;margin-top:6px;">Acesse seu painel</p>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:0;margin-bottom:24px;background:#f5f5f5;border-radius:8px;padding:4px;">
+        <button onclick="switchLoginTab('entrar')" id="tab-entrar" style="flex:1;padding:8px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:white;color:#333;">Entrar</button>
+        <button onclick="switchLoginTab('cadastrar')" id="tab-cadastrar" style="flex:1;padding:8px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:#999;">Cadastrar</button>
+      </div>
+
+      <!-- Form Entrar -->
+      <div id="form-entrar">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
+            <input type="email" id="login-email" placeholder="seu@email.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">SENHA</label>
+            <input type="password" id="login-senha" placeholder="••••••••" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;"
+              onkeypress="if(event.key==='Enter') window.fazerLogin()">
+          </div>
+          <button onclick="window.fazerLogin()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;">
+            Entrar →
+          </button>
+          <p id="login-erro" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;"></p>
+        </div>
+      </div>
+
+      <!-- Form Cadastrar -->
+      <div id="form-cadastrar" style="display:none;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">NOME COMPLETO</label>
+            <input type="text" id="cad-nome" placeholder="Seu nome" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">EMAIL</label>
+            <input type="email" id="cad-email" placeholder="seu@email.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">WHATSAPP</label>
+            <input type="text" id="cad-wpp" placeholder="5521999999999" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">SENHA</label>
+            <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+          </div>
+          <button onclick="window.fazerCadastro()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;">
+            Criar conta →
+          </button>
+          <p id="cad-erro" style="color:#e53e3e;font-size:13px;text-align:center;display:none;margin:0;"></p>
+        </div>
+      </div>
+
+      <p style="text-align:center;margin-top:20px;font-size:13px;color:#999;">
+        <a href="#" onclick="appNav('site');return false;" style="color:#9E4E33;">← Voltar ao site</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ÁREA DO CLIENTE ===== -->
+<div id="app-cliente" class="app-section">
+  <div style="min-height:100vh;background:#FAF8F5;">
+    <!-- Header -->
+    <div style="background:#2C1810;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;">
+      <img src="./logo.png" alt="JK IA" style="height:50px;object-fit:contain;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span id="cliente-nome-header" style="color:white;font-size:14px;"></span>
+        <button onclick="window.fazerLogout()" style="background:rgba(255,255,255,0.15);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;">Sair</button>
+      </div>
+    </div>
+
+    <div style="max-width:900px;margin:0 auto;padding:32px 20px;">
+      <h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;">Meu Ensaio</h1>
+      <p style="color:#999;margin-bottom:32px;">Acompanhe o status do seu ensaio fotográfico com IA</p>
+
+      <!-- Cards de Status -->
+      <div id="cliente-pedidos" style="display:flex;flex-direction:column;gap:20px;">
+        <div style="text-align:center;padding:60px;color:#999;">
+          <div style="font-size:48px;margin-bottom:12px;">📸</div>
+          <p>Carregando seus pedidos...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="app-admin" class="app-section">
 
 
