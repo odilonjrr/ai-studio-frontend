@@ -2258,44 +2258,62 @@ async function fazerCadastro() {
   if (senha.length < 6) { if(erroEl){erroEl.textContent='Senha deve ter mínimo 6 caracteres';erroEl.style.display='block';} return; }
   if(erroEl) erroEl.style.display = 'none';
   showToast('⏳ Criando conta...');
-  // Criar usuário no Supabase Auth
+
   var resp = await fetch(SB_URL + '/auth/v1/signup', {
     method: 'POST',
     headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, password: senha })
   });
   var data = await resp.json();
+
+  // Email já registrado — tentar fazer login
+  if (data.msg === 'User already registered' || (data.code === 'email_exists')) {
+    showToast('⚠️ Email já cadastrado! Tentando entrar...');
+    var loginResult = await sbLogin(email, senha);
+    if (loginResult.ok) {
+      await finalizarCadastro(loginResult.user, nome, wpp);
+    } else {
+      if(erroEl){erroEl.textContent='Email já cadastrado. Use a aba "Entrar".';erroEl.style.display='block';}
+    }
+    return;
+  }
+
   if (!data.access_token && !data.user) {
     var msg = data.msg || data.error_description || 'Erro ao criar conta';
     if(erroEl){erroEl.textContent=msg;erroEl.style.display='block';}
     showToast('❌ ' + msg); return;
   }
+
   _authToken = data.access_token;
   _authUser = data.user;
   localStorage.setItem('sb_token', data.access_token);
   localStorage.setItem('sb_user', JSON.stringify(data.user));
-  // Criar perfil na tabela perfis
+  await finalizarCadastro(data.user, nome, wpp);
+}
+window.fazerCadastro = fazerCadastro;
+
+async function finalizarCadastro(user, nome, wpp) {
+  // Salvar perfil
   await fetch(SB_URL + '/rest/v1/perfis', {
     method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + data.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ id: data.user.id, nome: nome, email: email, telefone: wpp, role: 'cliente' })
-  });
-
-  // Salvar também na tabela clientes (para aparecer no admin)
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json', 'Prefer': 'return=minimal,resolution=merge-duplicates' },
+    body: JSON.stringify({ id: user.id, nome: nome, email: user.email, telefone: wpp, role: 'cliente' })
+  }).catch(function(){});
+  // Salvar na tabela clientes do admin
   await fetch(SB_URL + '/rest/v1/clientes', {
     method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + data.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ nome: nome, email: email, telefone: wpp })
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + _authToken, 'Content-Type': 'application/json', 'Prefer': 'return=minimal,resolution=merge-duplicates' },
+    body: JSON.stringify({ nome: nome, email: user.email, telefone: wpp })
   }).catch(function(){});
   _authRole = 'cliente';
   localStorage.setItem('sb_role', 'cliente');
-  showToast('✅ Conta criada! Bem-vindo, ' + nome + '!');
+  showToast('✅ Bem-vindo, ' + nome + '!');
   var header = document.getElementById('cliente-nome-header');
   if (header) header.textContent = nome;
   appNav('cliente');
   carregarPainelCliente();
 }
-window.fazerCadastro = fazerCadastro;
+window.finalizarCadastro = finalizarCadastro;
 
 async function fazerLogout() {
   await sbLogout();
