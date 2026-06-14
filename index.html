@@ -2046,25 +2046,26 @@ async function verificarSessao() {
   var token = localStorage.getItem('sb_token');
   var user = localStorage.getItem('sb_user');
   if (!token || !user) return false;
-  _authToken = token;
-  _authUser = JSON.parse(user);
-  // Verificar se token ainda é válido
-  var resp = await sbFetch('/auth/v1/user');
-  if (resp.ok) {
-    var perfil = await sbGetPerfil();
-    if (perfil) {
-      _authRole = perfil.role;
-      localStorage.setItem('sb_role', perfil.role);
+  try {
+    _authToken = token;
+    _authUser = JSON.parse(user);
+    _authRole = localStorage.getItem('sb_role') || 'cliente';
+    // Verificar se token ainda é válido
+    var resp = await fetch(SB_URL + '/auth/v1/user', {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + token }
+    });
+    if (!resp.ok) {
+      await sbLogout();
+      return false;
     }
     return true;
+  } catch(e) {
+    return false;
   }
-  await sbLogout();
-  return false;
 }
 
 // Verificar sessão ao carregar
 window.addEventListener('DOMContentLoaded', async function() {
-  // Não rodar na página de preview
   var params = new URLSearchParams(window.location.search);
   if (params.get('preview')) return;
 
@@ -2072,13 +2073,8 @@ window.addEventListener('DOMContentLoaded', async function() {
   if (logado) {
     var role = _authRole || localStorage.getItem('sb_role');
     if (role === 'admin') {
-      // Mostrar link Admin no nav
       var adminLinks = document.querySelectorAll('.link-admin');
       adminLinks.forEach(function(el) { el.style.display = ''; });
-    } else {
-      // Cliente logado - mostrar área do cliente
-      var clienteLinks = document.querySelectorAll('.link-cliente');
-      clienteLinks.forEach(function(el) { el.style.display = ''; });
     }
   }
 });
@@ -2278,12 +2274,19 @@ async function fazerCadastro() {
   _authUser = data.user;
   localStorage.setItem('sb_token', data.access_token);
   localStorage.setItem('sb_user', JSON.stringify(data.user));
-  // Criar perfil
+  // Criar perfil na tabela perfis
   await fetch(SB_URL + '/rest/v1/perfis', {
     method: 'POST',
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + data.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
     body: JSON.stringify({ id: data.user.id, nome: nome, email: email, telefone: wpp, role: 'cliente' })
   });
+
+  // Salvar também na tabela clientes (para aparecer no admin)
+  await fetch(SB_URL + '/rest/v1/clientes', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + data.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ nome: nome, email: email, telefone: wpp })
+  }).catch(function(){});
   _authRole = 'cliente';
   localStorage.setItem('sb_role', 'cliente');
   showToast('✅ Conta criada! Bem-vindo, ' + nome + '!');
