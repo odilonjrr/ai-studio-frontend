@@ -869,6 +869,7 @@
     .split-grid { grid-template-columns: 1fr; }
     .wpp-float { display: none !important; }
     .g-btn-wpp { display: none !important; }
+    #hamburger-btn { display: flex !important; }
   }
 
 
@@ -2074,7 +2075,7 @@ window.addEventListener('DOMContentLoaded', async function() {
   if (logado) {
     var role = _authRole || localStorage.getItem('sb_role');
     if (role === 'admin') {
-      var adminLinks = document.querySelectorAll('.link-admin');
+      var adminLinks = document.querySelectorAll('.link-admin, .link-admin-mobile');
       adminLinks.forEach(function(el) { el.style.display = ''; });
     }
   }
@@ -2196,6 +2197,19 @@ function switchLoginTab(tab) {
   }
 }
 window.switchLoginTab = switchLoginTab;
+
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobile-menu');
+  if (!menu) return;
+  if (menu.style.display === 'none' || menu.style.display === '') {
+    menu.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  } else {
+    menu.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+window.toggleMobileMenu = toggleMobileMenu;
 
 function irParaCliente() {
   if (_authToken && _authRole === 'cliente') {
@@ -2426,8 +2440,27 @@ window.verFotosCliente = verFotosCliente;
       WhatsApp
     </a>
     <button class="g-btn-cta" onclick="openModal()">Criar Ensaio</button>
+    <!-- Hamburguer mobile -->
+    <button id="hamburger-btn" onclick="toggleMobileMenu()" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;align-items:center;justify-content:center;">
+      <span style="display:block;width:22px;height:2px;background:#1E1612;border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:#1E1612;border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:#1E1612;border-radius:2px;transition:all 0.3s;"></span>
+    </button>
   </div>
 </nav>
+
+<!-- Menu Mobile -->
+<div id="mobile-menu" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,22,18,0.95);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:28px;">
+  <button onclick="toggleMobileMenu()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:white;font-size:28px;cursor:pointer;">×</button>
+  <img src="./logo.png" alt="JK IA" style="height:60px;object-fit:contain;margin-bottom:8px;">
+  <a onclick="toggleMobileMenu();appNav('site');" style="color:white;font-size:20px;font-weight:600;text-decoration:none;font-family:'Playfair Display',serif;">Início</a>
+  <a onclick="toggleMobileMenu();goEnsaios();" style="color:white;font-size:20px;font-weight:600;text-decoration:none;font-family:'Playfair Display',serif;">Ensaios</a>
+  <a onclick="toggleMobileMenu();goDepoimentos();" style="color:white;font-size:20px;font-weight:600;text-decoration:none;font-family:'Playfair Display',serif;">Depoimentos</a>
+  <a onclick="toggleMobileMenu();appNav('upload');" style="color:white;font-size:20px;font-weight:600;text-decoration:none;font-family:'Playfair Display',serif;">Enviar Fotos</a>
+  <a onclick="toggleMobileMenu();window.irParaCliente();" style="color:white;font-size:20px;font-weight:600;text-decoration:none;font-family:'Playfair Display',serif;">Meu Ensaio</a>
+  <a onclick="toggleMobileMenu();window.irParaAdmin();" class="link-admin-mobile" style="color:#C8A86B;font-size:20px;font-weight:600;text-decoration:none;font-family:'Playfair Display',serif;display:none;">Admin</a>
+  <button onclick="toggleMobileMenu();openModal();" style="background:#9E4E33;color:white;border:none;padding:14px 40px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;">✨ Criar Ensaio</button>
+</div>
 
 <!-- ===== SITE ===== -->
 <div id="app-site" class="app-section active">
@@ -2768,7 +2801,7 @@ window.verFotosCliente = verFotosCliente;
       <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:#5a3e2b;display:flex;flex-direction:column;gap:8px;">
         <li>✅ 2 fotos em alta qualidade</li>
         <li>✅ Seu rosto preservado</li>
-        <li>✅ Entrega em 5 dias úteis</li>
+        <li>✅ Entrega em até 24 horas</li>
       </ul>
       <button onclick="openModal()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Criar ensaio</button>
     </div>
@@ -2783,7 +2816,7 @@ window.verFotosCliente = verFotosCliente;
       <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:#5a3e2b;display:flex;flex-direction:column;gap:8px;">
         <li>✅ 5 fotos em alta qualidade</li>
         <li>✅ Seu rosto preservado</li>
-        <li>✅ Entrega em 5 dias úteis</li>
+        <li>✅ Entrega em até 24 horas</li>
       </ul>
       <button onclick="openModal()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Criar ensaio</button>
     </div>
@@ -2799,7 +2832,7 @@ window.verFotosCliente = verFotosCliente;
       <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:rgba(255,255,255,0.9);display:flex;flex-direction:column;gap:8px;">
         <li>✅ 10 fotos em alta qualidade</li>
         <li>✅ Seu rosto preservado</li>
-        <li>✅ Entrega em 5 dias úteis</li>
+        <li>✅ Entrega em até 24 horas</li>
         <li>✅ Variedade de poses</li>
       </ul>
       <button onclick="openModal()" style="width:100%;padding:12px;background:white;color:#9E4E33;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Criar ensaio</button>
@@ -2815,7 +2848,7 @@ window.verFotosCliente = verFotosCliente;
       <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:#5a3e2b;display:flex;flex-direction:column;gap:8px;">
         <li>✅ 20 fotos em alta qualidade</li>
         <li>✅ Seu rosto preservado</li>
-        <li>✅ Entrega em 5 dias úteis</li>
+        <li>✅ Entrega em até 24 horas</li>
         <li>✅ Variedade de poses e cenários</li>
       </ul>
       <button onclick="openModal()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Criar ensaio</button>
