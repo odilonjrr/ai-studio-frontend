@@ -2080,6 +2080,17 @@ window.addEventListener('DOMContentLoaded', async function() {
     if (role === 'admin') {
       var adminLinks = document.querySelectorAll('.link-admin, .link-admin-mobile');
       adminLinks.forEach(function(el) { el.style.display = ''; });
+      // Restaurar sessão admin sem redirecionar — fica na home
+    } else if (role === 'cliente') {
+      // Restaurar nome no header do cliente
+      var user = _authUser;
+      if (user) {
+        var header = document.getElementById('cliente-nome-header');
+        if (header) {
+          var nome = localStorage.getItem('sb_nome') || user.email;
+          header.textContent = nome;
+        }
+      }
     }
   }
 });
@@ -2216,13 +2227,31 @@ window.toggleMobileMenu = toggleMobileMenu;
 
 function irParaCliente() {
   if (_authToken && _authRole === 'cliente') {
+    var header = document.getElementById('cliente-nome-header');
+    if (header) header.textContent = localStorage.getItem('sb_nome') || '';
     appNav('cliente');
     carregarPainelCliente();
+    iniciarPollingCliente();
+  } else if (_authToken && _authRole === 'admin') {
+    appNav('admin');
   } else {
     appNav('login');
   }
 }
 window.irParaCliente = irParaCliente;
+
+var _pollingInterval = null;
+function iniciarPollingCliente() {
+  if (_pollingInterval) clearInterval(_pollingInterval);
+  _pollingInterval = setInterval(function() {
+    if (currentSection === 'cliente' && _authToken) {
+      carregarPainelCliente();
+    } else {
+      clearInterval(_pollingInterval);
+    }
+  }, 30000);
+}
+window.iniciarPollingCliente = iniciarPollingCliente;
 
 function irParaAdmin() {
   if (_authToken && _authRole === 'admin') {
@@ -2250,8 +2279,9 @@ async function fazerLogin() {
   if (perfil) {
     _authRole = perfil.role;
     localStorage.setItem('sb_role', perfil.role);
+    localStorage.setItem('sb_nome', perfil.nome);
     if (perfil.role === 'admin') {
-      var adminLinks = document.querySelectorAll('.link-admin');
+      var adminLinks = document.querySelectorAll('.link-admin, .link-admin-mobile');
       adminLinks.forEach(function(el){ el.style.display = ''; });
       showToast('✅ Bem-vindo, ' + perfil.nome + '!');
       appNav('admin');
@@ -2261,6 +2291,7 @@ async function fazerLogin() {
       if (header) header.textContent = perfil.nome;
       appNav('cliente');
       carregarPainelCliente();
+      iniciarPollingCliente();
     }
   }
 }
@@ -2325,6 +2356,7 @@ async function finalizarCadastro(user, nome, wpp) {
   }).catch(function(){});
   _authRole = 'cliente';
   localStorage.setItem('sb_role', 'cliente');
+  localStorage.setItem('sb_nome', nome);
   showToast('✅ Bem-vindo, ' + nome + '!');
   var header = document.getElementById('cliente-nome-header');
   if (header) header.textContent = nome;
@@ -2398,17 +2430,38 @@ async function verFotosCliente(pedidoId) {
     });
     var files = await resp.json();
     if (!files || files.length === 0) {
-      showToast('📭 Nenhuma foto encontrada ainda');
+      showToast('📭 Nenhuma foto encontrada. Aguarde o admin fazer o upload!');
       return;
     }
-    // Abrir cada foto em nova aba para download
-    files.forEach(function(file, i) {
-      setTimeout(function() {
-        var url = SB_URL + '/storage/v1/object/fotos-prontas/' + pedidoId + '/' + file.name + '?token=' + _authToken;
-        window.open(url, '_blank');
-      }, i * 300);
+    // Gerar URLs assinadas para download seguro
+    var paths = files.map(function(f) { return pedidoId + '/' + f.name; });
+    var signResp = await sbFetch('/storage/v1/object/sign/fotos-prontas', {
+      method: 'POST',
+      body: JSON.stringify({ paths: paths, expiresIn: 3600 })
     });
-    showToast('✅ ' + files.length + ' fotos abrindo para download!');
+    var signed = await signResp.json();
+    if (signed && signed.length > 0) {
+      signed.forEach(function(s, i) {
+        setTimeout(function() {
+          var url = SB_URL + s.signedURL;
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'foto_' + (i+1) + '.jpg';
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, i * 500);
+      });
+      showToast('✅ ' + files.length + ' fotos iniciando download!');
+    } else {
+      // Fallback: abrir direto
+      files.forEach(function(file, i) {
+        setTimeout(function() {
+          window.open(SB_URL + '/storage/v1/object/fotos-prontas/' + pedidoId + '/' + file.name, '_blank');
+        }, i * 300);
+      });
+    }
   } catch(e) {
     showToast('❌ Erro ao carregar fotos');
   }
@@ -3539,8 +3592,15 @@ window.verFotosCliente = verFotosCliente;
     </div>
 
     <div style="max-width:900px;margin:0 auto;padding:32px 20px;">
-      <h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;">Meu Ensaio</h1>
-      <p style="color:#999;margin-bottom:32px;">Acompanhe o status do seu ensaio fotográfico com IA</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+        <div>
+          <h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;">Meu Ensaio</h1>
+          <p style="color:#999;margin:0;">Acompanhe o status do seu ensaio fotográfico com IA</p>
+        </div>
+        <button onclick="carregarPainelCliente()" style="background:white;border:1px solid #ddd;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          🔄 Atualizar
+        </button>
+      </div>
 
       <!-- Cards de Status -->
       <div id="cliente-pedidos" style="display:flex;flex-direction:column;gap:20px;">
