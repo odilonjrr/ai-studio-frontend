@@ -619,7 +619,7 @@
   .tipo-opt .tipo-desc { font-size: 10px; color: var(--muted); margin-top: 3px; }
 
   /* qty */
-  .qty-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 28px; }
+  .qty-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
   .qty-opt {
     border: 1.5px solid #E4DAD4; border-radius: 10px; padding: 14px 6px;
     text-align: center; cursor: pointer; transition: all 0.2s; background: white;
@@ -855,6 +855,7 @@
     .depoimentos-grid { grid-template-columns: 1fr; padding: 0; }
     .depoimentos-section { padding: 0 28px 60px; }
     .cta-banner { flex-direction: column; margin: 0 28px 60px; padding: 40px; text-align: center; }
+    .precos-grid { grid-template-columns: repeat(2,1fr) !important; padding: 0 20px !important; }
     footer { padding: 40px 28px 24px; }
     .footer-grid { grid-template-columns: 1fr; gap: 28px; }
     nav { padding: 14px 22px; }
@@ -1776,8 +1777,8 @@ function abrirModalNovoPedido() {
 
   var qtyEl = document.getElementById('np-qty');
   var valorEl = document.getElementById('np-valor');
-  if (qtyEl) { qtyEl.value = '2'; qtyEl.onchange = function() { if (valorEl) valorEl.value = ({2:19.90,5:29.90,10:49.90,20:79.90,50:99.90,100:149.90})[this.value] || ''; }; }
-  if (valorEl) valorEl.value = '19.90';
+  if (qtyEl) { qtyEl.value = '2'; qtyEl.onchange = function() { if (valorEl) valorEl.value = ({2:17.00,5:37.00,10:57.00,20:97.00})[this.value] || ''; }; }
+  if (valorEl) valorEl.value = '17.00';
 
   // Carregar clientes no dropdown
   var SURL = 'https://heebcqoduhvbwpkjwmtf.supabase.co';
@@ -2748,6 +2749,81 @@ window.verFotosCliente = verFotosCliente;
     </div>
   </div>
 
+  <!-- PREÇOS -->
+  <div class="wave-divider"></div>
+  <div class="section-title">
+    <div class="eyebrow">PLANOS</div>
+    <h2>Escolha seu <em>pacote</em></h2>
+    <p>Preços acessíveis para um ensaio fotográfico profissional gerado por IA</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1100px;margin:0 auto 80px;padding:0 48px;">
+
+    <!-- 2 fotos -->
+    <div style="background:white;border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 4px 24px rgba(30,22,18,0.07);border:2px solid transparent;transition:all 0.3s;" onmouseover="this.style.borderColor='#C8A86B'" onmouseout="this.style.borderColor='transparent'">
+      <div style="font-size:13px;font-weight:600;letter-spacing:2px;color:#C8A86B;margin-bottom:12px;">INÍCIO</div>
+      <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:#1E1612;line-height:1;">2</div>
+      <div style="font-size:13px;color:#8A7B74;margin-bottom:20px;">fotos</div>
+      <div style="font-size:32px;font-weight:700;color:#9E4E33;margin-bottom:8px;">R$17</div>
+      <div style="font-size:12px;color:#8A7B74;margin-bottom:24px;">R$8,50 por foto</div>
+      <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:#5a3e2b;display:flex;flex-direction:column;gap:8px;">
+        <li>✅ 2 fotos em alta qualidade</li>
+        <li>✅ Seu rosto preservado</li>
+        <li>✅ Entrega em 5 dias úteis</li>
+      </ul>
+      <button onclick="openModal()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Criar ensaio</button>
+    </div>
+
+    <!-- 5 fotos -->
+    <div style="background:white;border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 4px 24px rgba(30,22,18,0.07);border:2px solid transparent;transition:all 0.3s;" onmouseover="this.style.borderColor='#C8A86B'" onmouseout="this.style.borderColor='transparent'">
+      <div style="font-size:13px;font-weight:600;letter-spacing:2px;color:#C8A86B;margin-bottom:12px;">POPULAR</div>
+      <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:#1E1612;line-height:1;">5</div>
+      <div style="font-size:13px;color:#8A7B74;margin-bottom:20px;">fotos</div>
+      <div style="font-size:32px;font-weight:700;color:#9E4E33;margin-bottom:8px;">R$37</div>
+      <div style="font-size:12px;color:#8A7B74;margin-bottom:24px;">R$7,40 por foto</div>
+      <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:#5a3e2b;display:flex;flex-direction:column;gap:8px;">
+        <li>✅ 5 fotos em alta qualidade</li>
+        <li>✅ Seu rosto preservado</li>
+        <li>✅ Entrega em 5 dias úteis</li>
+      </ul>
+      <button onclick="openModal()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Criar ensaio</button>
+    </div>
+
+    <!-- 10 fotos -->
+    <div style="background:linear-gradient(135deg,#9E4E33,#C97B5E);border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 8px 32px rgba(158,78,51,0.3);border:2px solid transparent;position:relative;transform:scale(1.05);">
+      <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#C8A86B;color:white;font-size:11px;font-weight:700;letter-spacing:1px;padding:4px 14px;border-radius:20px;">MAIS VENDIDO</div>
+      <div style="font-size:13px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,0.7);margin-bottom:12px;">PROFISSIONAL</div>
+      <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:white;line-height:1;">10</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:20px;">fotos</div>
+      <div style="font-size:32px;font-weight:700;color:white;margin-bottom:8px;">R$57</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:24px;">R$5,70 por foto</div>
+      <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:rgba(255,255,255,0.9);display:flex;flex-direction:column;gap:8px;">
+        <li>✅ 10 fotos em alta qualidade</li>
+        <li>✅ Seu rosto preservado</li>
+        <li>✅ Entrega em 5 dias úteis</li>
+        <li>✅ Variedade de poses</li>
+      </ul>
+      <button onclick="openModal()" style="width:100%;padding:12px;background:white;color:#9E4E33;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Criar ensaio</button>
+    </div>
+
+    <!-- 20 fotos -->
+    <div style="background:white;border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 4px 24px rgba(30,22,18,0.07);border:2px solid transparent;transition:all 0.3s;" onmouseover="this.style.borderColor='#C8A86B'" onmouseout="this.style.borderColor='transparent'">
+      <div style="font-size:13px;font-weight:600;letter-spacing:2px;color:#C8A86B;margin-bottom:12px;">PREMIUM</div>
+      <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:#1E1612;line-height:1;">20</div>
+      <div style="font-size:13px;color:#8A7B74;margin-bottom:20px;">fotos</div>
+      <div style="font-size:32px;font-weight:700;color:#9E4E33;margin-bottom:8px;">R$97</div>
+      <div style="font-size:12px;color:#8A7B74;margin-bottom:24px;">R$4,85 por foto</div>
+      <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;font-size:13px;color:#5a3e2b;display:flex;flex-direction:column;gap:8px;">
+        <li>✅ 20 fotos em alta qualidade</li>
+        <li>✅ Seu rosto preservado</li>
+        <li>✅ Entrega em 5 dias úteis</li>
+        <li>✅ Variedade de poses e cenários</li>
+      </ul>
+      <button onclick="openModal()" style="width:100%;padding:12px;background:#9E4E33;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Criar ensaio</button>
+    </div>
+
+  </div>
+  <div class="wave-divider"></div>
+
   <!-- CTA BANNER -->
   <div class="cta-banner">
     <div class="cta-text">
@@ -3016,12 +3092,12 @@ window.verFotosCliente = verFotosCliente;
       <h2>Quantas fotos?</h2>
       <p class="subtitle">Escolha o pacote ideal para você.</p>
       <div class="qty-grid">
-        <div class="qty-opt" onclick="selectQty(this,2,19.90)"><div class="num">02</div><div class="lbl">fotos</div><div class="price">R$19,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,5,29.90)"><div class="num">05</div><div class="lbl">fotos</div><div class="price">R$29,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,10,49.90)"><div class="num">10</div><div class="lbl">fotos</div><div class="price">R$49,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,20,79.90)"><div class="num">20</div><div class="lbl">fotos</div><div class="price">R$79,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,50,99.90)"><div class="num">50</div><div class="lbl">fotos</div><div class="price">R$99,90</div></div>
-        <div class="qty-opt" onclick="selectQty(this,100,149.90)"><div class="num">100</div><div class="lbl">fotos</div><div class="price">R$149,90</div></div>
+        <div class="qty-opt" onclick="selectQty(this,2,17.00)"><div class="num">02</div><div class="lbl">fotos</div><div class="price">R$17,00</div></div>
+        <div class="qty-opt" onclick="selectQty(this,5,37.00)"><div class="num">05</div><div class="lbl">fotos</div><div class="price">R$37,00</div></div>
+        <div class="qty-opt" onclick="selectQty(this,10,57.00)"><div class="num">10</div><div class="lbl">fotos</div><div class="price">R$57,00</div></div>
+        <div class="qty-opt" onclick="selectQty(this,20,97.00)"><div class="num">20</div><div class="lbl">fotos</div><div class="price">R$97,00</div></div>
+        
+        
       </div>
       <div style="display:flex;gap:12px;">
         <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(1)">← Voltar</button>
@@ -3801,12 +3877,12 @@ window.verFotosCliente = verFotosCliente;
           <div>
             <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">QUANTIDADE *</label>
             <select id="np-qty" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-              <option value="2">2 fotos — R$19,90</option>
-              <option value="5">5 fotos — R$29,90</option>
-              <option value="10">10 fotos — R$49,90</option>
-              <option value="20">20 fotos — R$79,90</option>
-              <option value="50">50 fotos — R$99,90</option>
-              <option value="100">100 fotos — R$149,90</option>
+              <option value="2">2 fotos — R$17,00</option>
+              <option value="5">5 fotos — R$37,00</option>
+              <option value="10">10 fotos — R$57,00</option>
+              <option value="20">20 fotos — R$97,00</option>
+              
+              
             </select>
           </div>
         </div>
@@ -4976,7 +5052,7 @@ window.addEventListener('scroll', function(){
   }
 
   // ===== PRECOS =====
-  var precosPorQty = {2:19.90, 5:29.90, 10:49.90, 20:79.90, 50:99.90, 100:149.90};
+  var precosPorQty = {2:17.00, 5:37.00, 10:57.00, 20:97.00};
 
   // ===== NOVO PEDIDO =====
 
@@ -5139,12 +5215,12 @@ if (typeof renderPedidos === 'function') renderPedidos('todos');
           <div>
             <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">QUANTIDADE</label>
             <select id="ep-qty" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
-              <option value="2">2 fotos — R$19,90</option>
-              <option value="5">5 fotos — R$29,90</option>
-              <option value="10">10 fotos — R$49,90</option>
-              <option value="20">20 fotos — R$79,90</option>
-              <option value="50">50 fotos — R$99,90</option>
-              <option value="100">100 fotos — R$149,90</option>
+              <option value="2">2 fotos — R$17,00</option>
+              <option value="5">5 fotos — R$37,00</option>
+              <option value="10">10 fotos — R$57,00</option>
+              <option value="20">20 fotos — R$97,00</option>
+              
+              
             </select>
           </div>
         </div>
