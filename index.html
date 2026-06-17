@@ -837,7 +837,7 @@
 
   /* ========== RESPONSIVE ========== */
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; padding: 50px 28px 20px; min-height: auto; }
+    .hero { grid-template-columns: 1fr; padding: 20px 28px 20px; min-height: auto; }
     .hero-visual {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1679,9 +1679,12 @@
 
 
 /* ===== EXTRA OVERRIDES ===== */
+html, body { overflow-x: hidden; max-width: 100%; }
 @media(max-width:900px) {
   #global-nav { padding:14px 22px; }
   .g-nav-links { display:none; }
+  #hamburger-btn { display:flex !important; }
+  .g-nav-right { gap:8px; }
 }
 </style>
 </head>
