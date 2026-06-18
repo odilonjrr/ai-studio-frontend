@@ -1725,6 +1725,27 @@ html, body { overflow-x: hidden; max-width: 100%; }
   #hamburger-btn { display:flex !important; }
   .g-nav-right { gap:8px; }
 }
+
+/* ===== COPA BANNER ===== */
+.copa-banner {
+  background: linear-gradient(90deg, #009C3B 0%, #007A2E 50%, #FFDF00 100%);
+  padding: 12px 52px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 156, 59, 0.25);
+  animation: bannerPulse 3s ease-in-out infinite;
+}
+@keyframes bannerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+.copa-banner span { color: #FFDF00; font-weight: 800; }
+@media (max-width: 768px) {
+  .copa-banner { padding: 10px 20px; font-size: 12px; }
+}
 </style>
 </head>
 <script>
@@ -2629,6 +2650,10 @@ window.verFotosCliente = verFotosCliente;
 <!-- ===== SITE ===== -->
 <div id="app-site" class="app-section active">
 
+<!-- COPA BANNER -->
+<div class="copa-banner">
+  🇧🇷 Ganhe <span>50% a mais de fotos</span> durante a copa! 🇧🇷
+</div>
 
 <!-- NAV -->
 <nav id="navbar">
