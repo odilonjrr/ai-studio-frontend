@@ -1726,6 +1726,65 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .g-nav-right { gap:8px; }
 }
 
+/* ===== BEFORE/AFTER SLIDER ===== */
+.before-after-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  cursor: col-resize;
+}
+.before-after-container img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.before-after-before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.before-after-before img {
+  width: 100%;
+  height: 100%;
+}
+.before-after-slider {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 100%;
+  background: white;
+  cursor: col-resize;
+  transform: translateX(-50%);
+  z-index: 10;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+.before-after-slider::before,
+.before-after-slider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.before-after-slider::before {
+  left: -8px;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent white transparent transparent;
+}
+.before-after-slider::after {
+  right: -8px;
+  border-width: 6px 0 6px 8px;
+  border-color: transparent transparent transparent white;
+}
+
 /* ===== COPA BANNER ===== */
 .copa-banner {
   position: fixed;
@@ -2714,28 +2773,60 @@ window.verFotosCliente = verFotosCliente;
     </div>
 
     <div class="hero-visual">
-      <!-- Foto grande à esquerda - COPA DO MUNDO -->
-      <div class="hero-img" style="grid-row:span 2; border-radius:16px; overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
-        <img src="./tema-copa.png" alt="Copa do Mundo" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
-        <div style="position:absolute;top:12px;left:12px;background:#FFDF00;color:#009C3B;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:0.5px;">⚽ +50% FOTOS</div>
-        <div class="img-badge" style="background:linear-gradient(90deg,#009C3B,#00A859);">⚽ Copa do Mundo</div>
+      <!-- Foto grande à esquerda - COPA DO MUNDO (Before/After) -->
+      <div class="hero-img" style="grid-row:span 2; border-radius:16px; overflow:hidden;" onmouseover="this.style.cursor='col-resize'">
+        <div class="before-after-container">
+          <img src="./tema-copa-depois.png" alt="Copa do Mundo - Depois" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+          <div class="before-after-before">
+            <img src="./tema-copa-antes.png" alt="Copa do Mundo - Antes" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+          </div>
+          <div class="before-after-slider"></div>
+        </div>
+        <div style="position:absolute;top:12px;left:12px;background:#FFDF00;color:#009C3B;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:0.5px;z-index:5;">⚽ +50% FOTOS</div>
+        <div class="img-badge" style="background:linear-gradient(90deg,#009C3B,#00A859);z-index:5;">⚽ Copa do Mundo</div>
       </div>
-      <!-- Coluna do meio -->
-      <div class="hero-img" style="overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
-        <img src="./tema-bebe.jpeg" alt="Ensaio Bebê" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+      <!-- Coluna do meio - BEBÊ (Before/After) -->
+      <div class="hero-img" style="overflow:hidden;">
+        <div class="before-after-container">
+          <img src="./tema-bebe-depois.jpeg" alt="Ensaio Bebê - Depois" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+          <div class="before-after-before">
+            <img src="./tema-bebe-antes.jpeg" alt="Ensaio Bebê - Antes" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+          </div>
+          <div class="before-after-slider"></div>
+        </div>
         <div class="img-badge">👶 Bebê</div>
       </div>
-      <div class="hero-img" style="overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
-        <img src="./tema-gestante.jpeg" alt="Ensaio Gestante" style="width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;">
+      <!-- GESTANTE (Before/After) -->
+      <div class="hero-img" style="overflow:hidden;">
+        <div class="before-after-container">
+          <img src="./tema-gestante-depois.jpeg" alt="Ensaio Gestante - Depois" style="width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;">
+          <div class="before-after-before">
+            <img src="./tema-gestante-antes.jpeg" alt="Ensaio Gestante - Antes" style="width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;">
+          </div>
+          <div class="before-after-slider"></div>
+        </div>
         <div class="img-badge">🤰 Gestante</div>
       </div>
-      <!-- Coluna da direita -->
-      <div class="hero-img" style="overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
-        <img src="./tema-aniversario.jpeg" alt="Ensaio Aniversário" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+      <!-- Coluna da direita - ANIVERSÁRIO (Before/After) -->
+      <div class="hero-img" style="overflow:hidden;">
+        <div class="before-after-container">
+          <img src="./tema-aniversario-depois.jpeg" alt="Ensaio Aniversário - Depois" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+          <div class="before-after-before">
+            <img src="./tema-aniversario-antes.jpeg" alt="Ensaio Aniversário - Antes" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+          </div>
+          <div class="before-after-slider"></div>
+        </div>
         <div class="img-badge">🎂 Aniversário</div>
       </div>
-      <div class="hero-img" style="overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
-        <img src="./tema-formatura.jpeg" alt="Ensaio Formatura" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
+      <!-- FORMATURA (Before/After) -->
+      <div class="hero-img" style="overflow:hidden;">
+        <div class="before-after-container">
+          <img src="./tema-formatura-depois.jpeg" alt="Ensaio Formatura - Depois" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
+          <div class="before-after-before">
+            <img src="./tema-formatura-antes.jpeg" alt="Ensaio Formatura - Antes" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
+          </div>
+          <div class="before-after-slider"></div>
+        </div>
         <div class="img-badge">🎓 Formatura</div>
       </div>
 
@@ -4854,7 +4945,47 @@ window.verFotosCliente = verFotosCliente;
     if (document.getElementById('app-admin')?.classList.contains('active')) {
       carregarPedidos();
     }
+    initBeforeAfterSliders();
   });
+
+  function initBeforeAfterSliders() {
+    var sliders = document.querySelectorAll('.before-after-container');
+    sliders.forEach(function(slider) {
+      var sliderLine = slider.querySelector('.before-after-slider');
+      var beforeImg = slider.querySelector('.before-after-before');
+      var isActive = false;
+
+      function updateSliderPosition(e) {
+        if (!isActive) return;
+        var rect = slider.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        if (x < 0) x = 0;
+        if (x > rect.width) x = rect.width;
+        var percent = (x / rect.width) * 100;
+        sliderLine.style.left = percent + '%';
+        beforeImg.style.width = percent + '%';
+      }
+
+      sliderLine.addEventListener('mousedown', function() { isActive = true; });
+      document.addEventListener('mouseup', function() { isActive = false; });
+      document.addEventListener('mousemove', updateSliderPosition);
+
+      slider.addEventListener('touch start', function() { isActive = true; });
+      document.addEventListener('touchend', function() { isActive = false; });
+      document.addEventListener('touchmove', function(e) {
+        if (!isActive) return;
+        var touch = e.touches[0];
+        var rect = slider.getBoundingClientRect();
+        var x = touch.clientX - rect.left;
+        if (x < 0) x = 0;
+        if (x > rect.width) x = rect.width;
+        var percent = (x / rect.width) * 100;
+        sliderLine.style.left = percent + '%';
+        beforeImg.style.width = percent + '%';
+      });
+    });
+  }
+
   function openLightbox(wrapper) {
     var img = wrapper.querySelector('img');
     var overlay = document.getElementById('lightbox-overlay');
