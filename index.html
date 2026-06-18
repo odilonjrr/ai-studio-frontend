@@ -1728,6 +1728,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 /* ===== COPA BANNER ===== */
 .copa-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
   background: linear-gradient(90deg, #009C3B 0%, #007A2E 50%, #FFDF00 100%);
   padding: 12px 52px;
   text-align: center;
@@ -1743,8 +1748,15 @@ html, body { overflow-x: hidden; max-width: 100%; }
   50% { opacity: 0.95; }
 }
 .copa-banner span { color: #FFDF00; font-weight: 800; }
+
+/* Ajusta nav para não ficar atrás do banner */
+nav { top: 50px !important; }
+#screen-home { padding-top: 124px !important; }
+
 @media (max-width: 768px) {
   .copa-banner { padding: 10px 20px; font-size: 12px; }
+  nav { top: 46px !important; }
+  #screen-home { padding-top: 120px !important; }
 }
 </style>
 </head>
@@ -2647,13 +2659,13 @@ window.verFotosCliente = verFotosCliente;
   <button onclick="toggleMobileMenu();openModal();" style="background:#9E4E33;color:white;border:none;padding:14px 40px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;">✨ Criar Ensaio</button>
 </div>
 
-<!-- ===== SITE ===== -->
-<div id="app-site" class="app-section active">
-
 <!-- COPA BANNER -->
 <div class="copa-banner">
   🇧🇷 Ganhe <span>50% a mais de fotos</span> durante a copa! 🇧🇷
 </div>
+
+<!-- ===== SITE ===== -->
+<div id="app-site" class="app-section active">
 
 <!-- NAV -->
 <nav id="navbar">
