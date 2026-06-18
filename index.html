@@ -333,6 +333,41 @@
     max-width: 1200px; margin: 0 auto;
   }
 
+  /* DESTAQUE COPA DO MUNDO */
+  .copa-hero {
+    max-width: 1100px; margin: 0 auto 48px; padding: 0 64px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    border-radius: 24px; overflow: hidden;
+  }
+  .copa-hero > .copa-hero-text, .copa-hero > .copa-hero-img {
+    background: linear-gradient(120deg, #009C3B, #007A2E);
+  }
+  .copa-hero {
+    background: linear-gradient(120deg, #009C3B, #007A2E);
+    box-shadow: 0 24px 60px rgba(0,156,59,0.28);
+    padding: 0;
+  }
+  .copa-hero-text {
+    padding: 48px 44px; color: #fff;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .copa-hero-tag {
+    background: #FFDF00; color: #009C3B; font-weight: 800;
+    font-size: 12px; letter-spacing: 1px; padding: 6px 14px;
+    border-radius: 20px; width: fit-content; margin-bottom: 18px;
+  }
+  .copa-hero-text h2 {
+    font-family: 'Playfair Display', serif; font-size: 40px;
+    line-height: 1.08; margin-bottom: 14px; color: #fff;
+  }
+  .copa-hero-text h2 em { color: #FFDF00; font-style: italic; }
+  .copa-hero-text > p { font-size: 16px; opacity: 0.94; margin-bottom: 10px; }
+  .copa-hero-offer { font-size: 18px; font-weight: 700; margin-bottom: 24px !important; opacity: 1 !important; }
+  .copa-hero-offer span { color: #FFDF00; }
+  .copa-hero-btn { background: #FFDF00 !important; color: #009C3B !important; width: fit-content; }
+  .copa-hero-img { cursor: zoom-in; min-height: 360px; }
+  .copa-hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+
   .ensaio-card {
     border-radius: 16px; overflow: hidden;
     box-shadow: 0 4px 24px var(--shadow);
@@ -851,6 +886,10 @@
     .float-card-2 { display: none; }
     .hero-stats { gap: 20px; }
     .ensaios-grid { grid-template-columns: 1fr; padding: 0 28px 60px; }
+    .copa-hero { grid-template-columns: 1fr; margin: 0 28px 48px; padding: 0; }
+    .copa-hero-text { padding: 36px 28px; }
+    .copa-hero-text h2 { font-size: 30px; }
+    .copa-hero-img { min-height: 240px; order: -1; }
     .como-funciona { grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 28px 60px; }
     .depoimentos-grid { grid-template-columns: 1fr; padding: 0; }
     .depoimentos-section { padding: 0 28px 60px; }
@@ -2539,12 +2578,12 @@ window.verFotosCliente = verFotosCliente;
 </script>
 
 <!-- ===== GLOBAL NAV ===== -->
-<!-- BANNER DIA DOS NAMORADOS -->
-<div id="banner-namorados" style="background:linear-gradient(90deg,#8B1A4A,#C2185B,#E91E8C,#C2185B,#8B1A4A);color:white;text-align:center;padding:10px 20px;font-size:14px;font-weight:600;letter-spacing:0.5px;position:relative;z-index:100;">
-  💕 ESPECIAL DIA DOS NAMORADOS — Ensaio de Casal com desconto! 
-  <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;margin:0 8px;font-size:13px;">Use o cupom: <strong>AMOR12</strong></span>
-  <button onclick="openModal('casal')" style="background:white;color:#C2185B;border:none;padding:5px 16px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;margin-left:8px;">Criar agora 💑</button>
-  <button onclick="document.getElementById('banner-namorados').style.display='none'" style="background:none;border:none;color:white;position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:20px;cursor:pointer;opacity:0.7;">✕</button>
+<!-- BANNER COPA DO MUNDO -->
+<div id="banner-copa" style="background:linear-gradient(90deg,#009C3B,#00A859,#009C3B);color:white;text-align:center;padding:10px 20px;font-size:14px;font-weight:600;letter-spacing:0.5px;position:relative;z-index:100;">
+  ⚽ ESPECIAL COPA DO MUNDO — Ganhe 50% MAIS fotos no seu pack! 🇧🇷
+  <span style="background:#FFDF00;color:#009C3B;padding:3px 12px;border-radius:20px;margin:0 8px;font-size:13px;font-weight:700;">+50% DE FOTOS</span>
+  <button onclick="openModal('copa')" style="background:#FFDF00;color:#009C3B;border:none;padding:5px 16px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;margin-left:8px;">Criar agora ⚽</button>
+  <button onclick="document.getElementById('banner-copa').style.display='none'" style="background:none;border:none;color:white;position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:20px;cursor:pointer;opacity:0.7;">✕</button>
 </div>
 
 <nav id="global-nav">
@@ -2638,12 +2677,11 @@ window.verFotosCliente = verFotosCliente;
     </div>
 
     <div class="hero-visual">
-      <!-- Foto grande à esquerda -->
-      <!-- Foto grande à esquerda - DIA DOS NAMORADOS -->
+      <!-- Foto grande à esquerda - COPA DO MUNDO -->
       <div class="hero-img" style="grid-row:span 2; border-radius:16px; overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
-        <img src="./tema-casal.jpeg" alt="Dia dos Namorados" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
-        <div style="position:absolute;top:12px;left:12px;background:linear-gradient(90deg,#C2185B,#E91E8C);color:white;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:0.5px;">💕 ESPECIAL</div>
-        <div class="img-badge" style="background:linear-gradient(90deg,#C2185B,#E91E8C);">💑 Dia dos Namorados</div>
+        <img src="./tema-copa.png" alt="Copa do Mundo" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+        <div style="position:absolute;top:12px;left:12px;background:#FFDF00;color:#009C3B;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:0.5px;">⚽ +50% FOTOS</div>
+        <div class="img-badge" style="background:linear-gradient(90deg,#009C3B,#00A859);">⚽ Copa do Mundo</div>
       </div>
       <!-- Coluna do meio -->
       <div class="hero-img" style="overflow:hidden; cursor:zoom-in;" onclick="openLightbox(this)">
@@ -2717,6 +2755,20 @@ window.verFotosCliente = verFotosCliente;
 
   <div class="wave-divider"></div>
 
+  <!-- DESTAQUE COPA DO MUNDO -->
+  <div class="copa-hero">
+    <div class="copa-hero-text">
+      <div class="copa-hero-tag">⚽ ESPECIAL COPA DO MUNDO 🇧🇷</div>
+      <h2>Ensaio <em>Copa do Mundo</em></h2>
+      <p>Vista a camisa, mostre sua paixão pelo Brasil e crie um ensaio de torcedor com cara de estúdio profissional.</p>
+      <p class="copa-hero-offer">🎁 Durante a Copa você ganha <span>50% MAIS fotos</span> no seu pack!</p>
+      <button class="btn-primary copa-hero-btn" onclick="openModal('copa')">⚽ Quero meu ensaio da Copa</button>
+    </div>
+    <div class="copa-hero-img" onclick="openLightbox(this)">
+      <img src="./tema-copa.png" alt="Ensaio Copa do Mundo">
+    </div>
+  </div>
+
   <!-- ENSAIOS -->
   <div class="section-title">
     <div class="eyebrow">Nossos Ensaios</div>
@@ -2769,16 +2821,15 @@ window.verFotosCliente = verFotosCliente;
     </div>
 
     <!-- CASAL -->
-    <div class="ensaio-card" style="border:2px solid #E91E8C;position:relative;">
-      <div style="position:absolute;top:12px;left:12px;z-index:10;background:linear-gradient(90deg,#C2185B,#E91E8C);color:white;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px;">💕 ESPECIAL DIA DOS NAMORADOS</div>
+    <div class="ensaio-card">
       <div class="img-zoom-wrap" onclick="openLightbox(this)"><img src="./tema-casal.jpeg" alt="Casal" style="width:100%;height:320px;object-fit:cover;object-position:center;border-radius:12px 12px 0 0;display:block;"></div>
       <div class="ensaio-info">
-        <div class="ensaio-tag" style="background:linear-gradient(90deg,#C2185B,#E91E8C);color:white;">💑 Dia dos Namorados</div>
+        <div class="ensaio-tag">💑 Casal</div>
         <h3>Ensaio de Casal</h3>
         <p>Capture momentos especiais com seu parceiro. Poses românticas com iluminação suave.</p>
         <div class="ensaio-footer">
           <div class="ensaio-preco">a partir de <strong>R$ 19,90</strong></div>
-          <button class="btn-escolher" style="background:linear-gradient(90deg,#C2185B,#E91E8C);" onclick="openModal('casal')">Quero este 💕</button>
+          <button class="btn-escolher" onclick="openModal('casal')">Quero este 💑</button>
         </div>
       </div>
     </div>
@@ -3002,8 +3053,9 @@ window.verFotosCliente = verFotosCliente;
         <h4>Ensaios</h4>
         <a onclick="openModal('prof')">💼 Profissional</a>
         <a onclick="openModal('gest')">🤰 Gestante</a>
+        <a onclick="openModal('copa')">⚽ Copa do Mundo</a>
         <a onclick="openModal('aniv')">🎂 Aniversário</a>
-        <a onclick="openModal('casal')">💕 Casal</a>
+        <a onclick="openModal('casal')">💑 Casal</a>
         <a onclick="openModal('form')">🎓 Formatura</a>
         <a onclick="openModal('intim')">✨ Intimista</a>
         <a onclick="openModal('bebe')">👶 Bebê</a>
@@ -3181,6 +3233,12 @@ window.verFotosCliente = verFotosCliente;
       <h2>Escolha o ensaio</h2>
       <p class="subtitle">Selecione o tema que combina com você.</p>
       <div class="tipo-grid">
+        <div class="tipo-opt" id="tipo-copa" onclick="selectTipo('copa')" style="position:relative;border:2px solid #009C3B;">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#FFDF00;color:#009C3B;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;">⚽ +50% FOTOS</div>
+          <div class="tipo-emoji">⚽</div>
+          <div class="tipo-nome">Copa do Mundo</div>
+          <div class="tipo-desc" style="color:#009C3B;">Torcedor & paixão</div>
+        </div>
         <div class="tipo-opt" id="tipo-prof" onclick="selectTipo('prof')">
           <div class="tipo-emoji">💼</div>
           <div class="tipo-nome">Profissional</div>
@@ -3196,11 +3254,10 @@ window.verFotosCliente = verFotosCliente;
           <div class="tipo-nome">Aniversário</div>
           <div class="tipo-desc">Glamour & elegância</div>
         </div>
-        <div class="tipo-opt" id="tipo-casal" onclick="selectTipo('casal')" style="position:relative;border:2px solid #E91E8C;">
-          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#C2185B,#E91E8C);color:white;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;">💕 DIA DOS NAMORADOS</div>
+        <div class="tipo-opt" id="tipo-casal" onclick="selectTipo('casal')">
           <div class="tipo-emoji">💑</div>
           <div class="tipo-nome">Casal</div>
-          <div class="tipo-desc" style="color:#E91E8C;">Especial & romântico</div>
+          <div class="tipo-desc">Romântico & a dois</div>
         </div>
         <div class="tipo-opt" id="tipo-form" onclick="selectTipo('form')">
           <div class="tipo-emoji">🎓</div>
@@ -3248,14 +3305,12 @@ window.verFotosCliente = verFotosCliente;
       </div>
       <div class="eyebrow">Passo 2 de 4</div>
       <h2>Quantas fotos?</h2>
-      <p class="subtitle">Escolha o pacote ideal para você.</p>
+      <p class="subtitle">⚽ Promoção Copa do Mundo: você recebe <strong style="color:#009C3B;">50% mais fotos</strong> pelo mesmo preço!</p>
       <div class="qty-grid">
-        <div class="qty-opt" onclick="selectQty(this,2,17.00)"><div class="num">02</div><div class="lbl">fotos</div><div class="price">R$17,00</div></div>
-        <div class="qty-opt" onclick="selectQty(this,5,37.00)"><div class="num">05</div><div class="lbl">fotos</div><div class="price">R$37,00</div></div>
-        <div class="qty-opt" onclick="selectQty(this,10,57.00)"><div class="num">10</div><div class="lbl">fotos</div><div class="price">R$57,00</div></div>
-        <div class="qty-opt" onclick="selectQty(this,20,97.00)"><div class="num">20</div><div class="lbl">fotos</div><div class="price">R$97,00</div></div>
-        
-        
+        <div class="qty-opt" onclick="selectQty(this,3,17.00)" style="position:relative;"><div style="position:absolute;top:-8px;right:-6px;background:#009C3B;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;">+50% ⚽</div><div class="num">03</div><div class="lbl">fotos <s style="opacity:0.5;font-weight:400;">02</s></div><div class="price">R$17,00</div></div>
+        <div class="qty-opt" onclick="selectQty(this,8,37.00)" style="position:relative;"><div style="position:absolute;top:-8px;right:-6px;background:#009C3B;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;">+50% ⚽</div><div class="num">08</div><div class="lbl">fotos <s style="opacity:0.5;font-weight:400;">05</s></div><div class="price">R$37,00</div></div>
+        <div class="qty-opt" onclick="selectQty(this,15,57.00)" style="position:relative;"><div style="position:absolute;top:-8px;right:-6px;background:#009C3B;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;">+50% ⚽</div><div class="num">15</div><div class="lbl">fotos <s style="opacity:0.5;font-weight:400;">10</s></div><div class="price">R$57,00</div></div>
+        <div class="qty-opt" onclick="selectQty(this,30,97.00)" style="position:relative;"><div style="position:absolute;top:-8px;right:-6px;background:#009C3B;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;">+50% ⚽</div><div class="num">30</div><div class="lbl">fotos <s style="opacity:0.5;font-weight:400;">20</s></div><div class="price">R$97,00</div></div>
       </div>
       <div style="display:flex;gap:12px;">
         <button class="btn-outline" style="flex:1;justify-content:center" onclick="goStep(1)">← Voltar</button>
@@ -4028,10 +4083,11 @@ window.verFotosCliente = verFotosCliente;
             <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px;">TEMA *</label>
             <select id="np-tema" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
               <option value="">Selecione...</option>
+              <option value="Copa do Mundo">⚽ Copa do Mundo</option>
               <option value="Profissional">💼 Profissional</option>
               <option value="Gestante">🤰 Gestante</option>
               <option value="Aniversario">🎂 Aniversário</option>
-              <option value="Casal">💕 Casal</option>
+              <option value="Casal">💑 Casal</option>
               <option value="Formatura">🎓 Formatura</option>
               <option value="Intimista">✨ Intimista</option>
               <option value="Bebe">👶 Bebê</option>
@@ -4841,7 +4897,7 @@ window.addEventListener('scroll', function(){
     document.getElementById('step'+n).classList.add('active');
   }
 
-  var tipoNames = {prof:'Profissional', gest:'Gestante', aniv:'Aniversario', casal:'Casal', form:'Formatura', intim:'Intimista', bebe:'Bebe', aninf:'Aniversario Infantil', fam:'Familia'};
+  var tipoNames = {copa:'Copa do Mundo', prof:'Profissional', gest:'Gestante', aniv:'Aniversario', casal:'Casal', form:'Formatura', intim:'Intimista', bebe:'Bebe', aninf:'Aniversario Infantil', fam:'Familia'};
 
   function selectTipo(id) {
     state.tipo = tipoNames[id]; state.tipoId = id;
